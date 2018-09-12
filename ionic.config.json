@@ -1,0 +1,7 @@
+{
+  "name": "UT Finder",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
+}

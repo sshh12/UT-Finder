@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-navbar color="utorange">
+    <ion-title>Schedule</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+  <ion-fab top right edge>
+   <button ion-fab edge color="utgrey" mini (click)="fetchSchedule()"><ion-icon name="add"></ion-icon></button>
+  </ion-fab>
+
+  <div>
+    <ion-grid *ngIf="weekMatrix && weekMatrix.length > 0" class='calender'>
+      <ion-row *ngFor='let row of weekMatrix'>
+        <ion-col *ngFor='let item of row' col-2 class="{{item ? item.class : ''}}" [style.background-color]="(item && item.bg) ? item.bg : ''" (click)="(item && item.click) ? item.click() : ''">
+          <p *ngIf='item'>{{ item.label }}</p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <div class="addchip" *ngIf="!weekMatrix">
+    <ion-chip>
+      <ion-icon (click)="fetchSchedule()" name="add" color="utgrey"></ion-icon>
+      <ion-label>Add your schedule</ion-label>
+    </ion-chip>
+  </div>
+
+</ion-content>
