@@ -10,6 +10,8 @@
    <button ion-fab edge color="utgrey" mini (click)="fetchSchedule()"><ion-icon name="add"></ion-icon></button>
   </ion-fab>
 
+  <hr class="timenow-bar" [style.top.px]="timeNowBarOffset">
+
   <div>
     <ion-grid *ngIf="weekMatrix && weekMatrix.length > 0" class='calender'>
       <ion-row *ngFor='let row of weekMatrix'>

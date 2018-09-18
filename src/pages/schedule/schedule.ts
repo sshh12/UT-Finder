@@ -24,6 +24,8 @@ export class SchedulePage {
     classes: Array<ClassTime> = [];
     checker;
 
+    timeNowBarOffset = -100;
+
     constructor(private iab: InAppBrowser,
                 private ref: ApplicationRef,
                 private storage: Storage,
@@ -35,6 +37,29 @@ export class SchedulePage {
           this.createCalender();
         }
       });
+
+      this.classes = [
+        {
+          num: 53695,
+          name: 'M M 408D',
+          title: 'SEQ, SERIES, AND MULTIVAR CALC',
+          building: 'RLM',
+          room: '4.102',
+          days: ['M', 'W', 'F'],
+          timeslot: '2:00pm-3:00pm'
+        }
+      ];
+      this.createCalender();
+
+      setInterval(() => {
+
+        let dateNow = new Date();
+        let time = dateNow.getHours() + dateNow.getMinutes() / 60;
+        time = Math.max(Math.min(time, 21), 8);
+
+        this.timeNowBarOffset = time * 120 - 888;
+
+      }, 5000);
 
     }
 
@@ -124,9 +149,9 @@ export class SchedulePage {
         sum += prefix.charCodeAt(i);
       }
 
-      let hue = Math.floor((sum % 10) / 10 * 360);
+      let hue = Math.floor((sum % 30) / 30 * 360);
 
-      return `hsl(${hue}, 47%, 71%)`
+      return `hsl(${hue}, 50%, 80%)`
 
     }
 

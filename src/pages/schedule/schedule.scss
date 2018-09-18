@@ -16,12 +16,21 @@ page-schedule {
   }
 
   ion-row {
-    height: 4em;
+    height: 60px;
   }
 
   .addchip {
     text-align: center;
     margin: auto;
+  }
+
+  .timenow-bar {
+    z-index: 100;
+    position: absolute;
+    height: 3px;
+    top: 100px;
+    width: 100%;
+    background-color: #f99;
   }
 
 }
