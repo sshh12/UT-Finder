@@ -10,8 +10,10 @@
    <button ion-fab edge color="utgrey" mini (click)="fetchSchedule()"><ion-icon name="add"></ion-icon></button>
   </ion-fab>
 
+  <!-- Current Time as line _____ -->
   <hr class="timenow-bar" [style.top.px]="timeNowBarOffset">
 
+  <!-- Render a fancy Object[][] data structure -->
   <div>
     <ion-grid *ngIf="weekMatrix && weekMatrix.length > 0" class='calender'>
       <ion-row *ngFor='let row of weekMatrix'>
@@ -22,6 +24,7 @@
     </ion-grid>
   </div>
 
+  <!-- Login prompt -->
   <div class="addchip" *ngIf="!weekMatrix">
     <ion-chip>
       <ion-icon (click)="fetchSchedule()" name="add" color="utgrey"></ion-icon>

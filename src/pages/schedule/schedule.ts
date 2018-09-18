@@ -20,50 +20,38 @@ class ClassTime {
 })
 export class SchedulePage {
 
-    weekMatrix: Array<Array<any>>;
-    classes: Array<ClassTime> = [];
-    checker;
+    weekMatrix: Array<Array<any>>; // Calender
+    classes: Array<ClassTime> = []; // List of classes
 
-    timeNowBarOffset = -100;
+    checker: number; // global interval
+
+    timeNowBarOffset: number = -100; // current time bar offset
 
     constructor(private iab: InAppBrowser,
                 private ref: ApplicationRef,
                 private storage: Storage,
                 private altCtrl: AlertController) {
 
-      storage.get('classes').then((classes) => {
+      storage.get('classes').then((classes) => { // check cache
         if(classes && classes.length > 0) {
           this.classes = classes;
           this.createCalender();
         }
       });
 
-      this.classes = [
-        {
-          num: 53695,
-          name: 'M M 408D',
-          title: 'SEQ, SERIES, AND MULTIVAR CALC',
-          building: 'RLM',
-          room: '4.102',
-          days: ['M', 'W', 'F'],
-          timeslot: '2:00pm-3:00pm'
-        }
-      ];
-      this.createCalender();
-
-      setInterval(() => {
+      setInterval(() => { // auto update time bar
 
         let dateNow = new Date();
         let time = dateNow.getHours() + dateNow.getMinutes() / 60;
-        time = Math.max(Math.min(time, 21), 8);
+        time = Math.max(Math.min(time, 21), 8); // ensure bar is within window
 
-        this.timeNowBarOffset = time * 120 - 888;
+        this.timeNowBarOffset = time * 120 - 888; // calc pixels to position
 
       }, 5000);
 
     }
 
-    createCalender() {
+    createCalender() : void { // Fill the matrix with stuff
 
       let calenderMatrix = [
         [null, {label:'M'}, {label:'T'}, {label:'W'}, {label:'TH'}, {label:'F'}]
@@ -91,11 +79,11 @@ export class SchedulePage {
 
       this.weekMatrix = calenderMatrix;
 
-      this.ref.tick();
+      this.ref.tick(); // force refresh required
 
     }
 
-    addClasses(calenderMatrix) {
+    addClasses(calenderMatrix) : void { // adds classes to matrix
 
       for(let classtime of this.classes) {
 
@@ -106,7 +94,7 @@ export class SchedulePage {
         let onClick = () => {
           let alert = this.altCtrl.create({
             title: classtime.name,
-            subTitle: classtime.title,
+            subTitle: `(#${classtime.num}) ${classtime.title}`,
             message: `${classtime.building} ${classtime.room} @ ${classtime.timeslot}`,
             buttons: ['Dismiss']
           });
@@ -117,7 +105,7 @@ export class SchedulePage {
 
           for(let day of classtime.days) {
 
-            let dayIndex = ['M', 'T', 'W', 'H', 'F'].indexOf(day) + 1;
+            let dayIndex = ['M', 'T', 'W', 'H', 'F'].indexOf(day) + 1; // H = Thursday
             if(i == startIndex) {
               calenderMatrix[i][dayIndex] = {
                 label: classtime.name,
@@ -140,7 +128,7 @@ export class SchedulePage {
 
     }
 
-    getColor(classtime) {
+    getColor(classtime) : string { // Simple func to convert classname to unique color
 
       let prefix = classtime.name.substring(0, classtime.name.lastIndexOf(' '));
       let sum = 0;
@@ -155,13 +143,13 @@ export class SchedulePage {
 
     }
 
-    getIndex(timeString) {
+    getIndex(timeString : string) : number { // convert time to row index in matrix
 
       let time = timeString.match( /(\d+):(\d+)(\wm)/ );
 
       let hour = parseInt(time[1]) + (time[3] == 'pm' ? 12:0);
 
-      if(time[1] == 12) {
+      if(time[1] == "12") {
         hour = 12;
       }
 
@@ -171,16 +159,16 @@ export class SchedulePage {
 
     }
 
-    fetchSchedule() {
+    fetchSchedule() : void { // Create browser and
 
       const browser = this.iab.create("https://utdirect.utexas.edu/registration/classlist.WBX", "_blank", {location: 'no'});
 
       browser.on('loadstop').subscribe(event => {
 
-        this.checker = setInterval(() => {
+        this.checker = setInterval(() => { // keep checking browser to see if they are on the classlist page
 
           browser.executeScript(
-             { code: "document.getElementsByTagName(\"table\")[0].innerHTML" }
+             { code: "document.getElementsByTagName(\"table\")[0].innerHTML" } // extract table html
           ).then((tableElem) => {
 
             let tableHTML = "" + tableElem;
@@ -190,9 +178,17 @@ export class SchedulePage {
               clearInterval(this.checker);
               browser.close();
 
-              this.classes = this.parseScheduleTable(tableHTML);
-              this.storage.set('classes', this.classes);
-              this.createCalender();
+              try {
+                this.classes = this.parseScheduleTable(tableHTML);
+                this.storage.set('classes', this.classes);
+                this.createCalender();
+              } catch {
+                this.altCtrl.create({
+                  title: 'Error',
+                  subTitle: 'Something is weird with your schedule...',
+                  buttons: ['Dismiss']
+                }).present();
+              }
 
             }
 
@@ -208,17 +204,7 @@ export class SchedulePage {
 
     }
 
-    parseScheduleTable(tableHTML) : Array<ClassTime> {
-
-      /*{
-        num: 53695,
-        name: 'M 408D',
-        title: 'SEQ, SERIES, AND MULTIVAR CALC',
-        building: 'RLM',
-        room: '4.102',
-        days: ['M', 'W', 'F'],
-        timeslot: '2:00pm-3:00pm'
-      },*/
+    parseScheduleTable(tableHTML: string) : Array<ClassTime> { // Convert HTML to classes
 
       let classes: Array<ClassTime> = [];
 
@@ -237,10 +223,10 @@ export class SchedulePage {
 
         for(let i = 0; i < times.length; i++) {
 
-          let daysAry = days[i][1].replace('TH', 'H').split('');
+          let daysAry = days[i][1].replace('TH', 'H').split(''); // TH -> H, since all other days are 1 letter
 
-          let building = (buildings.length != times.length) ? '*Check Online*' : buildings[i][1];
-          let room = (rooms.length != times.length) ? '*Check Online*' : rooms[i][1];
+          let building = (buildings.length != times.length) ? '*Check Online*' : buildings[i][1]; // Weirdness
+          let room = (rooms.length != times.length) ? '*Check Online*' : rooms[i][1]; // Weirdness
 
           classes.push({
             num: num,
@@ -260,7 +246,7 @@ export class SchedulePage {
 
     }
 
-    getRegexMatrix(re, input) {
+    getRegexMatrix(re: RegExp, input: string) : Array<any> { // apply regex to input, return a list of matches (each match is an array of groups)
 
       let matcher;
       let matrix = [];
