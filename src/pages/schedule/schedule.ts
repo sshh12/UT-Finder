@@ -214,12 +214,15 @@ export class SchedulePage {
 
           let daysAry = days[i][1].replace('TH', 'H').split('');
 
+          let building = (buildings.length != times.length) ? '*Check Online*' : buildings[i][1];
+          let room = (rooms.length != times.length) ? '*Check Online*' : rooms[i][1];
+
           classes.push({
             num: num,
             name: name,
             title: title,
-            building: buildings[i][1],
-            room: rooms[i][1],
+            building: building,
+            room: room,
             days: daysAry,
             timeslot: times[i][1].replace(' ', '')
           });
