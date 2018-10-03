@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-navbar color="utorange">
+    <ion-title>Accounts</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+  <ion-fab top right edge>
+   <button ion-fab edge color="utgrey" mini (click)="fetchAccounts()"><ion-icon name="refresh"></ion-icon></button>
+  </ion-fab>
+
+  <div>
+    <ion-card *ngFor='let acc of accounts'>
+      <ion-card-header>
+        {{ acc.name }} <ion-badge color="{{ getStatusColor(acc.status) }}" class="status">{{ acc.status }}</ion-badge>
+      </ion-card-header>
+      <ion-card-content>
+        <b>${{ acc.balance }}</b>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Login prompt -->
+  <div class="addchip" *ngIf="!accounts">
+    <ion-chip>
+      <ion-icon (click)="fetchAccounts()" name="refresh" color="utgrey"></ion-icon>
+      <ion-label>Add your accounts</ion-label>
+    </ion-chip>
+  </div>
+
+</ion-content>

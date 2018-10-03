@@ -5,6 +5,7 @@ import { MyApp } from './app.component';
 
 import { SchedulePage } from '../pages/schedule/schedule';
 import { MapPage } from '../pages/map/map';
+import { MoneyPage } from '../pages/money/money';
 import { TabsPage } from '../pages/tabs/tabs';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -18,6 +19,7 @@ import { IonicStorageModule } from '@ionic/storage';
     MyApp,
     SchedulePage,
     MapPage,
+    MoneyPage,
     TabsPage
   ],
   imports: [
@@ -30,6 +32,7 @@ import { IonicStorageModule } from '@ionic/storage';
     MyApp,
     SchedulePage,
     MapPage,
+    MoneyPage,
     TabsPage
   ],
   providers: [
