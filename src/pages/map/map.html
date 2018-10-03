@@ -1,9 +1,15 @@
 <ion-header>
+
   <ion-navbar color="utorange">
     <ion-title>Map</ion-title>
   </ion-navbar>
+
+  <ion-toolbar no-border-top>
+    <ion-searchbar placeholder="Where..." (ionInput)="search($event)"></ion-searchbar>
+  </ion-toolbar>
+
 </ion-header>
 
 <ion-content>
-  <iframe src="https://maps.utexas.edu/#"></iframe>
+  <div id="map_canvas"></div>
 </ion-content>

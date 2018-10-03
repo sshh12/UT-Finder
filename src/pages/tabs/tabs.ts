@@ -14,6 +14,7 @@ export class TabsPage {
   tab3Root = MoneyPage;
 
   constructor() {
-
+    //
   }
+
 }
