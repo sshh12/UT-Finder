@@ -6,7 +6,6 @@ import { Http } from '@angular/http';
 import {
   GoogleMaps,
   GoogleMap,
-  GoogleMapsEvent,
   GoogleMapOptions,
   GoogleMapsMapTypeId,
   TileOverlayOptions,

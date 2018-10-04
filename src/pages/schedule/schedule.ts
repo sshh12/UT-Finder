@@ -4,6 +4,8 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
+import { UTNav } from '../nav';
+
 class ClassTime {
     num: number;
     name: string;
@@ -23,14 +25,12 @@ export class SchedulePage {
     weekMatrix: Array<Array<any>>; // Calender
     classes: Array<ClassTime> = []; // List of classes
 
-    checker: number; // global interval
-
     timeNowBarOffset: number = -100; // current time bar offset
 
-    constructor(private iab: InAppBrowser,
-                private ref: ApplicationRef,
+    constructor(private ref: ApplicationRef,
                 private storage: Storage,
-                private altCtrl: AlertController) {
+                private altCtrl: AlertController,
+                private nav: UTNav) {
 
       storage.get('classes').then((classes) => { // check cache
         if(classes && classes.length > 0) {
@@ -159,48 +159,24 @@ export class SchedulePage {
 
     }
 
-    fetchSchedule() : void { // Create browser and
+    fetchSchedule() : void { // get schedule
 
-      const browser = this.iab.create("https://utdirect.utexas.edu/registration/classlist.WBX", "_blank", {location: 'no'});
+      this.nav.fetchTable("https://utdirect.utexas.edu/registration/classlist.WBX", "<th>Course</th>",
+        tableHTML => {
 
-      browser.on('loadstop').subscribe(event => {
+          try {
+            this.classes = this.parseScheduleTable(tableHTML);
+            this.storage.set('classes', this.classes);
+            this.createCalender();
+          } catch {
+            this.altCtrl.create({
+              title: 'Error',
+              subTitle: 'Something is weird with your schedule...',
+              buttons: ['Dismiss']
+            }).present();
+          }
 
-        this.checker = setInterval(() => { // keep checking browser to see if they are on the classlist page
-
-          browser.executeScript(
-             { code: "document.getElementsByTagName(\"table\")[0].innerHTML" } // extract table html
-          ).then((tableElem) => {
-
-            let tableHTML = "" + tableElem;
-
-            if(tableHTML.includes("<th>Course</th>")) {
-
-              clearInterval(this.checker);
-              browser.close();
-
-              try {
-                this.classes = this.parseScheduleTable(tableHTML);
-                this.storage.set('classes', this.classes);
-                this.createCalender();
-              } catch {
-                this.altCtrl.create({
-                  title: 'Error',
-                  subTitle: 'Something is weird with your schedule...',
-                  buttons: ['Dismiss']
-                }).present();
-              }
-
-            }
-
-          });
-
-        }, 500);
-
-      });
-
-      browser.on('exit').subscribe(event => {
-        clearInterval(this.checker);
-      });
+        });
 
     }
 

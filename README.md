@@ -1,6 +1,6 @@
 # UT-Finder
 
-A simple app for simple things. @UT
+A simple app for simple things. [@UT](https://www.utexas.edu/)
 
 ## Releases
 - [Apple](https://itunes.apple.com/us/app/ut-finder/id1436096236)

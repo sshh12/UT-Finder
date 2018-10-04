@@ -18,6 +18,8 @@ import { GoogleMaps } from "@ionic-native/google-maps";
 
 import { HttpModule } from '@angular/http';
 
+import { UTNav } from '../pages/nav';
+
 @NgModule({
   declarations: [
     MyApp,
@@ -45,6 +47,7 @@ import { HttpModule } from '@angular/http';
     SplashScreen,
     InAppBrowser,
     GoogleMaps,
+    UTNav,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

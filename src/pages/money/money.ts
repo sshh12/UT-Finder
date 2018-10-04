@@ -1,8 +1,9 @@
-import { Component, ApplicationRef } from '@angular/core';
+import { Component } from '@angular/core';
 
-import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
+
+import { UTNav } from '../nav';
 
 class Account {
     name: string;
@@ -18,10 +19,7 @@ export class MoneyPage {
 
     accounts: Array<Account> = []; // current accounts
 
-    checker: number; // global interval
-
-    constructor(private iab: InAppBrowser,
-                private ref: ApplicationRef,
+    constructor(private nav: UTNav,
                 private storage: Storage,
                 private altCtrl: AlertController) {
 
@@ -33,47 +31,23 @@ export class MoneyPage {
 
     }
 
-    fetchAccounts() : void { // Create browser and
+    fetchAccounts() : void { // get account balances
 
-      const browser = this.iab.create("https://utdirect.utexas.edu/hfis/diningDollars.WBX", "_blank", {location: 'no'});
+      this.nav.fetchTable("https://utdirect.utexas.edu/hfis/diningDollars.WBX", "<th>Balance  </th>",
+        tableHTML => {
 
-      browser.on('loadstop').subscribe(event => {
+          try {
+            this.accounts = this.parseAccountsTable(tableHTML);
+            this.storage.set('accounts', this.accounts);
+          } catch {
+            this.altCtrl.create({
+              title: 'Error',
+              subTitle: 'Something is weird with your accounts...',
+              buttons: ['Dismiss']
+            }).present();
+          }
 
-        this.checker = setInterval(() => { // keep checking browser to see if they are on the classlist page
-
-          browser.executeScript(
-             { code: "document.getElementsByTagName(\"table\")[0].innerHTML" } // extract table html
-          ).then((tableElem) => {
-
-            let tableHTML = "" + tableElem;
-
-            if(tableHTML.includes("<th>Balance  </th>")) {
-
-              clearInterval(this.checker);
-              browser.close();
-
-              try {
-                this.accounts = this.parseAccountsTable(tableHTML);
-                this.storage.set('accounts', this.accounts);
-              } catch {
-                this.altCtrl.create({
-                  title: 'Error',
-                  subTitle: 'Something is weird with your accounts...',
-                  buttons: ['Dismiss']
-                }).present();
-              }
-
-            }
-
-          });
-
-        }, 500);
-
-      });
-
-      browser.on('exit').subscribe(event => {
-        clearInterval(this.checker);
-      });
+        });
 
     }
 
