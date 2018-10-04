@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, AlertController } from 'ionic-angular';
 
 import { Http } from '@angular/http';
 
@@ -12,8 +12,18 @@ import {
   TileOverlayOptions,
   MarkerOptions,
   GoogleMapsAnimation,
-  Marker
+  Marker,
+  ILatLng,
+  PolylineOptions,
+  Polygon,
+  MarkerIcon
 } from '@ionic-native/google-maps';
+
+class BusRoute {
+  num: number;
+  name: string;
+  dir: string;
+}
 
 @Component({
   selector: 'page-map',
@@ -27,7 +37,22 @@ export class MapPage {
   tileOptions: TileOverlayOptions;
   buildings = [];
 
-  constructor(public navCtrl: NavController, private http: Http) {
+  busRoutes: BusRoute[] = [ // https://www.capmetro.org/busroutes/#!
+    {num: 640, name: 'Forty Acres', dir: 'C'},
+    {num: 641, name: 'East Campus', dir: 'E'},
+    {num: 642, name: 'West Campus', dir: 'K'},
+    {num: 656, name: 'Intramural Fields', dir: 'I'},
+    {num: 661, name: 'Far West', dir: 'I'},
+    {num: 663, name: 'Lake Austin', dir: 'I'},
+    {num: 670, name: 'Crossing Place', dir: 'I'},
+    {num: 671, name: 'North Riverside', dir: 'I'},
+    {num: 672, name: 'Lakeshore', dir: 'I'},
+    {num: 680, name: 'North Riverside/Lakeshore', dir: 'I'},
+    {num: 681, name: 'Intramural Fields/Far West', dir: 'I'},
+    {num: 682, name: 'Forty Acres/East Campus', dir: 'C'}
+  ]
+
+  constructor(public navCtrl: NavController, private http: Http, private alertCtrl: AlertController) {
     //...
   }
 
@@ -35,12 +60,16 @@ export class MapPage {
     this.loadMap();
   }
 
-  search(event: any) { // Handle search bar
-
-    let query = event.target.value.toLowerCase();
-
+  clearMap() {
     this.map.clear();
     this.map.addTileOverlay(this.tileOptions);
+  }
+
+  search(event: any) { // Handle search bar
+
+    this.clearMap();
+
+    let query = event.target.value.toLowerCase();
 
     if (query && query.trim() !== '') {
 
@@ -52,12 +81,17 @@ export class MapPage {
           let lat = parseFloat(pos[0]);
           let lng = parseFloat(pos[1]);
 
+          let icon: MarkerIcon = {
+            url: 'assets/map-building.png'
+          };
+
           let options: MarkerOptions = { // Create a marker for results
             title: building.properties.Building_A,
             position: {lat: lat, lng: lng},
             visible: true,
             animation: GoogleMapsAnimation.DROP,
             flat: false,
+            icon: icon,
             zIndex: 9999
           };
 
@@ -128,11 +162,125 @@ export class MapPage {
       tileSize: 256,
       isPng: true,
       visible: true,
-      zIndex: 999,
+      zIndex: 20,
       opacity: 1.0
     };
 
     this.map.addTileOverlay(this.tileOptions);
+
+  }
+
+  showBuses() {
+
+    let alert = this.alertCtrl.create();
+    alert.setTitle('Bus Routes');
+
+    let checked = true;
+
+    for(let route of this.busRoutes) {
+
+      alert.addInput({
+        type: 'radio',
+        label: `${route.num} ${route.name}`,
+        value: JSON.stringify(route),
+        checked: checked
+      });
+
+      checked = false;
+
+    }
+
+    alert.addButton('Cancel');
+    alert.addButton({
+      text: 'Show',
+      handler: (data: any) => {
+        this.renderRoute(JSON.parse(data));
+      }
+    });
+
+    alert.present();
+
+  }
+
+  renderRoute(route: BusRoute) { // Render a specific route
+
+    this.clearMap();
+
+    let date: Date = new Date();
+    let dateString: string = `${date.getMonth() + 1}/${date.getDay()}/${date.getFullYear()}`;
+
+    let url = `https://www.capmetro.org/planner/s_routetrace.php?route=${route.num}&dir=${route.dir}&date=${dateString}&opts=30`;
+
+    this.http.get(url).subscribe( // Get route geo data
+      data => {
+
+        let json = data.json();
+
+        // ----- Outline
+        let traceCoords: ILatLng[] = [];
+
+        traceCoords.push({
+          lat: json.trace[0][0],
+          lng: json.trace[0][1]
+        });
+
+        for(let i = 1; i < json.trace.length; i++) { // undo weird compression algo
+          traceCoords.push({
+            lat: traceCoords[i-1].lat + json.trace[i][0] / 1000000,
+            lng: traceCoords[i-1].lng + json.trace[i][1] / 1000000
+          });
+        }
+
+        let polyOptions: PolylineOptions = {
+          points: traceCoords,
+          strokeColor: '#1070AF',
+          fillColor: '#00000000', // no fill
+          strokeWidth: 10,
+          zIndex: 99,
+          strokeOpacity: 1.0,
+          clickable: false
+        };
+
+        this.map.addPolygon(polyOptions).then((polygon: Polygon) => {
+
+        });
+
+        // -----
+
+        // ----- Stops
+
+        for(let stop of json.stops) {
+
+          this.http.get(`https://www.capmetro.org/planner/s_stopinfo.asp?stopid=${stop.id}&opt=2`).subscribe( // load stop data
+            stopdata => {
+
+              let stopJson = stopdata.json();
+
+              let icon: MarkerIcon = {
+                url: 'assets/map-front-bus.png'
+              };
+
+              let options: MarkerOptions = {
+                title: stopJson.name,
+                icon: icon,
+                position: {lat: stop.latLng[0], lng: stop.latLng[1]},
+                visible: true,
+                animation: GoogleMapsAnimation.DROP,
+                flat: false,
+                zIndex: 9999
+              };
+
+              this.map.addMarker(options).then((marker: Marker) => {
+              });
+
+            });
+
+        }
+
+        // -----
+
+
+      });
 
   }
 
