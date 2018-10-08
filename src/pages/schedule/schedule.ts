@@ -1,6 +1,5 @@
 import { Component, ApplicationRef } from '@angular/core';
 
-import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 

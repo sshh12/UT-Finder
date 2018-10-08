@@ -1,5 +1,10 @@
 import { Component } from '@angular/core';
-import { NavController, AlertController } from 'ionic-angular';
+
+import {
+  NavController,
+  AlertController,
+  ToastController
+} from 'ionic-angular';
 
 import { Http } from '@angular/http';
 
@@ -51,7 +56,10 @@ export class MapPage {
     {num: 682, name: 'Forty Acres/East Campus', dir: 'C'}
   ]
 
-  constructor(public navCtrl: NavController, private http: Http, private alertCtrl: AlertController) {
+  constructor(public navCtrl: NavController,
+              private http: Http,
+              private alertCtrl: AlertController,
+              private toastCtrl: ToastController) {
     //...
   }
 
@@ -214,6 +222,15 @@ export class MapPage {
       data => {
 
         let json = data.json();
+
+        if(json.status != 'OK') {
+          this.toastCtrl.create({
+            message: 'Route not available',
+            duration: 3000,
+            position: 'top'
+          }).present();
+          return;
+        }
 
         // ----- Outline
         let traceCoords: ILatLng[] = [];
