@@ -12,10 +12,18 @@
 
 <ion-content>
 
-  <ion-fab top right edge>
-   <button ion-fab edge color="utgrey" mini (click)="showBuses()"><ion-icon name="bus"></ion-icon></button>
-  </ion-fab>
 
-  <div id="map_canvas"></div>
+
+  <div id="map_canvas">
+
+    <ion-fab top right #fab>
+      <button mini ion-fab color="utgrey"><ion-icon name="map"></ion-icon></button>
+      <ion-fab-list>
+        <button ion-fab color="blue" (click)="showBuses()"><ion-icon name="bus"></ion-icon></button>
+        <button ion-fab color="success" (click)="showFood()"><ion-icon name="pizza"></ion-icon></button>
+      </ion-fab-list>
+    </ion-fab>
+
+  </div>
 
 </ion-content>
