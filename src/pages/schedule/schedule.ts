@@ -24,6 +24,7 @@ export class SchedulePage {
     weekMatrix: Array<Array<any>>; // Calender
     classes: Array<ClassTime> = []; // List of classes
 
+    scheduleOffset: number = 0; // use row index to hide the top of calender
     timeNowBarOffset: number = -100; // current time bar offset
 
     constructor(private ref: ApplicationRef,
@@ -44,19 +45,35 @@ export class SchedulePage {
         let time = dateNow.getHours() + dateNow.getMinutes() / 60;
         time = Math.max(Math.min(time, 21), 8); // ensure bar is within window
 
-        this.timeNowBarOffset = time * 120 - 888; // calc pixels to position
+        this.timeNowBarOffset = time * 120 - 888 - this.scheduleOffset * 60; // calc pixels to position
 
-      }, 5000);
+      }, 1000);
 
     }
 
     createCalender() : void { // Fill the matrix with stuff
 
-      let calenderMatrix = [
-        [null, {label:'M'}, {label:'T'}, {label:'W'}, {label:'TH'}, {label:'F'}]
-      ];
+      let calenderMatrix: Array<Array<any>> = [[
+        null,
+        {label:'M', class:'day-header'},
+        {label:'T', class:'day-header'},
+        {label:'W', class:'day-header'},
+        {label:'TH', class:'day-header'},
+        {label:'F', class:'day-header'}
+      ]];
 
-      for(let i = 8; i <= 20; i++) {
+      // calculate the calender offset to display only relevent time period
+      let minStartIndex = 999;
+      for(let classtime of this.classes) {
+        let start = classtime.timeslot.split('-')[0];
+        minStartIndex = Math.min(minStartIndex, this.getIndex(start));
+      }
+      if(minStartIndex % 2 == 0) { // should be odd #, so it starts on the hour
+        minStartIndex -= 1;
+      }
+      this.scheduleOffset = minStartIndex - 1; // ignore header index
+
+      for(let i = 8 + this.scheduleOffset / 2; i <= 20; i++) {
 
         let timeString;
         if(i > 12) {
@@ -69,8 +86,8 @@ export class SchedulePage {
           timeString = ' ' + timeString;
         }
 
-        calenderMatrix.push([{label: timeString}, null, null, null, null, null]);
-        calenderMatrix.push([{label: ' '}, null, null, null, null, null]);
+        calenderMatrix.push([{label: timeString, class:'time-header'}, null, null, null, null, null]);
+        calenderMatrix.push([{label: ' ', class:'time-header'}, null, null, null, null, null]);
 
       }
 
@@ -87,8 +104,8 @@ export class SchedulePage {
       for(let classtime of this.classes) {
 
         let [start, end] = classtime.timeslot.split('-');
-        let startIndex = this.getIndex(start);
-        let endIndex = this.getIndex(end);
+        let startIndex = this.getIndex(start) - this.scheduleOffset;
+        let endIndex = this.getIndex(end) - this.scheduleOffset;
 
         let onClick = () => {
           let alert = this.altCtrl.create({
@@ -138,7 +155,7 @@ export class SchedulePage {
 
       let hue = Math.floor((sum % 30) / 30 * 360);
 
-      return `hsl(${hue}, 50%, 80%)`
+      return `hsl(${hue}, 50%, 85%)`
 
     }
 
