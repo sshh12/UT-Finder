@@ -31,22 +31,37 @@ export class UTNav {
           this.checker = setInterval(() => {
 
             browser.executeScript(
-               { code: "[window.location.href, document.getElementById('IDToken1')]" }
-            ).then((test) => {
+               { code: "window.location.href" }
+            ).then((curUrl) => {
 
-              if(("" + test[0]).includes("www.utexas.edu")) { // this means the user is prob already logged in
+              curUrl = "" + curUrl;
+
+              if(curUrl.includes("www.utexas.edu")) { // this means the user is prob already logged in
 
                 clearInterval(this.checker);
                 browser.close();
                 this.lastLogged = new Date();
                 resolve();
 
-              } else if (test[1] != null) { // currently on the login page
+              } else if (curUrl.startsWith("https://login.utexas.edu")) { // currently on the login page
 
                 browser.executeScript(
-                   { code: `document.getElementById('IDToken1').value = "${username}"; document.getElementById('IDToken2').value = "${password}"` }
-                ).then(() => {
-                  browser.executeScript({ code: "LoginSubmit('Log In')" })
+                   { code: "document.getElementById('error-message') != null" }
+                ).then((error) => {
+                  if(error) {
+                    this.alertCtrl.create({
+                      title: 'Login',
+                      message: 'An error occured 😞'
+                    }).present();
+                    clearInterval(this.checker);
+                    browser.close();
+                    resolve();
+                  }
+                  return browser.executeScript(
+                     { code: `document.getElementById('IDToken1').value = "${username}"; document.getElementById('IDToken2').value = "${password}"` }
+                  )
+                }).then(() => {
+                  return browser.executeScript({ code: "LoginSubmit('Log In')" })
                 }).then(() => {
                   clearInterval(this.checker);
                   browser.close();
@@ -76,7 +91,7 @@ export class UTNav {
 
         let timeSinceLogged = new Date().getTime() - this.lastLogged.getTime();
 
-        if(timeSinceLogged > 180 * 1000) { // reset after 3 mins
+        if(timeSinceLogged > 5 * 60 * 1000) { // reset after 5 mins
 
           Promise.all([this.storage.get('eid'), this.storage.get('password')]).then((creds) => {
 
@@ -138,13 +153,17 @@ export class UTNav {
 
           });
 
+        } else {
+
+          resolve(); // already logged in, nothing to do
+
         }
 
     });
 
   }
 
-  async fetchTable(url: string, include: string) { // get table from given url
+  fetchTable(url: string, include: string) { // get table from given url
 
     return new Promise((resolve, reject) => {
 
