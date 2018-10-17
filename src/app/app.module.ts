@@ -6,6 +6,7 @@ import { MyApp } from './app.component';
 import { SchedulePage } from '../pages/schedule/schedule';
 import { MapPage } from '../pages/map/map';
 import { MoneyPage } from '../pages/money/money';
+import { ResourcesPage } from '../pages/resources/resources';
 import { TabsPage } from '../pages/tabs/tabs';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -26,6 +27,7 @@ import { UTNav } from '../pages/nav';
     SchedulePage,
     MapPage,
     MoneyPage,
+    ResourcesPage,
     TabsPage
   ],
   imports: [
@@ -40,6 +42,7 @@ import { UTNav } from '../pages/nav';
     SchedulePage,
     MapPage,
     MoneyPage,
+    ResourcesPage,
     TabsPage
   ],
   providers: [
