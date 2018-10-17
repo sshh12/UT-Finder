@@ -15,7 +15,7 @@ export class UTNav {
 
   }
 
-  doLogin(username: string, password: string, save: boolean) {
+  doLogin(username: string, password: string, save: boolean) { // open the browser and login as the user
 
     return new Promise((resolve, reject) => {
 
@@ -34,14 +34,14 @@ export class UTNav {
                { code: "[window.location.href, document.getElementById('IDToken1')]" }
             ).then((test) => {
 
-              if(("" + test[0]).includes("www.utexas.edu")) {
+              if(("" + test[0]).includes("www.utexas.edu")) { // this means the user is prob already logged in
 
                 clearInterval(this.checker);
                 browser.close();
                 this.lastLogged = new Date();
                 resolve();
 
-              } else if (test[1] != null) {
+              } else if (test[1] != null) { // currently on the login page
 
                 browser.executeScript(
                    { code: `document.getElementById('IDToken1').value = "${username}"; document.getElementById('IDToken2').value = "${password}"` }
@@ -82,7 +82,7 @@ export class UTNav {
 
             let username = creds[0], password = creds[1];
 
-            if(!username || !password) {
+            if(!username || !password) { // need user/pass
 
               this.alertCtrl.create({
                 title: 'Login',
@@ -112,7 +112,7 @@ export class UTNav {
                 ]
               }).present();
 
-            } else {
+            } else { // already have user/pass
 
               this.alertCtrl.create({
                 title: 'Login',
