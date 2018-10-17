@@ -222,7 +222,7 @@ export class MapPage {
     this.clearMap();
 
     let date: Date = new Date();
-    let dateString: string = `${date.getMonth() + 1}/${date.getDay()}/${date.getFullYear()}`;
+    let dateString: string = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 
     let url = `https://www.capmetro.org/planner/s_routetrace.php?route=${route.num}&dir=${route.dir}&date=${dateString}&opts=30`;
 
