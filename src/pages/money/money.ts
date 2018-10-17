@@ -33,11 +33,11 @@ export class MoneyPage {
 
     fetchAccounts() : void { // get account balances
 
-      this.nav.fetchTable("https://utdirect.utexas.edu/hfis/diningDollars.WBX", "<th>Balance  </th>",
+      this.nav.fetchTable("https://utdirect.utexas.edu/hfis/diningDollars.WBX", "<th>Balance  </th>").then(
         tableHTML => {
 
           try {
-            this.accounts = this.parseAccountsTable(tableHTML);
+            this.accounts = this.parseAccountsTable(tableHTML as string);
             this.storage.set('accounts', this.accounts);
           } catch {
             this.altCtrl.create({

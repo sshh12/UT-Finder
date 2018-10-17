@@ -160,11 +160,11 @@ export class SchedulePage {
 
     fetchSchedule() : void { // get schedule
 
-      this.nav.fetchTable("https://utdirect.utexas.edu/registration/classlist.WBX", "<th>Course</th>",
+      this.nav.fetchTable("https://utdirect.utexas.edu/registration/classlist.WBX", "<th>Course</th>").then(
         tableHTML => {
 
           try {
-            this.classes = this.parseScheduleTable(tableHTML);
+            this.classes = this.parseScheduleTable(tableHTML as string);
             this.storage.set('classes', this.classes);
             this.createCalender();
           } catch {
