@@ -31,11 +31,18 @@ import { foodPlaces, FoodPlace } from './food';
 })
 export class MapPage {
 
+  utCenter: ILatLng = {
+    lat: 30.285512,
+    lng: -97.735946
+  };
+
   // Maps
   map: GoogleMap;
   mapData: any;
   tileOptions: TileOverlayOptions;
   buildings = [];
+
+  weatherAPIKey: string = '30a796e71ba6c4c2e5e7270dfbbe78a2';
 
   constructor(public navCtrl: NavController,
               private http: Http,
@@ -118,10 +125,7 @@ export class MapPage {
     let mapOptions: GoogleMapOptions = {
       mapType: GoogleMapsMapTypeId.HYBRID,
       camera: {
-         target: {
-           lat: 30.285512,
-           lng: -97.735946
-         },
+         target: this.utCenter,
          zoom: 16
        },
        styles: [
@@ -305,6 +309,29 @@ export class MapPage {
 
 
       });
+
+  }
+
+  showWeather() {
+
+    this.http.get(`http://api.openweathermap.org/data/2.5/weather?lat=${this.utCenter.lat}&lon=${this.utCenter.lng}&appid=${this.weatherAPIKey}`).subscribe(
+        weatherData => {
+
+          let weather = weatherData.json();
+
+          let temp = Math.round((weather.main.temp - 273.15) * 9 / 5 + 32);
+
+          let conditions = [];
+          for(let cond of weather.weather) {
+            conditions.push(cond.description);
+          }
+
+          this.alertCtrl.create({
+            title: 'Weather',
+            message: `It's ${temp}°F with ${conditions.join(", ")}`
+          }).present();
+
+        });
 
   }
 
