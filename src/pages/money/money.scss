@@ -6,10 +6,10 @@ page-money {
   }
 
   .status {
-      float: right;
+      margin: auto !important;
   }
 
-  ion-card-content {
+  ion-card-content, ion-card-header {
     text-align: center;
   }
 

@@ -11,15 +11,29 @@
   </ion-fab>
 
   <div>
-    <ion-card *ngFor='let acc of accounts'>
-      <ion-card-header>
-        {{ acc.name }} <ion-badge color="{{ getStatusColor(acc.status) }}" class="status">{{ acc.status }}</ion-badge>
-      </ion-card-header>
-      <ion-card-content>
-        <b>${{ acc.balance }}</b>
-      </ion-card-content>
-    </ion-card>
+    <ion-grid>
+      <ion-row>
+
+        <ion-col *ngFor='let acc of accounts'>
+            <ion-card>
+              <ion-card-header>
+                {{ acc.name }}
+              </ion-card-header>
+              <ion-card-content>
+                <p><b>${{ acc.balance }}</b><p>
+                <br>
+                <div>
+                  <ion-badge color="{{ getStatusColor(acc.status) }}" class="status">{{ acc.status }}</ion-badge>
+                </div>
+              </ion-card-content>
+            </ion-card>
+        </ion-col>
+
+      </ion-row>
+    </ion-grid>
   </div>
+
+
 
   <!-- Login prompt -->
   <div class="addchip" *ngIf="!accounts">
