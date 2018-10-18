@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
-import { AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
+
+import {
+  AlertController,
+  ToastController
+} from 'ionic-angular';
 
 @Injectable()
 export class UTNav {
@@ -11,6 +15,7 @@ export class UTNav {
 
   constructor(private iab: InAppBrowser,
               private alertCtrl: AlertController,
+              private toastCtrl: ToastController,
               private storage: Storage) {
 
   }
@@ -48,10 +53,11 @@ export class UTNav {
                 browser.executeScript(
                    { code: "document.getElementById('error-message') != null" }
                 ).then((error) => {
-                  if(error) {
-                    this.alertCtrl.create({
-                      title: 'Login',
-                      message: 'An error occured 😞'
+                  if(error == 'true') {
+                    this.toastCtrl.create({
+                      message: 'Unable to login 😢',
+                      duration: 3000,
+                      position: 'top'
                     }).present();
                     clearInterval(this.checker);
                     browser.close();
@@ -64,7 +70,7 @@ export class UTNav {
                   return browser.executeScript({ code: "LoginSubmit('Log In')" })
                 }).then(() => {
                   clearInterval(this.checker);
-                  browser.close();
+                  // browser.close();
                   this.lastLogged = new Date();
                   resolve();
                 });

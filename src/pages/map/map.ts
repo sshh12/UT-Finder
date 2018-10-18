@@ -237,7 +237,7 @@ export class MapPage {
 
         if(json.status != 'OK') {
           this.toastCtrl.create({
-            message: 'Route not available',
+            message: 'Route not available 😢',
             duration: 3000,
             position: 'top'
           }).present();

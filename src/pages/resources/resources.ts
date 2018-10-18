@@ -8,12 +8,12 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 })
 export class ResourcesPage {
 
-    constructor(private browser: InAppBrowser) {
+    constructor(private iab: InAppBrowser) {
 
     }
 
     openLink(url) {
-      this.browser.create(url, '_system');
+      this.iab.create(url, '_blank', {location: 'no'});
     }
 
 }
