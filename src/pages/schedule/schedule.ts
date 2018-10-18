@@ -1,9 +1,11 @@
-import { Component, ApplicationRef } from '@angular/core';
+import { Component, ApplicationRef, ViewChild } from '@angular/core';
 
 import { AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { UTNav } from '../nav';
+
+import { Content } from 'ionic-angular';
 
 class ClassTime {
     num: number;
@@ -27,6 +29,8 @@ export class SchedulePage {
     scheduleOffset: number = 0; // use row index to hide the top of calender
     timeNowBarOffset: number = -100; // current time bar offset
 
+    @ViewChild(Content) content: Content;
+
     constructor(private ref: ApplicationRef,
                 private storage: Storage,
                 private altCtrl: AlertController,
@@ -39,15 +43,17 @@ export class SchedulePage {
         }
       });
 
-      setInterval(() => { // auto update time bar
+      setInterval(this.updateTimeBar, 1000); // auto update time bar
 
-        let dateNow = new Date();
-        let time = dateNow.getHours() + dateNow.getMinutes() / 60;
-        time = Math.max(Math.min(time, 21), 8); // ensure bar is within window
+    }
 
-        this.timeNowBarOffset = time * 120 - 888 - this.scheduleOffset * 60; // calc pixels to position
+    updateTimeBar() : void {
 
-      }, 1000);
+      let dateNow = new Date();
+      let time = dateNow.getHours() + dateNow.getMinutes() / 60;
+      time = Math.max(Math.min(time, 23), 5); // force bar into range
+
+      this.timeNowBarOffset = time * 120 - 528 - this.scheduleOffset * 60; // calc pixels to position
 
     }
 
@@ -73,7 +79,7 @@ export class SchedulePage {
       }
       this.scheduleOffset = minStartIndex - 1; // ignore header index
 
-      for(let i = 8 + this.scheduleOffset / 2; i <= 20; i++) {
+      for(let i = 5 + this.scheduleOffset / 2; i <= 22; i++) {
 
         let timeString;
         if(i > 12) {
@@ -96,6 +102,9 @@ export class SchedulePage {
       this.weekMatrix = calenderMatrix;
 
       this.ref.tick(); // force refresh required
+
+      this.updateTimeBar();
+      this.content.scrollTo(0, this.timeNowBarOffset - 250);
 
     }
 
@@ -169,7 +178,7 @@ export class SchedulePage {
         hour = 12;
       }
 
-      let index = 1 + (hour - 8) * 2 + (time[2] == '30' ? 1:0);
+      let index = 1 + (hour - 5) * 2 + (time[2] == '30' ? 1:0);
 
       return index;
 
