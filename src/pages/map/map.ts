@@ -77,7 +77,11 @@ export class MapPage {
           let lng = parseFloat(pos[1]);
 
           let icon: MarkerIcon = {
-            url: 'assets/map-building.png'
+            url: 'assets/map-building.png',
+            size: {
+              width: 32,
+              height: 32
+            }
           };
 
           let options: MarkerOptions = { // Create a marker for results
@@ -169,7 +173,11 @@ export class MapPage {
     for(let foodPlace of foodPlaces) {
 
       let icon: MarkerIcon = {
-        url: 'assets/map-food.png'
+        url: 'assets/map-food.png',
+        size: {
+          width: 32,
+          height: 32
+        }
       };
 
       let options: MarkerOptions = {
@@ -285,7 +293,11 @@ export class MapPage {
               let stopJson = stopdata.json();
 
               let icon: MarkerIcon = {
-                url: 'assets/map-front-bus.png'
+                url: 'assets/map-front-bus.png',
+                size: {
+                  width: 32,
+                  height: 32
+                }
               };
 
               let options: MarkerOptions = {
