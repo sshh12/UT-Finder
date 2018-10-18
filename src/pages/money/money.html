@@ -26,6 +26,21 @@
                   <ion-badge color="{{ getStatusColor(acc.status) }}" class="status">{{ acc.status }}</ion-badge>
                 </div>
               </ion-card-content>
+              <hr>
+              <ion-row>
+                <ion-col>
+                  <button (click)="viewHistory(acc)" ion-button icon-start clear small>
+                    <ion-icon name="list"></ion-icon>
+                    <div>History</div>
+                  </button>
+                </ion-col>
+                <ion-col>
+                  <button (click)="addFunds(acc)" ion-button icon-start clear small>
+                    <ion-icon name="cash"></ion-icon>
+                    <div>Add Funds</div>
+                  </button>
+                </ion-col>
+              </ion-row>
             </ion-card>
         </ion-col>
 

@@ -1,9 +1,15 @@
 import { Component } from '@angular/core';
 
-import { AlertController } from 'ionic-angular';
+import {
+  AlertController,
+  ToastController
+} from 'ionic-angular';
+
 import { Storage } from '@ionic/storage';
 
 import { UTNav } from '../nav';
+
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 class Account {
     name: string;
@@ -21,7 +27,9 @@ export class MoneyPage {
 
     constructor(private nav: UTNav,
                 private storage: Storage,
-                private altCtrl: AlertController) {
+                private altCtrl: AlertController,
+                private toastCtrl: ToastController,
+                private iab: InAppBrowser) {
 
       storage.get('accounts').then((accounts) => { // check cache
         if(accounts && accounts.length > 0) {
@@ -29,6 +37,34 @@ export class MoneyPage {
         }
       });
 
+    }
+
+    viewHistory(acc: Account) {
+      if(acc.name.includes('Bevo Bucks')) {
+        this.iab.create('https://utdirect.utexas.edu/bevobucks/accountHist.WBX', '_blank', {location: 'no'});
+      } else if (acc.name.includes('Dine In')) {
+        this.iab.create('https://utdirect.utexas.edu/hfis/transactions.WBX', '_blank', {location: 'no'});
+      } else {
+        this.toastCtrl.create({
+          message: 'Unknown account type 😢',
+          duration: 3000,
+          position: 'top'
+        }).present();
+      }
+    }
+
+    addFunds(acc: Account) {
+      if(acc.name.includes('Bevo Bucks')) {
+        this.iab.create('https://utdirect.utexas.edu/bevobucks/addBucks.WBX', '_blank', {location: 'no'});
+      } else if (acc.name.includes('Dine In')) {
+        this.iab.create('https://utdirect.utexas.edu/hfis/addDollars.WBX', '_blank', {location: 'no'});
+      } else {
+        this.toastCtrl.create({
+          message: 'Unknown account type 😢',
+          duration: 3000,
+          position: 'top'
+        }).present();
+      }
     }
 
     fetchAccounts() : void { // get account balances
