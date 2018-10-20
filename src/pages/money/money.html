@@ -1,6 +1,6 @@
 <ion-header>
   <ion-navbar color="utorange">
-    <ion-title>Finance</ion-title>
+    <ion-title>Money</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -51,7 +51,7 @@
 
 
   <!-- Login prompt -->
-  <div class="addchip" *ngIf="!accounts">
+  <div class="addchip" *ngIf="!accounts || accounts.length == 0">
     <ion-chip>
       <ion-icon (click)="fetchAccounts()" name="refresh" color="utgrey"></ion-icon>
       <ion-label>Add your accounts</ion-label>

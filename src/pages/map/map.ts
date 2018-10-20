@@ -25,6 +25,16 @@ import {
 import { busRoutes, BusRoute } from './buses';
 import { foodPlaces, FoodPlace } from './food';
 
+import { TempMapData } from './tempmap'; // Since the map is broken from some reason (UT's problem)
+
+class Building {
+  name: string; // A Building Center
+  symbol: string; // ABC
+  location: ILatLng;
+  rawJSON: any;
+  _repr: string;
+}
+
 @Component({
   selector: 'page-map',
   templateUrl: 'map.html'
@@ -40,7 +50,7 @@ export class MapPage {
   map: GoogleMap;
   mapData: any;
   tileOptions: TileOverlayOptions;
-  buildings = [];
+  buildings: Array<Building> = [];
 
   weatherAPIKey: string = '30a796e71ba6c4c2e5e7270dfbbe78a2';
 
@@ -72,10 +82,6 @@ export class MapPage {
 
         if(building._repr.includes(query)) {
 
-          let pos = building.properties.centroid.split(", ");
-          let lat = parseFloat(pos[0]);
-          let lng = parseFloat(pos[1]);
-
           let icon: MarkerIcon = {
             url: 'assets/map-building.png',
             size: {
@@ -85,8 +91,8 @@ export class MapPage {
           };
 
           let options: MarkerOptions = { // Create a marker for results
-            title: building.properties.Building_A,
-            position: {lat: lat, lng: lng},
+            title: building.name,
+            position: building.location,
             visible: true,
             animation: GoogleMapsAnimation.DROP,
             flat: false,
@@ -106,11 +112,35 @@ export class MapPage {
 
   }
 
+  loadMapManually() { // TODO delete when UT fixes their stuff
+
+    this.buildings = [];
+
+    for(let place in TempMapData) {
+
+      let repr = place + TempMapData[place].id;
+      repr = repr.toLowerCase();
+
+      this.buildings.push({
+        name: place,
+        symbol: TempMapData[place].id,
+        location: {lat: parseFloat(TempMapData[place].lat), lng: parseFloat(TempMapData[place].lng)},
+        _repr: repr,
+        rawJSON: {}
+      });
+
+    }
+
+  }
+
   loadMap() { // Init the map and tile data
 
     this.http.get('https://maps.utexas.edu/data/utm.json').subscribe( // Gather geodata
       data => {
         let json = data.json();
+
+        this.buildings = [];
+
         for (let i in json.features) { // Copied from https://maps.utexas.edu/js/controller.js
           let current = json.features[i];
           if (current.properties &&
@@ -118,12 +148,25 @@ export class MapPage {
             current.properties.Building_A.length > 2 &&
             current.properties.BldFAMIS_N &&
             current.properties.BldFAMIS_N.length > 2) {
-            current._repr = current.properties.Building_A + current.properties.BldFAMIS_N;
-            current._repr = current._repr.toLowerCase();
-            this.buildings.push(current);
+
+            let repr = current.properties.Building_A + current.properties.BldFAMIS_N;
+            repr = repr.toLowerCase();
+
+            let [lat, lng] = current.properties.centroid.split(", ");
+            this.buildings.push({
+              name: current.properties.Building_A,
+              symbol: current.properties.BldFAMIS_N,
+              location: {lat: parseFloat(lat), lng: parseFloat(lng)},
+              _repr: repr,
+              rawJSON: current
+            });
+
           }
         }
-        this.mapData = json;
+      }, error => {
+
+        this.loadMapManually();
+
       });
 
     let mapOptions: GoogleMapOptions = {

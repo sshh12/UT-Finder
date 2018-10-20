@@ -25,7 +25,7 @@
   </div>
 
   <!-- Login prompt -->
-  <div class="addchip" *ngIf="!weekMatrix">
+  <div class="addchip" *ngIf="!weekMatrix || !classes || classes.length == 0">
     <ion-chip>
       <ion-icon (click)="fetchSchedule()" name="add" color="utgrey"></ion-icon>
       <ion-label>Add your schedule</ion-label>
