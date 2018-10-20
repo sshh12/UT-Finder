@@ -1,4 +1,4 @@
-import { Component, ApplicationRef } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 
