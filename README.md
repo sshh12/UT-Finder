@@ -8,4 +8,4 @@ A simple app for simple things. [@UT](https://www.utexas.edu/)
 
 ## Screenshots
 
-![screenshot 1](https://lh3.googleusercontent.com/wyUU4JXmXVpn5GdjJ_1xeoZgwQxYMrPf23mYiA5ILK4zv3-_CQJTud3jKcnl7ecQ0g1N=w210-h400-rw) ![screenshot 2](https://lh3.googleusercontent.com/p7CkQcoyY3T3uOfh6_v7DGIDRzb3mz6gcfu-N0oREiwS273rQOlhgBIkOWUQ4sAezg=w210-h400-rw) ![screenshot 3](https://lh3.googleusercontent.com/VT7zyuzEm0weX8upAWznD0EYkfZwcna3DqDJgvKZ7tmG6_xYqtB8vXtzFUvalsXFkr4=w210-h400-rw)
+![screenshot 1](https://lh3.googleusercontent.com/aH0FbFlXeTisPrn8775COR02ABnrD3Y5rE4xfc77Rr1IjuJJXSi4hv02Vzpc6XO1Sng=w210-h400-rw) ![screenshot 2](https://lh3.googleusercontent.com/qqiCGOW6xL1UNVnUCUjNoIh6zoaGLZrQXFIiYYwpHl2I5V9BySN9CYH6GduDbLaRTgE=w210-h400-rw) ![screenshot 3](https://lh3.googleusercontent.com/df_3-uPG5ymqhSPyCIhoPCVWIouF8frT459V5vL54jXokdBUd-ChVbVzs18T2biCeBM=w210-h400-rw) ![screenshot 4](https://lh3.googleusercontent.com/o2D3RboJ-NWqsrKgCOZsVLA8CDVnF-gOmXFbtKBBA_-spe3OBygV8IoILsS5Mbxejfg=w210-h400-rw)
