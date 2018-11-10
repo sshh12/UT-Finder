@@ -43,17 +43,20 @@ export class SchedulePage {
         }
       });
 
-      setInterval(this.updateTimeBar, 1000); // auto update time bar
+      this.tempnum = 9;
+
+      setInterval(() => {this.updateTimeBar()}, 1000); // auto update time bar
 
     }
 
     updateTimeBar() : void {
 
       let dateNow = new Date();
-      let time = dateNow.getHours() + dateNow.getMinutes() / 60;
+      let time: number = dateNow.getHours() + dateNow.getMinutes() / 60;
       time = Math.max(Math.min(time, 23), 5); // force bar into range
 
       this.timeNowBarOffset = time * 120 - 528 - this.scheduleOffset * 60; // calc pixels to position
+      this.ref.tick();
 
     }
 
