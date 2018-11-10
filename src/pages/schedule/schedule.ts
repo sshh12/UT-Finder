@@ -43,8 +43,6 @@ export class SchedulePage {
         }
       });
 
-      this.tempnum = 9;
-
       setInterval(() => {this.updateTimeBar()}, 1000); // auto update time bar
 
     }
