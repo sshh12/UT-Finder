@@ -25,7 +25,7 @@ import {
 import { busRoutes, BusRoute } from './buses';
 import { foodPlaces, FoodPlace } from './food';
 
-import { TempMapData } from './tempmap'; // Since the map is broken from some reason (UT's problem)
+import { BackupMap } from './backup-map'; // b/c website breaks
 
 class Building {
   name: string; // A Building Center
@@ -112,23 +112,32 @@ export class MapPage {
 
   }
 
-  loadMapManually() { // TODO delete when UT fixes their stuff
+  loadMapFromJSON(mapJSON: any) { // TODO delete when UT fixes their stuff
 
     this.buildings = [];
 
-    for(let place in TempMapData) {
+    for (let i in mapJSON.features) { // Copied from https://maps.utexas.edu/js/controller.js
+      let current = mapJSON.features[i];
 
-      let repr = place + TempMapData[place].id;
-      repr = repr.toLowerCase();
+      if (current.properties &&
+        current.properties.Building_A &&
+        current.properties.Building_A.length > 2 &&
+        current.properties.BldFAMIS_N &&
+        current.properties.BldFAMIS_N.length > 2) {
 
-      this.buildings.push({
-        name: place,
-        symbol: TempMapData[place].id,
-        location: {lat: parseFloat(TempMapData[place].lat), lng: parseFloat(TempMapData[place].lng)},
-        _repr: repr,
-        rawJSON: {}
-      });
+        let repr = current.properties.Building_A + current.properties.BldFAMIS_N;
+        repr = repr.toLowerCase();
 
+        let [lat, lng] = current.properties.centroid.split(", ");
+        this.buildings.push({
+          name: current.properties.Building_A,
+          symbol: current.properties.BldFAMIS_N,
+          location: {lat: parseFloat(lat), lng: parseFloat(lng)},
+          _repr: repr,
+          rawJSON: current
+        });
+
+      }
     }
 
   }
@@ -138,35 +147,9 @@ export class MapPage {
     this.http.get('https://maps.utexas.edu/data/utm.json').subscribe( // Gather geodata
       data => {
         let json = data.json();
-
-        this.buildings = [];
-
-        for (let i in json.features) { // Copied from https://maps.utexas.edu/js/controller.js
-          let current = json.features[i];
-          if (current.properties &&
-            current.properties.Building_A &&
-            current.properties.Building_A.length > 2 &&
-            current.properties.BldFAMIS_N &&
-            current.properties.BldFAMIS_N.length > 2) {
-
-            let repr = current.properties.Building_A + current.properties.BldFAMIS_N;
-            repr = repr.toLowerCase();
-
-            let [lat, lng] = current.properties.centroid.split(", ");
-            this.buildings.push({
-              name: current.properties.Building_A,
-              symbol: current.properties.BldFAMIS_N,
-              location: {lat: parseFloat(lat), lng: parseFloat(lng)},
-              _repr: repr,
-              rawJSON: current
-            });
-
-          }
-        }
+        this.loadMapFromJSON(json);
       }, error => {
-
-        this.loadMapManually();
-
+        this.loadMapFromJSON(BackupMap);
       });
 
     let mapOptions: GoogleMapOptions = {
