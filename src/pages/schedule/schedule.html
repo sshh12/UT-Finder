@@ -6,7 +6,11 @@
 
 <ion-content padding>
 
-  <ion-fab top right edge>
+  <ion-fab bottom right *ngIf="classes && classes.length > 0">
+   <button ion-fab edge color="utgrey" mini (click)="saveToCalendar()"><ion-icon name="download"></ion-icon></button>
+  </ion-fab>
+
+  <ion-fab top right>
    <button ion-fab edge color="utgrey" mini (click)="fetchSchedule()"><ion-icon name="add"></ion-icon></button>
   </ion-fab>
 

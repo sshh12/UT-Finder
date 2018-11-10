@@ -1,11 +1,10 @@
 import { Component, ApplicationRef, ViewChild } from '@angular/core';
-
+import { Content } from 'ionic-angular';
+import { Calendar } from '@ionic-native/calendar';
 import { AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { UTNav } from '../nav';
-
-import { Content } from 'ionic-angular';
 
 class ClassTime {
     num: number;
@@ -34,6 +33,7 @@ export class SchedulePage {
     constructor(private ref: ApplicationRef,
                 private storage: Storage,
                 private altCtrl: AlertController,
+                private calendar: Calendar,
                 private nav: UTNav) {
 
       storage.get('classes').then((classes) => { // check cache
@@ -184,6 +184,25 @@ export class SchedulePage {
 
     }
 
+    convertToDate(timeString : string) : Date { // convert time to date
+
+      let time = timeString.match( /(\d+):(\d+)(\wm)/ );
+
+      let hour = parseInt(time[1]) + (time[3] == 'pm' ? 12:0);
+      let mins = parseInt(time[2]);
+
+      if(time[1] == "12") {
+        hour = 12;
+      }
+
+      let date = new Date();
+      date.setHours(hour);
+      date.setMinutes(mins);
+
+      return date;
+
+    }
+
     fetchSchedule() : void { // get schedule
 
       this.nav.fetchTable("https://utdirect.utexas.edu/registration/classlist.WBX", "<th>Course</th>").then(
@@ -257,6 +276,78 @@ export class SchedulePage {
       }
 
       return matrix;
+
+    }
+
+    saveToCalendar(check: boolean = true) {
+
+      if(check) {
+        this.altCtrl.create({
+          title: 'Calender',
+          message: 'Would you like to add your classes to your local calender?',
+          buttons: [
+            {
+              text: 'Cancel'
+            },
+            {
+              text: `Add ${this.classes.length} Classes`,
+              handler: data => {
+                this.saveToCalendar(false);
+              }
+            }
+          ]
+        }).present();
+        return;
+      }
+
+      this.calendar.hasWritePermission().then((perms) => {
+
+        if(perms) {
+
+          let opts = this.calendar.getCalendarOptions();
+          opts.firstReminderMinutes = null;
+          opts.secondReminderMinutes = null;
+          opts.calendarName = 'Classes';
+          opts.recurrence = 'weekly';
+
+          let currentDay = new Date().getDay();
+
+          for(let classtime of this.classes) {
+
+            let [start, end] = classtime.timeslot.split('-');
+            let startDate = this.convertToDate(start);
+            let endDate = this.convertToDate(end);
+
+            let name = classtime.name;
+            let place = `${classtime.building} ${classtime.room}`;
+            let notes = `(#${classtime.num}) ${classtime.title}`;
+
+            for(let day of classtime.days) {
+
+              let weekday = ['-', 'M', 'T', 'W', 'H', 'F', '-'].indexOf(day);
+
+              let actualStart = new Date(startDate);
+              let actualEnd = new Date(endDate);
+              actualStart.setDate(actualStart.getDate() + weekday - currentDay);
+              actualEnd.setDate(actualEnd.getDate() + weekday - currentDay);
+
+              this.calendar.createEventWithOptions(name, place, notes, actualStart, actualEnd, opts);
+
+            }
+
+          }
+
+          this.calendar.openCalendar(new Date());
+
+        } else {
+          this.calendar.requestWritePermission().then((perm) => {
+            if(perm) {
+              this.calendar.createCalendar('Classes');
+              this.saveToCalendar(false);
+            }
+          });
+        }
+      })
 
     }
 

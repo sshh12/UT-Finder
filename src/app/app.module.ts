@@ -8,18 +8,16 @@ import { MapPage } from '../pages/map/map';
 import { MoneyPage } from '../pages/money/money';
 import { ResourcesPage } from '../pages/resources/resources';
 import { TabsPage } from '../pages/tabs/tabs';
+import { UTNav } from '../pages/nav';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { IonicStorageModule } from '@ionic/storage';
-
+import { Calendar } from '@ionic-native/calendar';
 import { GoogleMaps } from "@ionic-native/google-maps";
-
 import { HttpModule } from '@angular/http';
-
-import { UTNav } from '../pages/nav';
 
 @NgModule({
   declarations: [
@@ -51,6 +49,7 @@ import { UTNav } from '../pages/nav';
     InAppBrowser,
     GoogleMaps,
     UTNav,
+    Calendar,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
