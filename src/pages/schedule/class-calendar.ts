@@ -21,6 +21,9 @@ export class ClassCalendar {
   }
 
   calculateTimeBarOffset(time: number) {
+    if(this.classes.length == 0) {
+      return -100;
+    }
     return time * 120 - 528 - this.scheduleOffset * 60;
   }
 

@@ -97,51 +97,47 @@ export class SchedulePage {
 
     }
 
-    fetchFinalsSchedule() : void { // get finals
-
-      this.nav.fetchTable(`https://utdirect.utexas.edu/registrar/exam_schedule.WBX`, "<b>Course</b>").then(
-        tableHTML => {
-
-          try {
-            this.finalsCalendar.finals = this.parseFinalsTable(tableHTML as string);
-            this.storage.set('finals', this.finalsCalendar.finals);
-            this.finalsCalendar.generate();
-          } catch {
-            this.altCtrl.create({
-              title: 'Error',
-              subTitle: 'Something is weird with your schedule...',
-              buttons: ['Dismiss']
-            }).present();
-          }
-
-        });
-
-    }
-
     fetchSchedule() : void { // get schedule
 
-      if(this.scheduleView == 'finals') {
-        this.fetchFinalsSchedule();
-        return;
+      let url, selector;
+
+      if(this.scheduleView == 'current') {
+        url = `https://utdirect.utexas.edu/registration/classlist.WBX`;
+        selector = '<th>Course</th>';
+      } else if(this.scheduleView == 'future') {
+        let sem = '20192'; // TODO
+        url = `https://utdirect.utexas.edu/registration/classlist.WBX?sem=${sem}`;
+        selector = '<th>Course</th>';
+      } else {
+        url = `https://utdirect.utexas.edu/registrar/exam_schedule.WBX`;
+        selector = '<b>Course</b>';
       }
 
-      let sem = this.scheduleView == 'future' ? '20192': '';
-
-      this.nav.fetchTable(`https://utdirect.utexas.edu/registration/classlist.WBX?sem=${sem}`, "<th>Course</th>").then(
+      this.nav.fetchTable(url, selector).then(
         tableHTML => {
 
           try {
 
-            let classes: Array<ClassTime> = this.parseScheduleTable(tableHTML as string);
+            if(this.scheduleView == 'finals') {
 
-            if(this.scheduleView == 'current') {
-              this.currentCalendar.classes = classes
-              this.storage.set('classes', classes);
-              this.currentCalendar.generate();
+              this.finalsCalendar.finals = this.parseFinalsTable(tableHTML as string);
+              this.storage.set('finals', this.finalsCalendar.finals);
+              this.finalsCalendar.generate();
+
             } else {
-              this.futureCalendar.classes = classes;
-              this.storage.set('futureclasses', classes);
-              this.futureCalendar.generate();
+
+              let classes: Array<ClassTime> = this.parseScheduleTable(tableHTML as string);
+
+              if(this.scheduleView == 'current') {
+                this.currentCalendar.classes = classes
+                this.storage.set('classes', classes);
+                this.currentCalendar.generate();
+              } else {
+                this.futureCalendar.classes = classes;
+                this.storage.set('futureclasses', classes);
+                this.futureCalendar.generate();
+              }
+
             }
 
             this.updateTimeBar();

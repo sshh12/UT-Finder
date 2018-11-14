@@ -8,6 +8,7 @@ export class FinalTime {
     endDate: Date;
     location: string;
     exists: boolean;
+    dayIndex?: number;
 }
 
 export class FinalsCalendar {
@@ -21,34 +22,73 @@ export class FinalsCalendar {
   }
 
   calculateTimeBarOffset(time: number) {
-    return time * 120 - 528 - this.scheduleOffset * 60;
+    if(this.finals.length == 0) {
+      return -100;
+    }
+    return time * 60 - 228 - this.scheduleOffset * 60;
+  }
+
+  dayOffset(start: Date, end: Date) {
+    let startTemp = new Date(start);
+    startTemp.setHours(10);
+    startTemp.setMinutes(0);
+    let endTemp = new Date(end);
+    endTemp.setHours(10);
+    endTemp.setMinutes(0);
+    let diff = endTemp.getTime() - startTemp.getTime();
+    return Math.round(diff / (1000 * 60 * 60 * 24));
   }
 
   generate() {
 
-    let calendarMatrix: Array<Array<any>> = [[
-      null,
-      {label:'M', class:'day-header'},
-      {label:'T', class:'day-header'},
-      {label:'W', class:'day-header'},
-      {label:'TH', class:'day-header'},
-      {label:'F', class:'day-header'}
-    ]];
-
     // calculate the calendar offset to display only relevent time period
+    let firstDate = new Date(9e12);
+    let lastDate = new Date(0);
+
     let minStartIndex = 999;
     for(let final of this.finals) {
+
       if(!final.exists) {
         continue;
       }
       minStartIndex = Math.min(minStartIndex, this.getFinalIndex(final));
-    }
-    if(minStartIndex % 2 == 0) { // should be odd #, so it starts on the hour
-      minStartIndex -= 1;
+
+      if(final.startDate.getTime() < firstDate.getTime()) {
+        firstDate = final.startDate;
+      }
+      if(final.endDate.getTime() > lastDate.getTime()) {
+        lastDate = final.endDate;
+      }
+
     }
     this.scheduleOffset = minStartIndex - 1; // ignore header index
 
-    for(let i = 5 + this.scheduleOffset / 2; i <= 22; i++) {
+    for(let final of this.finals) {
+
+      if(!final.exists) {
+        continue;
+      }
+
+      let offset = this.dayOffset(firstDate, final.startDate);
+      final.dayIndex = offset + 1;
+
+    }
+
+    let calendarMatrix: Array<Array<any>> = [[
+      null
+    ]];
+
+    let numDays = this.dayOffset(firstDate, lastDate) + 1;
+    for(let i = 0; i < numDays; i++) {
+      let date = new Date(firstDate.getTime() + 1000 * 60 * 60 * 24 * i);
+      let label = `${date.getMonth() + 1}/${date.getDate()}`
+      calendarMatrix[0].push({
+        label: label,
+        class: 'day-header'
+      })
+    }
+
+    for(let i = 5 + this.scheduleOffset; i <= 22; i++) {
 
       let timeString;
       if(i > 12) {
@@ -62,7 +102,6 @@ export class FinalsCalendar {
       }
 
       calendarMatrix.push([{label: timeString, class:'time-header'}, null, null, null, null, null]);
-      calendarMatrix.push([{label: ' ', class:'time-header'}, null, null, null, null, null]);
 
     }
 
@@ -81,7 +120,7 @@ export class FinalsCalendar {
       hour = final.endDate.getHours();
     }
 
-    let index = 1 + (hour - 5) * 2;
+    let index = 1 + (hour - 5);
 
     return index;
 
@@ -102,13 +141,13 @@ export class FinalsCalendar {
         let alert = this.altCtrl.create({
           title: final.name,
           subTitle: `(#${final.num}) ${final.title}`,
-          message: `${final.location}`,
+          message: `@ ${final.location}, ${final.startDate.toLocaleString()} to ${final.endDate.toLocaleString()}`,
           buttons: ['Dismiss']
         });
         alert.present();
       };
 
-      let dayIndex: number = final.startDate.getDay();
+      let dayIndex: number = final.dayIndex;
 
       for(let i = startIndex; i < endIndex; i++) {
 
