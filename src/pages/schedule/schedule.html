@@ -1,39 +1,97 @@
 <ion-header>
+
   <ion-navbar color="utorange">
     <ion-title>Schedule</ion-title>
   </ion-navbar>
+
+  <ion-segment [(ngModel)]="scheduleView">
+    <ion-segment-button value="current">
+      Current
+    </ion-segment-button>
+    <ion-segment-button value="finals">
+      Finals
+    </ion-segment-button>
+    <ion-segment-button value="future">
+      Future
+    </ion-segment-button>
+  </ion-segment>
+
 </ion-header>
 
 <ion-content padding>
 
-  <ion-fab bottom right *ngIf="classes && classes.length > 0">
-   <button ion-fab edge color="utgrey" mini (click)="saveToCalendar()"><ion-icon name="download"></ion-icon></button>
+  <ion-fab top right mini #fab>
+      <button ion-fab edge color="utgrey" mini (click)="fetchSchedule()"><ion-icon name="add"></ion-icon></button>
   </ion-fab>
 
-  <ion-fab top right #fab>
-      <button ion-fab edge color="utgrey" mini (click)="updateSchedule()"><ion-icon name="add"></ion-icon></button>
+  <ion-fab top left mini *ngIf="currentCalendar.classes && scheduleView=='current'">
+   <button ion-fab edge color="utgrey" mini (click)="saveToCalendar()"><ion-icon name="download"></ion-icon></button>
   </ion-fab>
 
   <!-- Current Time as line _____ -->
   <hr class="timenow-bar" [style.top.px]="timeNowBarOffset">
 
-  <!-- Render a fancy Object[][] data structure -->
-  <div>
-    <ion-grid *ngIf="weekMatrix && weekMatrix.length > 0" class='calender'>
-      <ion-row *ngFor='let row of weekMatrix'>
-        <ion-col *ngFor='let item of row' col-2 class="{{item ? item.class : ''}}" [style.background-color]="(item && item.bg) ? item.bg : ''" (click)="(item && item.click) ? item.click() : ''">
-          <p *ngIf='item'>{{ item.label }}</p>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </div>
+  <div [ngSwitch]="scheduleView">
 
-  <!-- Login prompt -->
-  <div class="addchip" *ngIf="!weekMatrix || !classes || classes.length == 0">
-    <ion-chip>
-      <ion-icon (click)="fetchSchedule()" name="add" color="utgrey"></ion-icon>
-      <ion-label>Add your schedule</ion-label>
-    </ion-chip>
+    <div *ngSwitchCase="'current'">
+
+      <!-- Render a fancy Object[][] data structure -->
+      <ion-grid *ngIf="currentCalendar.weekMatrix && currentCalendar.weekMatrix.length > 1" class='calendar'>
+        <ion-row *ngFor='let row of currentCalendar.weekMatrix'>
+          <ion-col *ngFor='let item of row' col-2 class="{{item ? item.class : ''}}" [style.background-color]="(item && item.bg) ? item.bg : ''" (click)="(item && item.click) ? item.click() : ''">
+            <p *ngIf='item'>{{ item.label }}</p>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <!-- Login prompt -->
+      <div class="addchip" *ngIf="!currentCalendar.classes || currentCalendar.classes.length == 0">
+        <ion-chip>
+          <ion-icon (click)="fetchSchedule()" name="add" color="utgrey"></ion-icon>
+          <ion-label>Add your schedule</ion-label>
+        </ion-chip>
+      </div>
+
+    </div>
+
+    <div *ngSwitchCase="'future'">
+
+      <ion-grid *ngIf="futureCalendar.weekMatrix && futureCalendar.weekMatrix.length > 1" class='calendar'>
+        <ion-row *ngFor='let row of futureCalendar.weekMatrix'>
+          <ion-col *ngFor='let item of row' col-2 class="{{item ? item.class : ''}}" [style.background-color]="(item && item.bg) ? item.bg : ''" (click)="(item && item.click) ? item.click() : ''">
+            <p *ngIf='item'>{{ item.label }}</p>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <div class="addchip" *ngIf="!futureCalendar.classes || futureCalendar.classes.length == 0">
+        <ion-chip>
+          <ion-icon (click)="fetchSchedule()" name="add" color="utgrey"></ion-icon>
+          <ion-label>Add your schedule</ion-label>
+        </ion-chip>
+      </div>
+
+    </div>
+
+    <div *ngSwitchCase="'finals'">
+
+      <ion-grid *ngIf="finalsCalendar.weekMatrix && finalsCalendar.weekMatrix.length > 1" class='calendar'>
+        <ion-row *ngFor='let row of finalsCalendar.weekMatrix'>
+          <ion-col *ngFor='let item of row' col-2 class="{{item ? item.class : ''}}" [style.background-color]="(item && item.bg) ? item.bg : ''" (click)="(item && item.click) ? item.click() : ''">
+            <p *ngIf='item'>{{ item.label }}</p>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <div class="addchip" *ngIf="!finalsCalendar.finals || finalsCalendar.finals.length == 0">
+        <ion-chip>
+          <ion-icon (click)="fetchSchedule()" name="add" color="utgrey"></ion-icon>
+          <ion-label>Add your finals</ion-label>
+        </ion-chip>
+      </div>
+
+    </div>
+
   </div>
 
 </ion-content>

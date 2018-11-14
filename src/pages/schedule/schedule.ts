@@ -5,26 +5,9 @@ import { AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 
 import { UTNav } from '../nav';
+import { ClassCalendar, ClassTime } from './class-calendar';
+import { FinalsCalendar, FinalTime } from './finals-calendar';
 
-class ClassTime {
-    num: number;
-    name: string;
-    title: string;
-    building: string;
-    room: string;
-    days: Array<string>;
-    timeslot: string;
-}
-
-class FinalTime {
-    num: number;
-    name: string;
-    title: string;
-    startDate: Date;
-    endDate: Date;
-    location: string;
-    exists: boolean;
-}
 
 @Component({
   selector: 'page-schedule',
@@ -32,12 +15,13 @@ class FinalTime {
 })
 export class SchedulePage {
 
-    weekMatrix: Array<Array<any>>; // Calender
-    classes: Array<ClassTime> = []; // List of classes
-    finals: Array<FinalTime> = []; // List of classes
+    currentCalendar: ClassCalendar;
+    futureCalendar: ClassCalendar;
+    finalsCalendar: FinalsCalendar;
 
-    scheduleOffset: number = 0; // use row index to hide the top of calender
     timeNowBarOffset: number = -100; // current time bar offset
+
+    scheduleView: string = 'current';
 
     @ViewChild(Content) content: Content;
 
@@ -47,10 +31,28 @@ export class SchedulePage {
                 private calendar: Calendar,
                 private nav: UTNav) {
 
+      this.currentCalendar = new ClassCalendar(altCtrl);
+      this.futureCalendar = new ClassCalendar(altCtrl);
+      this.finalsCalendar = new FinalsCalendar(altCtrl);
+
       storage.get('classes').then((classes) => { // check cache
         if(classes && classes.length > 0) {
-          this.classes = classes;
-          this.createClassesCalender();
+          this.currentCalendar.classes = classes;
+          this.currentCalendar.generate();
+        }
+      });
+
+      storage.get('futureclasses').then((classes) => { // check cache
+        if(classes && classes.length > 0) {
+          this.futureCalendar.classes = classes;
+          this.futureCalendar.generate();
+        }
+      });
+
+      storage.get('finals').then((finals) => { // check cache
+        if(finals && finals.length > 0) {
+          this.finalsCalendar.finals = finals;
+          this.finalsCalendar.generate();
         }
       });
 
@@ -64,250 +66,15 @@ export class SchedulePage {
       let time: number = dateNow.getHours() + dateNow.getMinutes() / 60;
       time = Math.max(Math.min(time, 23), 5); // force bar into range
 
-      this.timeNowBarOffset = time * 120 - 528 - this.scheduleOffset * 60; // calc pixels to position
-      this.ref.tick();
-
-    }
-
-    createFinalsCalender() : void { // Fill the matrix with stuff
-
-      let calenderMatrix: Array<Array<any>> = [[
-        null,
-        {label:'M', class:'day-header'},
-        {label:'T', class:'day-header'},
-        {label:'W', class:'day-header'},
-        {label:'TH', class:'day-header'},
-        {label:'F', class:'day-header'}
-      ]];
-
-      // calculate the calender offset to display only relevent time period
-      let minStartIndex = 999;
-      for(let final of this.finals) {
-        if(!final.exists) {
-          continue;
-        }
-        minStartIndex = Math.min(minStartIndex, this.getFinalIndex(final));
-      }
-      if(minStartIndex % 2 == 0) { // should be odd #, so it starts on the hour
-        minStartIndex -= 1;
-      }
-      this.scheduleOffset = minStartIndex - 1; // ignore header index
-
-      for(let i = 5 + this.scheduleOffset / 2; i <= 22; i++) {
-
-        let timeString;
-        if(i > 12) {
-          timeString = '' + (i - 12);
-        } else {
-          timeString = '' + i;
-        }
-
-        if(timeString.length < 2) {
-          timeString = ' ' + timeString;
-        }
-
-        calenderMatrix.push([{label: timeString, class:'time-header'}, null, null, null, null, null]);
-        calenderMatrix.push([{label: ' ', class:'time-header'}, null, null, null, null, null]);
-
-      }
-
-      this.addFinals(calenderMatrix);
-
-      this.classes = []; // forget the prev screen
-
-      this.weekMatrix = calenderMatrix;
-
-      this.ref.tick(); // force refresh required
-
-      this.updateTimeBar();
-      this.content.scrollTo(0, this.timeNowBarOffset - 250);
-
-    }
-
-    createClassesCalender() : void { // Fill the matrix with stuff
-
-      let calenderMatrix: Array<Array<any>> = [[
-        null,
-        {label:'M', class:'day-header'},
-        {label:'T', class:'day-header'},
-        {label:'W', class:'day-header'},
-        {label:'TH', class:'day-header'},
-        {label:'F', class:'day-header'}
-      ]];
-
-      // calculate the calender offset to display only relevent time period
-      let minStartIndex = 999;
-      for(let classtime of this.classes) {
-        let start = classtime.timeslot.split('-')[0];
-        minStartIndex = Math.min(minStartIndex, this.getIndex(start));
-      }
-      if(minStartIndex % 2 == 0) { // should be odd #, so it starts on the hour
-        minStartIndex -= 1;
-      }
-      this.scheduleOffset = minStartIndex - 1; // ignore header index
-
-      for(let i = 5 + this.scheduleOffset / 2; i <= 22; i++) {
-
-        let timeString;
-        if(i > 12) {
-          timeString = '' + (i - 12);
-        } else {
-          timeString = '' + i;
-        }
-
-        if(timeString.length < 2) {
-          timeString = ' ' + timeString;
-        }
-
-        calenderMatrix.push([{label: timeString, class:'time-header'}, null, null, null, null, null]);
-        calenderMatrix.push([{label: ' ', class:'time-header'}, null, null, null, null, null]);
-
-      }
-
-      this.addClasses(calenderMatrix);
-
-      this.weekMatrix = calenderMatrix;
-
-      this.ref.tick(); // force refresh required
-
-      this.updateTimeBar();
-      this.content.scrollTo(0, this.timeNowBarOffset - 250);
-
-    }
-
-    addClasses(calenderMatrix) : void { // adds classes to matrix
-
-      for(let classtime of this.classes) {
-
-        let [start, end] = classtime.timeslot.split('-');
-        let startIndex = this.getIndex(start) - this.scheduleOffset;
-        let endIndex = this.getIndex(end) - this.scheduleOffset;
-
-        let onClick = () => {
-          let alert = this.altCtrl.create({
-            title: classtime.name,
-            subTitle: `(#${classtime.num}) ${classtime.title}`,
-            message: `${classtime.building} ${classtime.room} @ ${classtime.timeslot}`,
-            buttons: ['Dismiss']
-          });
-          alert.present();
-        };
-
-        for(let i = startIndex; i < endIndex; i++) {
-
-          for(let day of classtime.days) {
-
-            let dayIndex = ['M', 'T', 'W', 'H', 'F'].indexOf(day) + 1; // H = Thursday
-            if(i == startIndex) {
-              calenderMatrix[i][dayIndex] = {
-                label: classtime.name,
-                class:'class-slot start-slot',
-                bg: this.getColor(classtime),
-                click: onClick};
-            } else {
-              calenderMatrix[i][dayIndex] = {
-                label: '\x00',
-                class:'class-slot end-slot',
-                bg: this.getColor(classtime),
-                click: onClick};
-            }
-
-          }
-
-        }
-
-      }
-
-    }
-
-    addFinals(calenderMatrix) : void { // adds finals to matrix
-
-      for(let final of this.finals) {
-
-        if(!final.exists) {
-          continue;
-        }
-
-        let startIndex = this.getFinalIndex(final) - this.scheduleOffset;
-        let endIndex = this.getFinalIndex(final, false) - this.scheduleOffset;
-
-        let onClick = () => {
-          let alert = this.altCtrl.create({
-            title: final.name,
-            subTitle: `(#${final.num}) ${final.title}`,
-            message: `${final.location}`,
-            buttons: ['Dismiss']
-          });
-          alert.present();
-        };
-
-        let dayIndex: number = final.startDate.getDay();
-
-        for(let i = startIndex; i < endIndex; i++) {
-
-            if(i == startIndex) {
-              calenderMatrix[i][dayIndex] = {
-                label: final.name,
-                class:'class-slot start-slot',
-                bg: this.getColor(final),
-                click: onClick};
-            } else {
-              calenderMatrix[i][dayIndex] = {
-                label: '\x00',
-                class:'class-slot end-slot',
-                bg: this.getColor(final),
-                click: onClick};
-            }
-
-        }
-
-      }
-
-    }
-
-    getColor(event: ClassTime | FinalTime) : string { // Simple func to convert classname to unique color
-
-      let prefix = event.name.substring(0, event.name.lastIndexOf(' '));
-      let sum = 0;
-
-      for(let i = 0; i < prefix.length; i++) {
-        sum += prefix.charCodeAt(i);
-      }
-
-      let hue = Math.floor((sum % 30) / 30 * 360);
-
-      return `hsl(${hue}, 50%, 85%)`
-
-    }
-
-    getIndex(timeString : string) : number { // convert time to row index in matrix
-
-      let time = timeString.match( /(\d+):(\d+)(\wm)/ );
-
-      let hour = parseInt(time[1]) + (time[3] == 'pm' ? 12:0);
-
-      if(time[1] == "12") {
-        hour = 12;
-      }
-
-      let index = 1 + (hour - 5) * 2 + (time[2] == '30' ? 1:0);
-
-      return index;
-
-    }
-
-    getFinalIndex(final: FinalTime, start=true) : number { // convert time to row index in matrix
-
-      let hour;
-      if(start) {
-        hour = final.startDate.getHours();
+      if(this.scheduleView == 'current') {
+        this.timeNowBarOffset = this.currentCalendar.calculateTimeBarOffset(time);
+      } else if(this.scheduleView == 'future') {
+        this.timeNowBarOffset = this.futureCalendar.calculateTimeBarOffset(time);
       } else {
-        hour = final.endDate.getHours();
+        this.timeNowBarOffset = this.finalsCalendar.calculateTimeBarOffset(time);
       }
 
-      let index = 1 + (hour - 5) * 2;
-
-      return index;
+      this.ref.tick();
 
     }
 
@@ -330,43 +97,15 @@ export class SchedulePage {
 
     }
 
-    updateSchedule() : void { // get schedule
-
-      this.altCtrl.create({
-        title: 'Schedule',
-        message: 'What schedule would you like to view?',
-        buttons: [
-          {
-            text: 'Future',
-            handler: data => {
-              this.fetchSchedule('20192');
-            }
-          },
-          {
-            text: 'Finals',
-            handler: data => {
-              this.fetchFinalsSchedule();
-            }
-          },
-          {
-            text: 'Current',
-            handler: data => {
-              this.fetchSchedule('');
-            }
-          }
-        ]
-      }).present();
-
-    }
-
     fetchFinalsSchedule() : void { // get finals
 
       this.nav.fetchTable(`https://utdirect.utexas.edu/registrar/exam_schedule.WBX`, "<b>Course</b>").then(
         tableHTML => {
 
           try {
-            this.finals = this.parseFinalsTable(tableHTML as string);
-            this.createFinalsCalender();
+            this.finalsCalendar.finals = this.parseFinalsTable(tableHTML as string);
+            this.storage.set('finals', this.finalsCalendar.finals);
+            this.finalsCalendar.generate();
           } catch {
             this.altCtrl.create({
               title: 'Error',
@@ -379,21 +118,43 @@ export class SchedulePage {
 
     }
 
-    fetchSchedule(sem: string) : void { // get schedule
+    fetchSchedule() : void { // get schedule
+
+      if(this.scheduleView == 'finals') {
+        this.fetchFinalsSchedule();
+        return;
+      }
+
+      let sem = this.scheduleView == 'future' ? '20192': '';
 
       this.nav.fetchTable(`https://utdirect.utexas.edu/registration/classlist.WBX?sem=${sem}`, "<th>Course</th>").then(
         tableHTML => {
 
           try {
-            this.classes = this.parseScheduleTable(tableHTML as string);
-            this.storage.set('classes', this.classes);
-            this.createClassesCalender();
+
+            let classes: Array<ClassTime> = this.parseScheduleTable(tableHTML as string);
+
+            if(this.scheduleView == 'current') {
+              this.currentCalendar.classes = classes
+              this.storage.set('classes', classes);
+              this.currentCalendar.generate();
+            } else {
+              this.futureCalendar.classes = classes;
+              this.storage.set('futureclasses', classes);
+              this.futureCalendar.generate();
+            }
+
+            this.updateTimeBar();
+            this.content.scrollTo(0, this.timeNowBarOffset - 250);
+
           } catch {
+
             this.altCtrl.create({
               title: 'Error',
               subTitle: 'Something is weird with your schedule...',
               buttons: ['Dismiss']
             }).present();
+
           }
 
         });
@@ -543,14 +304,14 @@ export class SchedulePage {
 
       if(check) {
         this.altCtrl.create({
-          title: 'Calender',
-          message: 'Would you like to add your classes to your local calender?',
+          title: 'Calendar',
+          message: 'Would you like to add your current classes to your local calendar?',
           buttons: [
             {
               text: 'Cancel'
             },
             {
-              text: `Add ${this.classes.length} Classes`,
+              text: `Add ${this.currentCalendar.classes.length} Classes`,
               handler: data => {
                 this.saveToCalendar(false);
               }
@@ -572,7 +333,7 @@ export class SchedulePage {
 
           let currentDay = new Date().getDay();
 
-          for(let classtime of this.classes) {
+          for(let classtime of this.currentCalendar.classes) {
 
             let [start, end] = classtime.timeslot.split('-');
             let startDate = this.convertToDate(start);
