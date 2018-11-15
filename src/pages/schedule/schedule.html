@@ -4,17 +4,19 @@
     <ion-title>Classes</ion-title>
   </ion-navbar>
 
-  <ion-segment [(ngModel)]="scheduleView">
-    <ion-segment-button value="current">
-      Current
-    </ion-segment-button>
-    <ion-segment-button value="finals">
-      Finals
-    </ion-segment-button>
-    <ion-segment-button value="future">
-      Future
-    </ion-segment-button>
-  </ion-segment>
+  <ion-toolbar>
+    <ion-segment [(ngModel)]="scheduleView">
+      <ion-segment-button value="current">
+        Current
+      </ion-segment-button>
+      <ion-segment-button value="finals">
+        Finals
+      </ion-segment-button>
+      <ion-segment-button value="future">
+        Future
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 
 </ion-header>
 
