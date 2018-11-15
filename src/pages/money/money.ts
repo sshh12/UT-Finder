@@ -69,7 +69,7 @@ export class MoneyPage {
 
     fetchAccounts() : void { // get account balances
 
-      this.nav.fetchTable("https://utdirect.utexas.edu/hfis/diningDollars.WBX", "<th>Balance  </th>").then(
+      this.nav.fetchTable("https://utdirect.utexas.edu/hfis/diningDollars.WBX", "<th>Balance  </th>",
         tableHTML => {
 
           try {
