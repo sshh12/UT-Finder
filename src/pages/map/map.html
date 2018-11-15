@@ -5,7 +5,7 @@
   </ion-navbar>
 
   <ion-toolbar no-border-top>
-    <ion-searchbar placeholder="Where..." (ionInput)="search($event)"></ion-searchbar>
+    <ion-searchbar placeholder="Where..." (ionInput)="search($event)" (keyup.enter)="closeKeyboard()"></ion-searchbar>
   </ion-toolbar>
 
 </ion-header>

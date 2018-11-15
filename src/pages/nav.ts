@@ -169,7 +169,7 @@ export class UTNav {
 
   }
 
-  fetchTable(url: string, include: string) { // get table from given url
+  fetchTable(url: string, include: string, callback?) { // get table from given url
 
     return new Promise((resolve, reject) => {
 
@@ -192,7 +192,13 @@ export class UTNav {
                 clearInterval(this.checker);
                 browser.close();
 
-                resolve(tableHTML);
+                // this is silly but passing the data through
+                // the resolve(...) wasn't working
+                if(callback) {
+                  callback(tableHTML);
+                }
+
+                resolve();
 
               }
 

@@ -27,7 +27,7 @@ export class ClassCalendar {
     return time * 120 - 528 - this.scheduleOffset * 60;
   }
 
-  generate() {
+  generate() : void {
 
     let calendarMatrix: Array<Array<any>> = [[
       null,

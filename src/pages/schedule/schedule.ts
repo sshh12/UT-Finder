@@ -35,28 +35,28 @@ export class SchedulePage {
       this.futureCalendar = new ClassCalendar(altCtrl);
       this.finalsCalendar = new FinalsCalendar(altCtrl);
 
-      storage.get('classes').then((classes) => { // check cache
+      storage.get('schedule:classes').then((classes) => { // check cache
         if(classes && classes.length > 0) {
           this.currentCalendar.classes = classes;
           this.currentCalendar.generate();
         }
       });
 
-      storage.get('futureclasses').then((classes) => { // check cache
+      storage.get('schedule:futureclasses').then((classes) => { // check cache
         if(classes && classes.length > 0) {
           this.futureCalendar.classes = classes;
           this.futureCalendar.generate();
         }
       });
 
-      storage.get('finals').then((finals) => { // check cache
+      storage.get('schedule:finals').then((finals) => { // check cache
         if(finals && finals.length > 0) {
           this.finalsCalendar.finals = finals;
           this.finalsCalendar.generate();
         }
       });
 
-      setInterval(() => {this.updateTimeBar()}, 1000); // auto update time bar
+      setInterval(() => {this.updateTimeBar()}, 500); // auto update time bar
 
     }
 
@@ -105,7 +105,7 @@ export class SchedulePage {
         url = `https://utdirect.utexas.edu/registration/classlist.WBX`;
         selector = '<th>Course</th>';
       } else if(this.scheduleView == 'future') {
-        let sem = '20192'; // TODO
+        let sem = '20192'; // TODO calulate this somehow
         url = `https://utdirect.utexas.edu/registration/classlist.WBX?sem=${sem}`;
         selector = '<th>Course</th>';
       } else {
@@ -113,7 +113,7 @@ export class SchedulePage {
         selector = '<b>Course</b>';
       }
 
-      this.nav.fetchTable(url, selector).then(
+      this.nav.fetchTable(url, selector,
         tableHTML => {
 
           try {
@@ -121,7 +121,7 @@ export class SchedulePage {
             if(this.scheduleView == 'finals') {
 
               this.finalsCalendar.finals = this.parseFinalsTable(tableHTML as string);
-              this.storage.set('finals', this.finalsCalendar.finals);
+              this.storage.set('schedule:finals', this.finalsCalendar.finals);
               this.finalsCalendar.generate();
 
             } else {
@@ -130,12 +130,12 @@ export class SchedulePage {
 
               if(this.scheduleView == 'current') {
                 this.currentCalendar.classes = classes
-                this.storage.set('classes', classes);
                 this.currentCalendar.generate();
+                this.storage.set('schedule:classes', classes);
               } else {
                 this.futureCalendar.classes = classes;
-                this.storage.set('futureclasses', classes);
                 this.futureCalendar.generate();
+                this.storage.set('schedule:futureclasses', classes);
               }
 
             }

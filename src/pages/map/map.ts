@@ -4,7 +4,8 @@ import { Http } from '@angular/http';
 import {
   NavController,
   AlertController,
-  ToastController
+  ToastController,
+  Keyboard
 } from 'ionic-angular';
 
 import {
@@ -14,7 +15,6 @@ import {
   GoogleMapsMapTypeId,
   TileOverlayOptions,
   MarkerOptions,
-  GoogleMapsAnimation,
   Marker,
   ILatLng,
   PolylineOptions,
@@ -57,6 +57,7 @@ export class MapPage {
   constructor(public navCtrl: NavController,
               private http: Http,
               private alertCtrl: AlertController,
+              private keyboard: Keyboard,
               private toastCtrl: ToastController) {
     //...
   }
@@ -68,6 +69,10 @@ export class MapPage {
   clearMap() {
     this.map.clear();
     this.map.addTileOverlay(this.tileOptions);
+  }
+
+  closeKeyboard() {
+    this.keyboard.close();
   }
 
   search(event: any) { // Handle search bar
@@ -94,7 +99,7 @@ export class MapPage {
             title: building.name,
             position: building.location,
             visible: true,
-            animation: GoogleMapsAnimation.DROP,
+            animation: null,
             flat: false,
             icon: icon,
             zIndex: 9999
@@ -194,6 +199,7 @@ export class MapPage {
 
   showFood() {
 
+    this.closeKeyboard();
     this.clearMap();
 
     for(let foodPlace of foodPlaces) {
@@ -211,7 +217,7 @@ export class MapPage {
         icon: icon,
         position: {lat: foodPlace.lat, lng: foodPlace.lng},
         visible: true,
-        animation: GoogleMapsAnimation.DROP,
+        animation: null,
         flat: false,
         zIndex: 9999
       };
@@ -224,6 +230,8 @@ export class MapPage {
   }
 
   showBuses() {
+
+    this.closeKeyboard();
 
     let alert = this.alertCtrl.create();
     alert.setTitle('Bus Routes');
@@ -331,7 +339,7 @@ export class MapPage {
                 icon: icon,
                 position: {lat: stop.latLng[0], lng: stop.latLng[1]},
                 visible: true,
-                animation: GoogleMapsAnimation.DROP,
+                animation: null,
                 flat: false,
                 zIndex: 9999
               };
