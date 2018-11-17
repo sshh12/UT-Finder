@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import {
   AlertController,
   ToastController
-} from 'ionic-angular';
+} from '@ionic/angular';
 
 import { Storage } from '@ionic/storage';
 
@@ -19,7 +19,8 @@ class Account {
 
 @Component({
   selector: 'page-money',
-  templateUrl: 'money.html'
+  templateUrl: 'money.page.html',
+  styleUrls: ['money.page.scss']
 })
 export class MoneyPage {
 

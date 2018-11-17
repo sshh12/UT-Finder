@@ -4,9 +4,8 @@ import { Http } from '@angular/http';
 import {
   NavController,
   AlertController,
-  ToastController,
-  Keyboard
-} from 'ionic-angular';
+  ToastController
+} from '@ionic/angular';
 
 import {
   GoogleMaps,
@@ -37,7 +36,8 @@ class Building {
 
 @Component({
   selector: 'page-map',
-  templateUrl: 'map.html'
+  templateUrl: 'map.page.html',
+  styleUrls: ['map.page.scss']
 })
 export class MapPage {
 
@@ -57,7 +57,6 @@ export class MapPage {
   constructor(public navCtrl: NavController,
               private http: Http,
               private alertCtrl: AlertController,
-              private keyboard: Keyboard,
               private toastCtrl: ToastController) {
     //...
   }
@@ -72,7 +71,7 @@ export class MapPage {
   }
 
   closeKeyboard() {
-    this.keyboard.close();
+    // TODO
   }
 
   search(event: any) { // Handle search bar

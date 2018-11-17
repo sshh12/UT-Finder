@@ -1,7 +1,6 @@
 import { Component, ApplicationRef, ViewChild } from '@angular/core';
-import { Content } from 'ionic-angular';
 import { Calendar } from '@ionic-native/calendar';
-import { AlertController } from 'ionic-angular';
+import { Content, AlertController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 
 import { UTNav } from '../nav';
@@ -11,7 +10,8 @@ import { FinalsCalendar, FinalTime } from './finals-calendar';
 
 @Component({
   selector: 'page-schedule',
-  templateUrl: 'schedule.html'
+  templateUrl: 'schedule.page.html',
+  styleUrls: ['schedule.page.scss']
 })
 export class SchedulePage {
 

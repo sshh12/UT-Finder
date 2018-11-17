@@ -4,7 +4,8 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 @Component({
   selector: 'page-resources',
-  templateUrl: 'resources.html'
+  templateUrl: 'resources.page.html',
+  styleUrls: ['resources.page.scss']
 })
 export class ResourcesPage {
 
