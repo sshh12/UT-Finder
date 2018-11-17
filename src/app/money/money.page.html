@@ -1,13 +1,13 @@
 <ion-header>
-  <ion-navbar color="utorange">
+  <ion-toolbar color="primary">
     <ion-title>Money</ion-title>
-  </ion-navbar>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
 
   <ion-fab bottom right>
-   <button ion-fab mini color="utgrey" mini (click)="fetchAccounts()"><ion-icon name="refresh"></ion-icon></button>
+   <button ion-fab mini color="secondary" mini (click)="fetchAccounts()"><ion-icon name="refresh"></ion-icon></button>
   </ion-fab>
 
   <div>
@@ -53,7 +53,7 @@
   <!-- Login prompt -->
   <div class="addchip" *ngIf="!accounts || accounts.length == 0">
     <ion-chip>
-      <ion-icon (click)="fetchAccounts()" name="refresh" color="utgrey"></ion-icon>
+      <ion-icon (click)="fetchAccounts()" name="refresh" color="secondary"></ion-icon>
       <ion-label>Add your accounts</ion-label>
     </ion-chip>
   </div>

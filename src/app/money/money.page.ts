@@ -46,11 +46,11 @@ export class MoneyPage {
       } else if (acc.name.includes('Dine In')) {
         this.iab.create('https://utdirect.utexas.edu/hfis/transactions.WBX', '_blank', {location: 'no'});
       } else {
-        this.toastCtrl.create({
+        /*this.toastCtrl.create({
           message: 'Unknown account type 😢',
           duration: 3000,
           position: 'top'
-        }).present();
+        }).present();*/
       }
     }
 
@@ -60,11 +60,11 @@ export class MoneyPage {
       } else if (acc.name.includes('Dine In')) {
         this.iab.create('https://utdirect.utexas.edu/hfis/addDollars.WBX', '_blank', {location: 'no'});
       } else {
-        this.toastCtrl.create({
+        /*this.toastCtrl.create({
           message: 'Unknown account type 😢',
           duration: 3000,
           position: 'top'
-        }).present();
+        }).present();*/
       }
     }
 
@@ -77,11 +77,11 @@ export class MoneyPage {
             this.accounts = this.parseAccountsTable(tableHTML as string);
             this.storage.set('accounts', this.accounts);
           } catch {
-            this.altCtrl.create({
+            /*this.altCtrl.create({
               title: 'Error',
               subTitle: 'Something is weird with your accounts...',
               buttons: ['Dismiss']
-            }).present();
+            }).present();*/
           }
 
         });

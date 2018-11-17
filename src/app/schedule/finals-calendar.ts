@@ -1,4 +1,4 @@
-import { AlertController } from 'ionic-angular';
+import { AlertController } from '@ionic/angular';
 
 export class FinalTime {
     num: number;
@@ -128,7 +128,7 @@ export class FinalsCalendar {
 
   addFinals(calendarMatrix) : void { // adds finals to matrix
 
-    for(let final of this.finals) {
+    /*for(let final of this.finals) {
 
       if(!final.exists) {
         continue;
@@ -167,7 +167,7 @@ export class FinalsCalendar {
 
       }
 
-    }
+    }*/
 
   }
 

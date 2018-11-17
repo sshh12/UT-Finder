@@ -5,12 +5,12 @@ import { Storage } from '@ionic/storage';
 import {
   AlertController,
   ToastController
-} from 'ionic-angular';
+} from '@ionic/angular';
 
 @Injectable()
 export class UTNav {
 
-  checker: number;
+  checker: any;
   lastLogged: Date = new Date(0);
 
   constructor(private iab: InAppBrowser,
@@ -54,11 +54,11 @@ export class UTNav {
                    { code: "document.getElementById('error-message') != null" }
                 ).then((error) => {
                   if(error == 'true') {
-                    this.toastCtrl.create({
+                    /*this.toastCtrl.create({
                       message: 'Unable to login 😢',
                       duration: 3000,
                       position: 'top'
-                    }).present();
+                    }).present();*/
                     clearInterval(this.checker);
                     browser.close();
                     resolve();
@@ -105,7 +105,7 @@ export class UTNav {
 
             if(!username || !password) { // need user/pass
 
-              this.alertCtrl.create({
+              /*this.alertCtrl.create({
                 title: 'Login',
                 inputs: [
                   {
@@ -131,11 +131,11 @@ export class UTNav {
                     }
                   }
                 ]
-              }).present();
+              }).present();*/
 
             } else { // already have user/pass
 
-              this.alertCtrl.create({
+              /*this.alertCtrl.create({
                 title: 'Login',
                 buttons: [
                   {
@@ -153,7 +153,7 @@ export class UTNav {
                     }
                   }
                 ]
-              }).present();
+              }).present();*/
 
             }
 

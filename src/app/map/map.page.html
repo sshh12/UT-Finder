@@ -1,8 +1,8 @@
 <ion-header>
 
-  <ion-navbar color="utorange">
+  <ion-toolbar color="primary">
     <ion-title>Map</ion-title>
-  </ion-navbar>
+  </ion-toolbar>
 
   <ion-toolbar no-border-top>
     <ion-searchbar placeholder="Where..." (ionInput)="search($event)" (keyup.enter)="closeKeyboard()"></ion-searchbar>
@@ -14,16 +14,16 @@
 
   <div id="map_canvas">
 
-    <ion-fab top right #fab>
-      <button mini ion-fab color="utgrey"><ion-icon name="map"></ion-icon></button>
+    <ion-fab-button vertical="top" horizontal="end" #fab>
+      <ion-fab-button mini ion-fab color="secondary"><ion-icon name="map"></ion-icon></ion-fab-button>
       <ion-fab-list>
-        <button ion-fab color="blue" (click)="showBuses()"><ion-icon name="bus"></ion-icon></button>
-        <button ion-fab color="success" (click)="showFood()"><ion-icon name="pizza"></ion-icon></button>
+        <ion-fab-button ion-fab color="blue" (click)="showBuses()"><ion-icon name="bus"></ion-icon></ion-fab-button>
+        <ion-fab-button ion-fab color="success" (click)="showFood()"><ion-icon name="pizza"></ion-icon></ion-fab-button>
       </ion-fab-list>
-    </ion-fab>
+    </ion-fab-button>
 
-    <ion-fab mini middle right #fabw>
-      <button mini ion-fab color="light" (click)="showWeather()"><ion-icon name="rainy"></ion-icon></button>
+    <ion-fab mini vertical="center" horizontal="end" #fabw>
+      <ion-fab-button mini ion-fab color="light" (click)="showWeather()"><ion-icon name="rainy"></ion-icon></ion-fab-button>
     </ion-fab>
 
   </div>

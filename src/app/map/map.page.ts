@@ -232,7 +232,7 @@ export class MapPage {
 
     this.closeKeyboard();
 
-    let alert = this.alertCtrl.create();
+    /*let alert = this.alertCtrl.create();
     alert.setTitle('Bus Routes');
 
     let checked = true;
@@ -258,7 +258,7 @@ export class MapPage {
       }
     });
 
-    alert.present();
+    alert.present();*/
 
   }
 
@@ -276,14 +276,14 @@ export class MapPage {
 
         let json = data.json();
 
-        if(json.status != 'OK') {
+        /*if(json.status != 'OK') {
           this.toastCtrl.create({
             message: 'Route not available 😢',
             duration: 3000,
             position: 'top'
           }).present();
           return;
-        }
+        }*/
 
         // ----- Outline
         let traceCoords: ILatLng[] = [];
@@ -371,10 +371,10 @@ export class MapPage {
             conditions.push(cond.description);
           }
 
-          this.alertCtrl.create({
+          /*this.alertCtrl.create({
             title: 'Weather',
             message: `It's ${temp}°F with ${conditions.join(", ")}`
-          }).present();
+          }).present();*/
 
         });
 

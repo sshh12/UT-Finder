@@ -116,7 +116,7 @@ export class SchedulePage {
       this.nav.fetchTable(url, selector,
         tableHTML => {
 
-          try {
+          /*try {
 
             if(this.scheduleView == 'finals') {
 
@@ -151,7 +151,7 @@ export class SchedulePage {
               buttons: ['Dismiss']
             }).present();
 
-          }
+          }*/
 
         });
 
@@ -299,7 +299,7 @@ export class SchedulePage {
     saveToCalendar(check: boolean = true) {
 
       if(check) {
-        this.altCtrl.create({
+        /*this.altCtrl.create({
           title: 'Calendar',
           message: 'Would you like to add your current classes to your local calendar?',
           buttons: [
@@ -313,7 +313,7 @@ export class SchedulePage {
               }
             }
           ]
-        }).present();
+        }).present();*/
         return;
       }
 

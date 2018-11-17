@@ -1,4 +1,4 @@
-import { AlertController } from 'ionic-angular';
+import { AlertController } from '@ionic/angular';
 
 export class ClassTime {
     num: number;
@@ -91,7 +91,7 @@ export class ClassCalendar {
 
   addClasses(calendarMatrix) : void { // adds classes to matrix
 
-    for(let classtime of this.classes) {
+    /*for(let classtime of this.classes) {
 
       let [start, end] = classtime.timeslot.split('-');
       let startIndex = this.getIndex(start) - this.scheduleOffset;
@@ -130,7 +130,8 @@ export class ClassCalendar {
 
       }
 
-    }
+
+    }*/
 
   }
 

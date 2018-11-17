@@ -1,8 +1,8 @@
 <ion-header>
 
-  <ion-navbar color="utorange">
+  <ion-toolbar color="primary">
     <ion-title>Classes</ion-title>
-  </ion-navbar>
+  </ion-toolbar>
 
   <ion-toolbar>
     <ion-segment [(ngModel)]="scheduleView">
@@ -22,12 +22,12 @@
 
 <ion-content padding>
 
-  <ion-fab bottom right #fab>
-      <button ion-fab mini color="utgrey" mini (click)="fetchSchedule()"><ion-icon name="add"></ion-icon></button>
+  <ion-fab vertical="bottom" horizontal="end" right #fab>
+      <ion-fab-button ion-fab mini color="secondary" mini (click)="fetchSchedule()"><ion-icon name="add"></ion-icon></ion-fab-button>
   </ion-fab>
 
-  <ion-fab top right *ngIf="currentCalendar.classes.length > 0 && scheduleView=='current'">
-   <button ion-fab mini color="blue" mini (click)="saveToCalendar()"><ion-icon name="download"></ion-icon></button>
+  <ion-fab vertical="top" horizontal="end" *ngIf="currentCalendar.classes.length > 0 && scheduleView=='current'">
+   <ion-fab-button ion-fab mini color="blue" mini (click)="saveToCalendar()"><ion-icon name="download"></ion-icon></ion-fab-button>
   </ion-fab>
 
   <!-- Current Time as line _____ -->
@@ -48,8 +48,8 @@
 
       <!-- Login prompt -->
       <div class="addchip" *ngIf="currentCalendar.classes.length == 0">
-        <ion-chip>
-          <ion-icon (click)="fetchSchedule()" name="add" color="utgrey"></ion-icon>
+        <ion-chip horizontal="center">
+          <ion-icon (click)="fetchSchedule()" name="add" color="secondary"></ion-icon>
           <ion-label>Add your schedule</ion-label>
         </ion-chip>
       </div>
@@ -68,7 +68,7 @@
 
       <div class="addchip" *ngIf="futureCalendar.classes.length == 0">
         <ion-chip>
-          <ion-icon (click)="fetchSchedule()" name="add" color="utgrey"></ion-icon>
+          <ion-icon (click)="fetchSchedule()" name="add" color="secondary"></ion-icon>
           <ion-label>Add your future schedule</ion-label>
         </ion-chip>
       </div>
@@ -87,7 +87,7 @@
 
       <div class="addchip" *ngIf="finalsCalendar.finals.length == 0">
         <ion-chip>
-          <ion-icon (click)="fetchSchedule()" name="add" color="utgrey"></ion-icon>
+          <ion-icon (click)="fetchSchedule()" name="add" color="secondary"></ion-icon>
           <ion-label>Add your finals</ion-label>
         </ion-chip>
       </div>
