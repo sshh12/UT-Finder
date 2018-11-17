@@ -91,20 +91,20 @@ export class ClassCalendar {
 
   addClasses(calendarMatrix) : void { // adds classes to matrix
 
-    /*for(let classtime of this.classes) {
+    for(let classtime of this.classes) {
 
       let [start, end] = classtime.timeslot.split('-');
       let startIndex = this.getIndex(start) - this.scheduleOffset;
       let endIndex = this.getIndex(end) - this.scheduleOffset;
 
-      let onClick = () => {
-        let alert = this.altCtrl.create({
-          title: classtime.name,
-          subTitle: `(#${classtime.num}) ${classtime.title}`,
+      let onClick = async () => {
+        let alert = await this.altCtrl.create({
+          header: classtime.name,
+          subHeader: `(#${classtime.num}) ${classtime.title}`,
           message: `${classtime.building} ${classtime.room} @ ${classtime.timeslot}`,
           buttons: ['Dismiss']
         });
-        alert.present();
+        await alert.present();
       };
 
       for(let i = startIndex; i < endIndex; i++) {
@@ -130,8 +130,7 @@ export class ClassCalendar {
 
       }
 
-
-    }*/
+    }
 
   }
 

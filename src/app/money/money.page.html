@@ -6,8 +6,8 @@
 
 <ion-content padding>
 
-  <ion-fab bottom right>
-   <button ion-fab mini color="secondary" mini (click)="fetchAccounts()"><ion-icon name="refresh"></ion-icon></button>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button mini color="secondary" (click)="fetchAccounts()"><ion-icon name="refresh"></ion-icon></ion-fab-button>
   </ion-fab>
 
   <div>
@@ -29,16 +29,16 @@
               <hr>
               <ion-row>
                 <ion-col>
-                  <button (click)="viewHistory(acc)" ion-button icon-start clear small>
+                  <ion-button size="small" fill="outline" (click)="viewHistory(acc)" ion-button icon-start clear small>
                     <ion-icon name="list"></ion-icon>
                     <div>History</div>
-                  </button>
+                  </ion-button>
                 </ion-col>
                 <ion-col>
-                  <button (click)="addFunds(acc)" ion-button icon-start clear small>
+                  <ion-button size="small" fill="outline" (click)="addFunds(acc)" ion-button icon-start clear small>
                     <ion-icon name="cash"></ion-icon>
                     <div>Add Funds</div>
-                  </button>
+                  </ion-button>
                 </ion-col>
               </ion-row>
             </ion-card>
@@ -51,7 +51,7 @@
 
 
   <!-- Login prompt -->
-  <div class="addchip" *ngIf="!accounts || accounts.length == 0">
+  <div style="text-align: center;" *ngIf="!accounts || accounts.length == 0">
     <ion-chip>
       <ion-icon (click)="fetchAccounts()" name="refresh" color="secondary"></ion-icon>
       <ion-label>Add your accounts</ion-label>

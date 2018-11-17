@@ -12,18 +12,18 @@
 
 <ion-content>
 
-  <div id="map_canvas">
+    <div id="map_canvas">
 
-    <ion-fab-button vertical="top" horizontal="end" #fab>
-      <ion-fab-button mini ion-fab color="secondary"><ion-icon name="map"></ion-icon></ion-fab-button>
-      <ion-fab-list>
-        <ion-fab-button ion-fab color="blue" (click)="showBuses()"><ion-icon name="bus"></ion-icon></ion-fab-button>
-        <ion-fab-button ion-fab color="success" (click)="showFood()"><ion-icon name="pizza"></ion-icon></ion-fab-button>
-      </ion-fab-list>
-    </ion-fab-button>
+    <ion-fab vertical="top" horizontal="end" slot="fixed">
+        <ion-fab-button mini color="secondary"><ion-icon name="map"></ion-icon></ion-fab-button>
+        <ion-fab-list>
+          <ion-fab-button color="light" (click)="showBuses()"><ion-icon name="bus"></ion-icon></ion-fab-button>
+          <ion-fab-button color="success" (click)="showFood()"><ion-icon name="pizza"></ion-icon></ion-fab-button>
+        </ion-fab-list>
+    </ion-fab>
 
-    <ion-fab mini vertical="center" horizontal="end" #fabw>
-      <ion-fab-button mini ion-fab color="light" (click)="showWeather()"><ion-icon name="rainy"></ion-icon></ion-fab-button>
+    <ion-fab mini vertical="center" horizontal="end" slot="fixed" #fabw>
+      <ion-fab-button mini color="light" (click)="showWeather()"><ion-icon name="rainy"></ion-icon></ion-fab-button>
     </ion-fab>
 
   </div>

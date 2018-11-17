@@ -22,12 +22,12 @@
 
 <ion-content padding>
 
-  <ion-fab vertical="bottom" horizontal="end" right #fab>
-      <ion-fab-button ion-fab mini color="secondary" mini (click)="fetchSchedule()"><ion-icon name="add"></ion-icon></ion-fab-button>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" #fab>
+      <ion-fab-button mini color="secondary" (click)="fetchSchedule()"><ion-icon name="add"></ion-icon></ion-fab-button>
   </ion-fab>
 
-  <ion-fab vertical="top" horizontal="end" *ngIf="currentCalendar.classes.length > 0 && scheduleView=='current'">
-   <ion-fab-button ion-fab mini color="blue" mini (click)="saveToCalendar()"><ion-icon name="download"></ion-icon></ion-fab-button>
+  <ion-fab vertical="top" horizontal="end" slot="fixed" *ngIf="currentCalendar.classes.length > 0 && scheduleView=='current'">
+   <ion-fab-button mini color="light" (click)="saveToCalendar()"><ion-icon name="download"></ion-icon></ion-fab-button>
   </ion-fab>
 
   <!-- Current Time as line _____ -->
@@ -47,10 +47,10 @@
       </ion-grid>
 
       <!-- Login prompt -->
-      <div class="addchip" *ngIf="currentCalendar.classes.length == 0">
-        <ion-chip horizontal="center">
+      <div style="text-align: center;" *ngIf="currentCalendar.classes.length == 0">
+        <ion-chip>
           <ion-icon (click)="fetchSchedule()" name="add" color="secondary"></ion-icon>
-          <ion-label>Add your schedule</ion-label>
+          <ion-label>Add Schedule</ion-label>
         </ion-chip>
       </div>
 
@@ -66,10 +66,10 @@
         </ion-row>
       </ion-grid>
 
-      <div class="addchip" *ngIf="futureCalendar.classes.length == 0">
+      <div style="text-align: center;" *ngIf="futureCalendar.classes.length == 0">
         <ion-chip>
           <ion-icon (click)="fetchSchedule()" name="add" color="secondary"></ion-icon>
-          <ion-label>Add your future schedule</ion-label>
+          <ion-label>Add Future Schedule</ion-label>
         </ion-chip>
       </div>
 
@@ -85,10 +85,10 @@
         </ion-row>
       </ion-grid>
 
-      <div class="addchip" *ngIf="finalsCalendar.finals.length == 0">
+      <div style="text-align: center;" *ngIf="finalsCalendar.finals.length == 0">
         <ion-chip>
           <ion-icon (click)="fetchSchedule()" name="add" color="secondary"></ion-icon>
-          <ion-label>Add your finals</ion-label>
+          <ion-label>Add Finals</ion-label>
         </ion-chip>
       </div>
 

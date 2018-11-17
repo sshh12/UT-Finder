@@ -52,13 +52,14 @@ export class UTNav {
 
                 browser.executeScript(
                    { code: "document.getElementById('error-message') != null" }
-                ).then((error) => {
+                ).then(async (error) => {
                   if(error == 'true') {
-                    /*this.toastCtrl.create({
+                    let toast = await this.toastCtrl.create({
                       message: 'Unable to login 😢',
                       duration: 3000,
                       position: 'top'
-                    }).present();*/
+                    });
+                    await toast.present();
                     clearInterval(this.checker);
                     browser.close();
                     resolve();
@@ -99,14 +100,14 @@ export class UTNav {
 
         if(timeSinceLogged > 5 * 60 * 1000) { // reset after 5 mins
 
-          Promise.all([this.storage.get('eid'), this.storage.get('password')]).then((creds) => {
+          Promise.all([this.storage.get('eid'), this.storage.get('password')]).then(async (creds) => {
 
             let username = creds[0], password = creds[1];
 
             if(!username || !password) { // need user/pass
 
-              /*this.alertCtrl.create({
-                title: 'Login',
+              let alert = await this.alertCtrl.create({
+                header: 'Login',
                 inputs: [
                   {
                     name: 'EID',
@@ -131,12 +132,13 @@ export class UTNav {
                     }
                   }
                 ]
-              }).present();*/
+              });
+              await alert.present();
 
             } else { // already have user/pass
 
-              /*this.alertCtrl.create({
-                title: 'Login',
+              let alert = await this.alertCtrl.create({
+                header: 'Login',
                 buttons: [
                   {
                     text: 'New Login',
@@ -153,7 +155,8 @@ export class UTNav {
                     }
                   }
                 ]
-              }).present();*/
+              });
+              await alert.present();
 
             }
 

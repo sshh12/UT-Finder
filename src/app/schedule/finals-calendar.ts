@@ -128,7 +128,7 @@ export class FinalsCalendar {
 
   addFinals(calendarMatrix) : void { // adds finals to matrix
 
-    /*for(let final of this.finals) {
+    for(let final of this.finals) {
 
       if(!final.exists) {
         continue;
@@ -137,14 +137,14 @@ export class FinalsCalendar {
       let startIndex = this.getFinalIndex(final) - this.scheduleOffset;
       let endIndex = this.getFinalIndex(final, false) - this.scheduleOffset;
 
-      let onClick = () => {
-        let alert = this.altCtrl.create({
-          title: final.name,
-          subTitle: `(#${final.num}) ${final.title}`,
+      let onClick = async () => {
+        let alert = await this.altCtrl.create({
+          header: final.name,
+          subHeader: `(#${final.num}) ${final.title}`,
           message: `@ ${final.location}, ${final.startDate.toLocaleString()} to ${final.endDate.toLocaleString()}`,
           buttons: ['Dismiss']
         });
-        alert.present();
+        await alert.present();
       };
 
       let dayIndex: number = final.dayIndex;
@@ -167,7 +167,7 @@ export class FinalsCalendar {
 
       }
 
-    }*/
+    }
 
   }
 

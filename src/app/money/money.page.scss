@@ -1,16 +1,10 @@
-page-money {
 
-  .addchip {
-    text-align: center;
-    margin: auto;
-  }
+.status {
+  margin: auto !important;
+}
 
-  .status {
-      margin: auto !important;
-  }
-
-  ion-card-content, ion-card-header {
-    text-align: center;
-  }
-
+ion-card-content,
+ion-card-header,
+ion-item {
+  text-align: center;
 }

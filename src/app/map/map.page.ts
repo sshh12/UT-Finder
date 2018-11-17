@@ -192,7 +192,7 @@ export class MapPage {
       opacity: 1.0
     };
 
-    this.map.addTileOverlay(this.tileOptions);
+    this.clearMap();
 
   }
 
@@ -228,18 +228,28 @@ export class MapPage {
 
   }
 
-  showBuses() {
+  async showBuses() {
 
     this.closeKeyboard();
 
-    /*let alert = this.alertCtrl.create();
-    alert.setTitle('Bus Routes');
+    let alertOptions = {
+      header: 'Bus Routes',
+      inputs: [],
+      buttons: [{
+          text: 'cancel'
+        }, {
+          text: 'Show',
+          handler: (data: any) => {
+            this.renderRoute(JSON.parse(data));
+          }
+        }]
+    };
 
     let checked = true;
 
     for(let route of busRoutes) {
 
-      alert.addInput({
+      alertOptions.inputs.push({
         type: 'radio',
         label: `${route.num} ${route.name}`,
         value: JSON.stringify(route),
@@ -250,15 +260,9 @@ export class MapPage {
 
     }
 
-    alert.addButton('Cancel');
-    alert.addButton({
-      text: 'Show',
-      handler: (data: any) => {
-        this.renderRoute(JSON.parse(data));
-      }
-    });
+    let alert = await this.alertCtrl.create(alertOptions);
 
-    alert.present();*/
+    await alert.present();
 
   }
 
@@ -272,18 +276,19 @@ export class MapPage {
     let url = `https://www.capmetro.org/planner/s_routetrace.php?route=${route.num}&dir=${route.dir}&date=${dateString}&opts=30`;
 
     this.http.get(url).subscribe( // Get route geo data
-      data => {
+      async data => {
 
         let json = data.json();
 
-        /*if(json.status != 'OK') {
-          this.toastCtrl.create({
+        if(json.status != 'OK') {
+          let toast = await this.toastCtrl.create({
             message: 'Route not available 😢',
             duration: 3000,
             position: 'top'
-          }).present();
+          })
+          await toast.present();
           return;
-        }*/
+        }
 
         // ----- Outline
         let traceCoords: ILatLng[] = [];
@@ -360,7 +365,7 @@ export class MapPage {
   showWeather() {
 
     this.http.get(`http://api.openweathermap.org/data/2.5/weather?lat=${this.utCenter.lat}&lon=${this.utCenter.lng}&appid=${this.weatherAPIKey}`).subscribe(
-        weatherData => {
+        async weatherData => {
 
           let weather = weatherData.json();
 
@@ -371,10 +376,11 @@ export class MapPage {
             conditions.push(cond.description);
           }
 
-          /*this.alertCtrl.create({
-            title: 'Weather',
+          let alert = await this.alertCtrl.create({
+            header: 'Weather',
             message: `It's ${temp}°F with ${conditions.join(", ")}`
-          }).present();*/
+          });
+          await alert.present();
 
         });
 

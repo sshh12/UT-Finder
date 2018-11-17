@@ -114,9 +114,9 @@ export class SchedulePage {
       }
 
       this.nav.fetchTable(url, selector,
-        tableHTML => {
+        async tableHTML => {
 
-          /*try {
+          try {
 
             if(this.scheduleView == 'finals') {
 
@@ -141,17 +141,18 @@ export class SchedulePage {
             }
 
             this.updateTimeBar();
-            this.content.scrollTo(0, this.timeNowBarOffset - 250);
+            this.content.scrollToPoint(0, this.timeNowBarOffset - 250);
 
           } catch {
 
-            this.altCtrl.create({
-              title: 'Error',
-              subTitle: 'Something is weird with your schedule...',
+            let alert = await this.altCtrl.create({
+              header: 'Error',
+              subHeader: 'Something is weird with your schedule...',
               buttons: ['Dismiss']
-            }).present();
+            })
+            await alert.present();
 
-          }*/
+          }
 
         });
 
@@ -296,11 +297,11 @@ export class SchedulePage {
 
     }
 
-    saveToCalendar(check: boolean = true) {
+    async saveToCalendar(check: boolean = true) {
 
       if(check) {
-        /*this.altCtrl.create({
-          title: 'Calendar',
+        let alert = await this.altCtrl.create({
+          header: 'Calendar',
           message: 'Would you like to add your current classes to your local calendar?',
           buttons: [
             {
@@ -313,7 +314,8 @@ export class SchedulePage {
               }
             }
           ]
-        }).present();*/
+        })
+        await alert.present();
         return;
       }
 
