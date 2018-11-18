@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Http } from '@angular/http';
+
+import { HTTP } from '@ionic-native/http/ngx';
 
 import {
   NavController,
@@ -59,7 +60,7 @@ export class MapPage {
 
   constructor(public navCtrl: NavController,
               private platform: Platform,
-              private http: Http,
+              private http: HTTP,
               private keyboard: Keyboard,
               private alertCtrl: AlertController,
               private toastCtrl: ToastController) {
@@ -152,15 +153,14 @@ export class MapPage {
 
   }
 
-  loadMap() { // Init the map and tile data
+  async loadMap() { // Init the map and tile data
 
-    this.http.get('https://maps.utexas.edu/data/utm.json').subscribe( // Gather geodata
-      data => {
-        let json = data.json();
-        this.loadMapFromJSON(json);
-      }, error => {
-        this.loadMapFromJSON(BackupMap);
-      });
+    try {
+      let mapData = await this.http.get('https://maps.utexas.edu/data/utm.json', {}, {});
+      this.loadMapFromJSON(JSON.parse(mapData.data));
+    } catch {
+      this.loadMapFromJSON(BackupMap);
+    }
 
     let mapOptions: GoogleMapOptions = {
       mapType: GoogleMapsMapTypeId.HYBRID,
@@ -276,7 +276,7 @@ export class MapPage {
 
   }
 
-  renderRoute(route: BusRoute) { // Render a specific route
+  async renderRoute(route: BusRoute) { // Render a specific route
 
     this.clearMap();
 
@@ -285,114 +285,99 @@ export class MapPage {
 
     let url = `https://www.capmetro.org/planner/s_routetrace.php?route=${route.num}&dir=${route.dir}&date=${dateString}&opts=30`;
 
-    this.http.get(url).subscribe( // Get route geo data
-      async data => {
+    let routeData = await this.http.get(url, {}, {});
+    let json = JSON.parse(routeData.data);
 
-        let json = data.json();
+    if(json.status != 'OK') {
+      let toast = await this.toastCtrl.create({
+        message: 'Route not available 😢',
+        duration: 3000,
+        position: 'top'
+      })
+      await toast.present();
+      return;
+    }
 
-        if(json.status != 'OK') {
-          let toast = await this.toastCtrl.create({
-            message: 'Route not available 😢',
-            duration: 3000,
-            position: 'top'
-          })
-          await toast.present();
-          return;
-        }
+    // ----- Outline
+    let traceCoords: ILatLng[] = [];
 
-        // ----- Outline
-        let traceCoords: ILatLng[] = [];
+    traceCoords.push({
+      lat: json.trace[0][0],
+      lng: json.trace[0][1]
+    });
 
-        traceCoords.push({
-          lat: json.trace[0][0],
-          lng: json.trace[0][1]
-        });
-
-        for(let i = 1; i < json.trace.length; i++) { // undo weird compression algo
-          traceCoords.push({
-            lat: traceCoords[i-1].lat + json.trace[i][0] / 1000000,
-            lng: traceCoords[i-1].lng + json.trace[i][1] / 1000000
-          });
-        }
-
-        let polyOptions: PolylineOptions = {
-          points: traceCoords,
-          strokeColor: '#1070AF',
-          fillColor: '#00000000', // no fill
-          strokeWidth: 10,
-          zIndex: 99,
-          strokeOpacity: 1.0,
-          clickable: false
-        };
-
-        this.map.addPolygon(polyOptions).then((polygon: Polygon) => {
-
-        });
-
-        // -----
-
-        // ----- Stops
-
-        for(let stop of json.stops) {
-
-          this.http.get(`https://www.capmetro.org/planner/s_stopinfo.asp?stopid=${stop.id}&opt=2`).subscribe( // load stop data
-            stopdata => {
-
-              let stopJson = stopdata.json();
-
-              let icon: MarkerIcon = {
-                url: 'assets/map-front-bus.png',
-                size: {
-                  width: 32,
-                  height: 32
-                }
-              };
-
-              let options: MarkerOptions = {
-                title: stopJson.name,
-                icon: icon,
-                position: {lat: stop.latLng[0], lng: stop.latLng[1]},
-                visible: true,
-                animation: null,
-                flat: false,
-                zIndex: 9999
-              };
-
-              this.map.addMarker(options).then((marker: Marker) => {
-              });
-
-            });
-
-        }
-
-        // -----
-
-
+    for(let i = 1; i < json.trace.length; i++) { // undo weird compression algo
+      traceCoords.push({
+        lat: traceCoords[i-1].lat + json.trace[i][0] / 1000000,
+        lng: traceCoords[i-1].lng + json.trace[i][1] / 1000000
       });
+    }
+
+    let polyOptions: PolylineOptions = {
+      points: traceCoords,
+      strokeColor: '#1070AF',
+      fillColor: '#00000000', // no fill
+      strokeWidth: 10,
+      zIndex: 99,
+      strokeOpacity: 1.0,
+      clickable: false
+    };
+
+    this.map.addPolygon(polyOptions).then((polygon: Polygon) => {
+    });
+
+    // -----
+
+    // ----- Stops
+
+    for(let stop of json.stops) {
+
+      let stopData = await this.http.get(`https://www.capmetro.org/planner/s_stopinfo.asp?stopid=${stop.id}&opt=2`, {}, {});
+      let stopJson = JSON.parse(stopData.data);
+
+      let icon: MarkerIcon = {
+        url: 'assets/map-front-bus.png',
+        size: {
+          width: 32,
+          height: 32
+        }
+      };
+
+      let options: MarkerOptions = {
+        title: stopJson.name,
+        icon: icon,
+        position: {lat: stop.latLng[0], lng: stop.latLng[1]},
+        visible: true,
+        animation: null,
+        flat: false,
+        zIndex: 9999
+      };
+
+      this.map.addMarker(options).then((marker: Marker) => {
+      });
+
+    }
 
   }
 
-  showWeather() {
+  async showWeather() {
 
-    this.http.get(`http://api.openweathermap.org/data/2.5/weather?lat=${this.utCenter.lat}&lon=${this.utCenter.lng}&appid=${this.weatherAPIKey}`).subscribe(
-        async weatherData => {
+    let weatherData = await this.http.get(`http://api.openweathermap.org/data/2.5/weather?lat=${this.utCenter.lat}&lon=${this.utCenter.lng}&appid=${this.weatherAPIKey}`, {}, {});
 
-          let weather = weatherData.json();
+    let weather = JSON.parse(weatherData.data);
 
-          let temp = Math.round((weather.main.temp - 273.15) * 9 / 5 + 32);
+    let temp = Math.round((weather.main.temp - 273.15) * 9 / 5 + 32);
 
-          let conditions = [];
-          for(let cond of weather.weather) {
-            conditions.push(cond.description);
-          }
+    let conditions = [];
+    for(let cond of weather.weather) {
+      conditions.push(cond.description);
+    }
 
-          let alert = await this.alertCtrl.create({
-            header: 'Weather',
-            message: `It's ${temp}°F with ${conditions.join(", ")}`
-          });
-          await alert.present();
-
-        });
+    let alert = await this.alertCtrl.create({
+      header: 'Weather',
+      message: `It's ${temp}°F with ${conditions.join(", ")}`
+    });
+    await alert.present();
 
   }
 

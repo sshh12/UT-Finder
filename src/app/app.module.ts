@@ -13,17 +13,16 @@ import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { IonicStorageModule } from '@ionic/storage';
 import { Calendar } from '@ionic-native/calendar/ngx';
 import { GoogleMaps } from "@ionic-native/google-maps";
-import { HttpModule } from '@angular/http';
+import { HTTP } from '@ionic-native/http/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 
-import { UTNav } from './nav';
+import { UTLogin } from './utlogin';
 
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
   imports: [
     BrowserModule,
-    HttpModule,
     IonicModule.forRoot(),
     IonicStorageModule.forRoot(),
     AppRoutingModule
@@ -35,7 +34,8 @@ import { UTNav } from './nav';
     GoogleMaps,
     Calendar,
     Keyboard,
-    UTNav,
+    UTLogin,
+    HTTP,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

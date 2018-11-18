@@ -7,7 +7,7 @@ import {
 
 import { Storage } from '@ionic/storage';
 
-import { UTNav } from '../nav';
+import { UTLogin } from '../utlogin';
 
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 
@@ -26,7 +26,7 @@ export class MoneyPage {
 
     accounts: Array<Account> = []; // current accounts
 
-    constructor(private nav: UTNav,
+    constructor(private utauth: UTLogin,
                 private storage: Storage,
                 private altCtrl: AlertController,
                 private toastCtrl: ToastController,
@@ -70,24 +70,25 @@ export class MoneyPage {
       }
     }
 
-    fetchAccounts() : void { // get account balances
+    async fetchAccounts() { // get account balances
 
-      this.nav.fetchTable("https://utdirect.utexas.edu/hfis/diningDollars.WBX", "<th>Balance  </th>",
-        async tableHTML => {
+      let tableHTML = await this.utauth.fetchTable("https://utdirect.utexas.edu/hfis/diningDollars.WBX", "<th>Balance  </th>");
 
-          try {
-            this.accounts = this.parseAccountsTable(tableHTML as string);
-            this.storage.set('accounts', this.accounts);
-          } catch {
-            let alert = await this.altCtrl.create({
-              header: 'Error',
-              subHeader: 'Something is weird with your accounts...',
-              buttons: ['Dismiss']
-            });
-            await alert.present();
-          }
+      try {
 
+        this.accounts = this.parseAccountsTable(tableHTML);
+        this.storage.set('accounts', this.accounts);
+
+      } catch {
+
+        let alert = await this.altCtrl.create({
+          header: 'Error',
+          subHeader: 'Something is weird with your accounts...',
+          buttons: ['Dismiss']
         });
+        await alert.present();
+
+      }
 
     }
 

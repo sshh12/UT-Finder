@@ -3,10 +3,9 @@ import { Calendar } from '@ionic-native/calendar/ngx';
 import { Content, AlertController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 
-import { UTNav } from '../nav';
+import { UTLogin } from '../utlogin';
 import { ClassCalendar, ClassTime } from './class-calendar';
 import { FinalsCalendar, FinalTime } from './finals-calendar';
-
 
 @Component({
   selector: 'page-schedule',
@@ -29,7 +28,7 @@ export class SchedulePage {
                 private storage: Storage,
                 private altCtrl: AlertController,
                 private calendar: Calendar,
-                private nav: UTNav) {
+                private utauth: UTLogin) {
 
       this.currentCalendar = new ClassCalendar(altCtrl);
       this.futureCalendar = new ClassCalendar(altCtrl);
@@ -97,9 +96,9 @@ export class SchedulePage {
 
     }
 
-    fetchSchedule() : void { // get schedule
+    async fetchSchedule() : Promise<void> { // get schedule
 
-      let url, selector;
+      let url: string, selector: string;
 
       if(this.scheduleView == 'current') {
         url = `https://utdirect.utexas.edu/registration/classlist.WBX`;
@@ -113,48 +112,45 @@ export class SchedulePage {
         selector = '<b>Course</b>';
       }
 
-      this.nav.fetchTable(url, selector,
-        async tableHTML => {
+      let tableHTML: string = await this.utauth.fetchTable(url, selector);
 
-          try {
+      try {
 
-            if(this.scheduleView == 'finals') {
+        if(this.scheduleView == 'finals') {
 
-              this.finalsCalendar.finals = this.parseFinalsTable(tableHTML as string);
-              this.storage.set('schedule:finals', this.finalsCalendar.finals);
-              this.finalsCalendar.generate();
+          this.finalsCalendar.finals = this.parseFinalsTable(tableHTML);
+          this.storage.set('schedule:finals', this.finalsCalendar.finals);
+          this.finalsCalendar.generate();
 
-            } else {
+        } else {
 
-              let classes: Array<ClassTime> = this.parseScheduleTable(tableHTML as string);
+          let classes: Array<ClassTime> = this.parseScheduleTable(tableHTML);
 
-              if(this.scheduleView == 'current') {
-                this.currentCalendar.classes = classes
-                this.currentCalendar.generate();
-                this.storage.set('schedule:classes', classes);
-              } else {
-                this.futureCalendar.classes = classes;
-                this.futureCalendar.generate();
-                this.storage.set('schedule:futureclasses', classes);
-              }
-
-            }
-
-            this.updateTimeBar();
-            this.content.scrollToPoint(0, this.timeNowBarOffset - 250);
-
-          } catch {
-
-            let alert = await this.altCtrl.create({
-              header: 'Error',
-              subHeader: 'Something is weird with your schedule...',
-              buttons: ['Dismiss']
-            })
-            await alert.present();
-
+          if(this.scheduleView == 'current') {
+            this.currentCalendar.classes = classes
+            this.currentCalendar.generate();
+            this.storage.set('schedule:classes', classes);
+          } else {
+            this.futureCalendar.classes = classes;
+            this.futureCalendar.generate();
+            this.storage.set('schedule:futureclasses', classes);
           }
 
-        });
+        }
+
+        this.updateTimeBar();
+        this.content.scrollToPoint(0, this.timeNowBarOffset - 250, 1000);
+
+      } catch {
+
+        let alert = await this.altCtrl.create({
+          header: 'Error',
+          subHeader: 'Something is weird with your schedule...',
+          buttons: ['Dismiss']
+        })
+        await alert.present();
+
+      }
 
     }
 
