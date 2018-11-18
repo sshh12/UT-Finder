@@ -45,6 +45,8 @@ export class MoneyPage {
         this.iab.create('https://utdirect.utexas.edu/bevobucks/accountHist.WBX', '_blank', {location: 'no'});
       } else if (acc.name.includes('Dine In')) {
         this.iab.create('https://utdirect.utexas.edu/hfis/transactions.WBX', '_blank', {location: 'no'});
+      } else if (acc.name.includes('Owe')) {
+        this.iab.create('https://utdirect.utexas.edu/acct/rec/wio/wio_home.WBX', '_blank', {location: 'no'});
       } else {
         let toast = await this.toastCtrl.create({
           message: 'Unknown account type 😢',
@@ -60,6 +62,8 @@ export class MoneyPage {
         this.iab.create('https://utdirect.utexas.edu/bevobucks/addBucks.WBX', '_blank', {location: 'no'});
       } else if (acc.name.includes('Dine In')) {
         this.iab.create('https://utdirect.utexas.edu/hfis/addDollars.WBX', '_blank', {location: 'no'});
+      } else if (acc.name.includes('Owe')) {
+        this.iab.create('https://utdirect.utexas.edu/acct/rec/wio/wio_home.WBX', '_blank', {location: 'no'});
       } else {
         let toast = await this.toastCtrl.create({
           message: 'Unknown account type 😢',
@@ -73,10 +77,12 @@ export class MoneyPage {
     async fetchAccounts() { // get account balances
 
       let tableHTML = await this.utauth.fetchTable("https://utdirect.utexas.edu/hfis/diningDollars.WBX", "<th>Balance  </th>");
+      let wioHTML = await this.utauth.getPage("https://utdirect.utexas.edu/acct/rec/wio/wio_home.WBX");
 
       try {
 
         this.accounts = this.parseAccountsTable(tableHTML);
+        this.accounts.push(...this.parseWIO(wioHTML));
         this.storage.set('accounts', this.accounts);
 
       } catch {
@@ -118,6 +124,26 @@ export class MoneyPage {
         });
 
       }
+
+      return accounts;
+
+    }
+
+    parseWIO(wioHTML: string) : Array<Account> {
+
+      let accounts: Array<Account> = [];
+
+      let amtMatches = this.getRegexMatrix(/td\s*?class=\"item_amt\">([\s\S]+?)<\/td/g, wioHTML);
+
+      let clean = (s) => s.replace(/(\r\n\t|\n|\r\t)/gm, '').replace('&#44;', '').replace('&#46;', '.').replace(' ', '').replace('$', '');
+
+      let bal = parseFloat(clean(amtMatches[0][1]));
+
+      accounts.push({
+        name: 'What I Owe',
+        balance: bal,
+        status: 'Active'
+      });
 
       return accounts;
 
