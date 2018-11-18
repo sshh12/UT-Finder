@@ -96,5 +96,6 @@
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.1.3" />
     <plugin name="cordova-plugin-cookieemperor" spec="https://github.com/rtk/cordova-cookie-emperor.git" />
     <plugin name="cordova-plugin-advanced-http" spec="2.0.1" />
+    <plugin name="mx.ferreyra.callnumber" spec="~0.0.2" />
     <engine name="android" spec="7.1.2" />
 </widget>

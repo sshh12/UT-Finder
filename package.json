@@ -23,6 +23,7 @@
     "@angular/platform-browser-dynamic": "~7.0.0",
     "@angular/router": "~7.0.0",
     "@ionic-native/calendar": "^5.0.0-beta.21",
+    "@ionic-native/call-number": "^5.0.0-beta.21",
     "@ionic-native/core": "^5.0.0-beta.21",
     "@ionic-native/google-maps": "^5.0.0-beta.25",
     "@ionic-native/http": "^5.0.0-beta.21",
@@ -32,6 +33,7 @@
     "@ionic-native/status-bar": "5.0.0-beta.21",
     "@ionic/angular": "4.0.0-beta.16",
     "@ionic/storage": "^2.2.0",
+    "call-number": "1.0.1",
     "cordova-android": "7.1.2",
     "cordova-android-play-services-gradle-release": "^1.4.6",
     "cordova-plugin-advanced-http": "2.0.1",
@@ -94,7 +96,8 @@
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
       },
       "cordova-plugin-cookieemperor": {},
-      "cordova-plugin-advanced-http": {}
+      "cordova-plugin-advanced-http": {},
+      "mx.ferreyra.callnumber": {}
     },
     "platforms": [
       "android"

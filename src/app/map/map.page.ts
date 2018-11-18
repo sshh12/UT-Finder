@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 
 import { HTTP } from '@ionic-native/http/ngx';
+import { Keyboard } from '@ionic-native/keyboard/ngx';
+import { CallNumber } from '@ionic-native/call-number/ngx';
 
 import {
   NavController,
@@ -8,8 +10,6 @@ import {
   ToastController,
   Platform,
 } from '@ionic/angular';
-
-import { Keyboard } from '@ionic-native/keyboard/ngx';
 
 import {
   GoogleMaps,
@@ -62,6 +62,7 @@ export class MapPage {
               private platform: Platform,
               private http: HTTP,
               private keyboard: Keyboard,
+              private caller: CallNumber,
               private alertCtrl: AlertController,
               private toastCtrl: ToastController) {
     //...
@@ -376,6 +377,25 @@ export class MapPage {
     let alert = await this.alertCtrl.create({
       header: 'Weather',
       message: `It's ${temp}°F with ${conditions.join(", ")}`
+    });
+    await alert.present();
+
+  }
+
+  async showSURE() {
+
+    let alert = await this.alertCtrl.create({
+      header: 'SURE Walk',
+      message: 'Would you like to order a SURE Walk?',
+      buttons: [
+        'cancel',
+        {
+          text: 'Call',
+          handler: data => {
+            this.caller.callNumber('5122329255', true);
+          }
+        },
+      ]
     });
     await alert.present();
 

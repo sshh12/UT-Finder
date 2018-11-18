@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { CallNumber } from '@ionic-native/call-number/ngx';
 
 @Component({
   selector: 'page-resources',
@@ -9,12 +10,16 @@ import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 })
 export class ResourcesPage {
 
-    constructor(private iab: InAppBrowser) {
+    constructor(private iab: InAppBrowser, private caller: CallNumber) {
 
     }
 
     openLink(url) {
       this.iab.create(url, '_blank', {location: 'no'});
+    }
+
+    callNumber(num) {
+      this.caller.callNumber(num, true);
     }
 
 }

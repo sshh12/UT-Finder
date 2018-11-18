@@ -15,6 +15,7 @@ import { Calendar } from '@ionic-native/calendar/ngx';
 import { GoogleMaps } from "@ionic-native/google-maps";
 import { HTTP } from '@ionic-native/http/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
+import { CallNumber } from '@ionic-native/call-number/ngx';
 
 import { UTLogin } from './utlogin';
 
@@ -36,6 +37,7 @@ import { UTLogin } from './utlogin';
     Keyboard,
     UTLogin,
     HTTP,
+    CallNumber,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]
