@@ -27,7 +27,7 @@
   </ion-fab>
 
   <ion-fab vertical="top" horizontal="end" slot="fixed" *ngIf="currentCalendar.classes.length > 0 && scheduleView=='current'">
-   <ion-fab-button mini color="light" (click)="saveToCalendar()"><ion-icon name="download"></ion-icon></ion-fab-button>
+   <ion-fab-button mini color="tertiary" (click)="saveToCalendar()"><ion-icon name="download"></ion-icon></ion-fab-button>
   </ion-fab>
 
   <!-- Current Time as line _____ -->
@@ -40,7 +40,7 @@
       <!-- Render a fancy Object[][] data structure -->
       <ion-grid *ngIf="currentCalendar.weekMatrix.length > 1" class='calendar'>
         <ion-row *ngFor='let row of currentCalendar.weekMatrix'>
-          <ion-col *ngFor='let item of row' col-2 class="{{item ? item.class : ''}}" [style.background-color]="(item && item.bg) ? item.bg : ''" (click)="(item && item.click) ? item.click() : ''">
+          <ion-col *ngFor='let item of row' size="2" class="{{item ? item.class : ''}}" [style.background-color]="(item && item.bg) ? item.bg : ''" (click)="(item && item.click) ? item.click() : ''">
             <p *ngIf='item'>{{ item.label }}</p>
           </ion-col>
         </ion-row>
@@ -60,7 +60,7 @@
 
       <ion-grid *ngIf="futureCalendar.weekMatrix.length > 1" class='calendar'>
         <ion-row *ngFor='let row of futureCalendar.weekMatrix'>
-          <ion-col *ngFor='let item of row' col-2 class="{{item ? item.class : ''}}" [style.background-color]="(item && item.bg) ? item.bg : ''" (click)="(item && item.click) ? item.click() : ''">
+          <ion-col *ngFor='let item of row' size="2" class="{{item ? item.class : ''}}" [style.background-color]="(item && item.bg) ? item.bg : ''" (click)="(item && item.click) ? item.click() : ''">
             <p *ngIf='item'>{{ item.label }}</p>
           </ion-col>
         </ion-row>
@@ -79,7 +79,7 @@
 
       <ion-grid *ngIf="finalsCalendar.weekMatrix.length > 1" class='calendar'>
         <ion-row *ngFor='let row of finalsCalendar.weekMatrix'>
-          <ion-col *ngFor='let item of row' col-2 class="{{item ? item.class : ''}}" [style.background-color]="(item && item.bg) ? item.bg : ''" (click)="(item && item.click) ? item.click() : ''">
+          <ion-col *ngFor='let item of row' size="2" class="{{item ? item.class : ''}}" [style.background-color]="(item && item.bg) ? item.bg : ''" (click)="(item && item.click) ? item.click() : ''">
             <p *ngIf='item'>{{ item.label }}</p>
           </ion-col>
         </ion-row>

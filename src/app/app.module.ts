@@ -9,11 +9,12 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { IonicStorageModule } from '@ionic/storage';
-import { Calendar } from '@ionic-native/calendar';
+import { Calendar } from '@ionic-native/calendar/ngx';
 import { GoogleMaps } from "@ionic-native/google-maps";
 import { HttpModule } from '@angular/http';
+import { Keyboard } from '@ionic-native/keyboard/ngx';
 
 import { UTNav } from './nav';
 
@@ -33,6 +34,7 @@ import { UTNav } from './nav';
     InAppBrowser,
     GoogleMaps,
     Calendar,
+    Keyboard,
     UTNav,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],

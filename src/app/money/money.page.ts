@@ -9,7 +9,7 @@ import { Storage } from '@ionic/storage';
 
 import { UTNav } from '../nav';
 
-import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 
 class Account {
     name: string;
@@ -40,48 +40,51 @@ export class MoneyPage {
 
     }
 
-    viewHistory(acc: Account) {
+    async viewHistory(acc: Account) {
       if(acc.name.includes('Bevo Bucks')) {
         this.iab.create('https://utdirect.utexas.edu/bevobucks/accountHist.WBX', '_blank', {location: 'no'});
       } else if (acc.name.includes('Dine In')) {
         this.iab.create('https://utdirect.utexas.edu/hfis/transactions.WBX', '_blank', {location: 'no'});
       } else {
-        /*this.toastCtrl.create({
+        let toast = await this.toastCtrl.create({
           message: 'Unknown account type 😢',
           duration: 3000,
           position: 'top'
-        }).present();*/
+        });
+        await toast.present();
       }
     }
 
-    addFunds(acc: Account) {
+    async addFunds(acc: Account) {
       if(acc.name.includes('Bevo Bucks')) {
         this.iab.create('https://utdirect.utexas.edu/bevobucks/addBucks.WBX', '_blank', {location: 'no'});
       } else if (acc.name.includes('Dine In')) {
         this.iab.create('https://utdirect.utexas.edu/hfis/addDollars.WBX', '_blank', {location: 'no'});
       } else {
-        /*this.toastCtrl.create({
+        let toast = await this.toastCtrl.create({
           message: 'Unknown account type 😢',
           duration: 3000,
           position: 'top'
-        }).present();*/
+        });
+        await toast.present();
       }
     }
 
     fetchAccounts() : void { // get account balances
 
       this.nav.fetchTable("https://utdirect.utexas.edu/hfis/diningDollars.WBX", "<th>Balance  </th>",
-        tableHTML => {
+        async tableHTML => {
 
           try {
             this.accounts = this.parseAccountsTable(tableHTML as string);
             this.storage.set('accounts', this.accounts);
           } catch {
-            /*this.altCtrl.create({
-              title: 'Error',
-              subTitle: 'Something is weird with your accounts...',
+            let alert = await this.altCtrl.create({
+              header: 'Error',
+              subHeader: 'Something is weird with your accounts...',
               buttons: ['Dismiss']
-            }).present();*/
+            });
+            await alert.present();
           }
 
         });

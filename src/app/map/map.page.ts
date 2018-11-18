@@ -1,11 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Http } from '@angular/http';
 
 import {
   NavController,
   AlertController,
-  ToastController
+  ToastController,
+  Platform,
 } from '@ionic/angular';
+
+import { Keyboard } from '@ionic-native/keyboard/ngx';
 
 import {
   GoogleMaps,
@@ -55,14 +58,17 @@ export class MapPage {
   weatherAPIKey: string = '30a796e71ba6c4c2e5e7270dfbbe78a2';
 
   constructor(public navCtrl: NavController,
+              private platform: Platform,
               private http: Http,
+              private keyboard: Keyboard,
               private alertCtrl: AlertController,
               private toastCtrl: ToastController) {
     //...
   }
 
-  ionViewDidLoad() {
-    this.loadMap();
+  async ngOnInit() {
+    await this.platform.ready();
+    await this.loadMap();
   }
 
   clearMap() {
@@ -71,7 +77,7 @@ export class MapPage {
   }
 
   closeKeyboard() {
-    // TODO
+    this.keyboard.hide();
   }
 
   search(event: any) { // Handle search bar
@@ -231,6 +237,10 @@ export class MapPage {
   async showBuses() {
 
     this.closeKeyboard();
+
+    if(!this.map) {
+      this.loadMap();
+    }
 
     let alertOptions = {
       header: 'Bus Routes',
