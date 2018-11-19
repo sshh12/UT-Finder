@@ -63,7 +63,7 @@ export class CanvasPage {
         courses.push({
           canvasID: course.id,
           name: course.name,
-          title: course.name.replace(/\w\w\d\d - /, '').replace(/ \(\d+\)/, '')
+          title: course.name.replace(/\w\w\d\d -/, '').replace(/\s+\(\d+\)\s*/, '').trim()
         });
 
       }

@@ -32,26 +32,28 @@ export class UTLogin {
 
   doLogin(username: string, password: string, save: boolean) : Promise<void> { // open the browser and login as the user
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
 
         if(save) {
           this.storage.set('eid', username)
           this.storage.set('password', password);
         }
 
-        const browser = this.iab.create('https://login.utexas.edu/login/UI/Login', '_blank', {location: 'no'});
+        const browser = this.iab.create('https://utdirect.utexas.edu/registration/classlist.WBX', '_blank', {location: 'no'});
 
-        browser.on('loadstop').subscribe(event => {
+        browser.on('loadstop').subscribe(() => {
 
           this.checker = setInterval(async () => {
 
             let curUrl = await browser.executeScript({ code: "window.location.href" }) + "";
 
-            if(curUrl.includes("www.utexas.edu")) { // this means the user is prob already logged in
+            if(curUrl.includes("www.utexas.edu") || curUrl.includes("utdirect.utexas.edu")) { // this means the user is prob already logged in
 
               clearInterval(this.checker);
               browser.close();
               this.lastLogged = new Date();
+              this.utLoginCookie = await this.getCookie('https://utdirect.utexas.edu', 'utlogin-prod');
+              this.utSCCookie = await this.getCookie('https://utexas.edu', 'SC');
               resolve();
 
             } else if (curUrl.startsWith("https://login.utexas.edu")) { // currently on the login page
@@ -75,7 +77,10 @@ export class UTLogin {
               } else {
 
                 await browser.executeScript(
-                   { code: `document.getElementById('IDToken1').value = "${username}"; document.getElementById('IDToken2').value = "${password}"` }
+                   { code: `document.getElementById('IDToken1').value = "${username}";` }
+                );
+                await browser.executeScript(
+                   { code: `document.getElementById('IDToken2').value = "${password}"` }
                 );
                 await browser.executeScript({ code: "LoginSubmit('Log In')" });
 
@@ -87,7 +92,7 @@ export class UTLogin {
 
         });
 
-        browser.on('exit').subscribe(event => {
+        browser.on('exit').subscribe(() => {
           clearInterval(this.checker);
         });
 
@@ -97,7 +102,7 @@ export class UTLogin {
 
     checkCanvasLogin() {
 
-      return new Promise(async (resolve, reject) => {
+      return new Promise(async (resolve) => {
 
           if(this.canvasCookie != '') {
             resolve();
@@ -108,7 +113,7 @@ export class UTLogin {
 
           const browser = this.iab.create('https://utexas.instructure.com/courses', '_blank', {location: 'no'});
 
-          browser.on('loadstop').subscribe(event => {
+          browser.on('loadstop').subscribe(() => {
 
             this.checker = setInterval(async () => {
 
@@ -127,7 +132,7 @@ export class UTLogin {
 
           });
 
-          browser.on('exit').subscribe(event => {
+          browser.on('exit').subscribe(() => {
             clearInterval(this.checker);
           });
 
@@ -137,7 +142,7 @@ export class UTLogin {
 
     checkLogin() : Promise<void> {
 
-      return new Promise(async (resolve, reject) => {
+      return new Promise(async (resolve) => {
 
         let timeSinceLogged = new Date().getTime() - this.lastLogged.getTime();
 
@@ -186,7 +191,7 @@ export class UTLogin {
                 buttons: [
                   {
                     text: 'New Login',
-                    handler: async data => {
+                    handler: async () => {
                       await this.storage.set('eid', '');
                       await this.storage.set('password', '');
                       await this.checkLogin();
@@ -195,7 +200,7 @@ export class UTLogin {
                   },
                   {
                     text: `As ${username}`,
-                    handler: async data => {
+                    handler: async () => {
                       await this.doLogin(username, password, false)
                       resolve();
                     }
@@ -218,22 +223,17 @@ export class UTLogin {
 
   getCookie(url: string, name: string) : Promise<string> {
 
-    return new Promise<string>(async (resolve, reject) => {
+    return new Promise<string>(async (resolve) => {
       cookieEmperor.getCookie(url, name,
         (c) => resolve(c.cookieValue),
-        (e) => resolve(''));
+        () => resolve(''));
     });
 
   }
 
-  async doHTTP(url: string, method: string = 'get') : Promise<any> { // retrieve page as an authed user
+  async doHTTP(url: string) : Promise<any> { // retrieve page as an authed user
 
     await this.checkLogin();
-
-    if(this.utLoginCookie == '') {
-      this.utLoginCookie = await this.getCookie('https://utdirect.utexas.edu', 'utlogin-prod');
-      this.utSCCookie = await this.getCookie('https://utexas.edu', 'SC');
-    }
 
     this.http.setCookie('https://utdirect.utexas.edu', 'utlogin-prod=' + this.utLoginCookie);
     this.http.setCookie('https://utexas.edu', 'SC=' + this.utSCCookie);
@@ -255,7 +255,7 @@ export class UTLogin {
   }
 
   async getPage(url: string) : Promise<string> {
-    let resp = await this.doHTTP(url, 'get');
+    let resp = await this.doHTTP(url);
     console.log(url, resp.data);
     return resp.data;
   }
