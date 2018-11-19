@@ -9,6 +9,9 @@
   <ion-tab tab="money">
     <ion-router-outlet name="money"></ion-router-outlet>
   </ion-tab>
+  <ion-tab tab="canvas">
+    <ion-router-outlet name="canvas"></ion-router-outlet>
+  </ion-tab>
   <ion-tab tab="resources">
     <ion-router-outlet name="resources"></ion-router-outlet>
   </ion-tab>
@@ -28,6 +31,11 @@
     <ion-tab-button tab="money" href="/tabs/(money:money)">
       <ion-icon name="logo-usd"></ion-icon>
       <ion-label>Money</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="canvas" href="/tabs/(canvas:canvas)">
+      <ion-icon name="school"></ion-icon>
+      <ion-label>Canvas</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="resources" href="/tabs/(resources:resources)">

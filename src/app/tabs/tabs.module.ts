@@ -10,6 +10,7 @@ import { TabsPage } from './tabs.page';
 import { SchedulePageModule } from '../schedule/schedule.module';
 import { MapPageModule } from '../map/map.module';
 import { MoneyPageModule } from '../money/money.module';
+import { CanvasPageModule } from '../canvas/canvas.module';
 import { ResourcesPageModule } from '../resources/resources.module';
 
 @NgModule({
@@ -21,6 +22,7 @@ import { ResourcesPageModule } from '../resources/resources.module';
     SchedulePageModule,
     MapPageModule,
     MoneyPageModule,
+    CanvasPageModule,
     ResourcesPageModule
   ],
   declarations: [TabsPage]

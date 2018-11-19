@@ -5,6 +5,7 @@ import { TabsPage } from './tabs.page';
 import { SchedulePage } from '../schedule/schedule.page';
 import { MapPage } from '../map/map.page';
 import { MoneyPage } from '../money/money.page';
+import { CanvasPage } from '../canvas/canvas.page';
 import { ResourcesPage } from '../resources/resources.page';
 
 const routes: Routes = [
@@ -31,6 +32,11 @@ const routes: Routes = [
         path: 'money',
         outlet: 'money',
         component: MoneyPage
+      },
+      {
+        path: 'canvas',
+        outlet: 'canvas',
+        component: CanvasPage
       },
       {
         path: 'resources',

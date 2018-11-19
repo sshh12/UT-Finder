@@ -18,12 +18,15 @@ export class UTLogin {
 
   utLoginCookie: string = '';
   utSCCookie: string = '';
+  canvasCookie: string = '';
 
   constructor(private iab: InAppBrowser,
               private alertCtrl: AlertController,
               private toastCtrl: ToastController,
               private http: HTTP,
               private storage: Storage) {
+
+    this.http.disableRedirect(false);
 
   }
 
@@ -49,8 +52,6 @@ export class UTLogin {
               clearInterval(this.checker);
               browser.close();
               this.lastLogged = new Date();
-              this.utLoginCookie = await this.getCookie('https://utdirect.utexas.edu', 'utlogin-prod');
-              this.utSCCookie = await this.getCookie('https://utexas.edu', 'SC');
               resolve();
 
             } else if (curUrl.startsWith("https://login.utexas.edu")) { // currently on the login page
@@ -78,18 +79,11 @@ export class UTLogin {
                 );
                 await browser.executeScript({ code: "LoginSubmit('Log In')" });
 
-                clearInterval(this.checker);
-                // browser.close();
-                this.lastLogged = new Date();
-                this.utLoginCookie = await this.getCookie('https://utdirect.utexas.edu', 'utlogin-prod');
-                this.utSCCookie = await this.getCookie('https://utexas.edu', 'SC');
-                resolve();
-
               }
 
             }
 
-          }, 200);
+          }, 400);
 
         });
 
@@ -98,6 +92,46 @@ export class UTLogin {
         });
 
       });
+
+    }
+
+    checkCanvasLogin() {
+
+      return new Promise(async (resolve, reject) => {
+
+          if(this.canvasCookie != '') {
+            resolve();
+            return;
+          }
+
+          await this.checkLogin();
+
+          const browser = this.iab.create('https://utexas.instructure.com/courses', '_blank', {location: 'no'});
+
+          browser.on('loadstop').subscribe(event => {
+
+            this.checker = setInterval(async () => {
+
+              let curUrl = await browser.executeScript({ code: "window.location.href" }) + "";
+
+              if(curUrl.includes("utexas.instructure.com/courses")) { // this means the user is prob already logged in
+
+                clearInterval(this.checker);
+                browser.close();
+                this.canvasCookie = await this.getCookie('https://utexas.instructure.com', 'canvas_session');
+                resolve();
+
+              }
+
+            }, 200);
+
+          });
+
+          browser.on('exit').subscribe(event => {
+            clearInterval(this.checker);
+          });
+
+        });
 
     }
 
@@ -187,25 +221,46 @@ export class UTLogin {
     return new Promise<string>(async (resolve, reject) => {
       cookieEmperor.getCookie(url, name,
         (c) => resolve(c.cookieValue),
-        (e) => reject(e));
+        (e) => resolve(''));
     });
 
   }
 
-  async getPage(url: string) : Promise<string> {
+  async doHTTP(url: string, method: string = 'get') : Promise<any> { // retrieve page as an authed user
+
+    await this.checkLogin();
+
+    if(this.utLoginCookie == '') {
+      this.utLoginCookie = await this.getCookie('https://utdirect.utexas.edu', 'utlogin-prod');
+      this.utSCCookie = await this.getCookie('https://utexas.edu', 'SC');
+    }
 
     this.http.setCookie('https://utdirect.utexas.edu', 'utlogin-prod=' + this.utLoginCookie);
     this.http.setCookie('https://utexas.edu', 'SC=' + this.utSCCookie);
+    this.http.setCookie('https://utexas.instructure.com', 'canvas_session=' + this.canvasCookie);
 
     let resp = await this.http.get(url, {}, {});
 
-    return resp.data;
+    return resp;
 
   }
 
-  async fetchTable(url: string, include: string) : Promise<string> { // get table from given url
+  async getCanvas(apiURL: string) {
 
-    await this.checkLogin();
+    await this.checkCanvasLogin();
+
+    let rawResp = await this.getPage('https://utexas.instructure.com/api/v1/' + apiURL);
+    return JSON.parse(rawResp.replace('while(1);', ''));
+
+  }
+
+  async getPage(url: string) : Promise<string> {
+    let resp = await this.doHTTP(url, 'get');
+    console.log(url, resp.data);
+    return resp.data;
+  }
+
+  async fetchTable(url: string, include: string) : Promise<string> { // get table from given url
 
     let html = await this.getPage(url);
     let reg = /<table["=\w\s%]*>\s*([\s\S]*?)\s*<\/table>/.exec(html);

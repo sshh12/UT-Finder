@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Canvas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" #fab>
+      <ion-fab-button mini color="secondary" (click)="fetchGrades()"><ion-icon name="refresh"></ion-icon></ion-fab-button>
+  </ion-fab>
+
+  <ion-list>
+
+    <ion-item *ngFor='let course of courses'>
+      <ion-label>{{ course.title }}</ion-label>
+      <ion-badge color='success' *ngIf='course.grade > 0' slot="end">{{ course.grade }}%</ion-badge>
+    </ion-item>
+
+  </ion-list>
+
+</ion-content>

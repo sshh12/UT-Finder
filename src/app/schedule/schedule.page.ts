@@ -139,7 +139,7 @@ export class SchedulePage {
         }
 
         this.updateTimeBar();
-        this.content.scrollToPoint(0, this.timeNowBarOffset - 250, 1000);
+        // this.content.scrollToPoint(0, this.timeNowBarOffset - 250, 1000);
 
       } catch {
 
