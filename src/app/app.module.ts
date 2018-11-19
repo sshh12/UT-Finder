@@ -1,56 +1,45 @@
-import { NgModule, ErrorHandler } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
-import { MyApp } from './app.component';
+import { RouteReuseStrategy } from '@angular/router';
 
-import { SchedulePage } from '../pages/schedule/schedule';
-import { MapPage } from '../pages/map/map';
-import { MoneyPage } from '../pages/money/money';
-import { ResourcesPage } from '../pages/resources/resources';
-import { TabsPage } from '../pages/tabs/tabs';
-import { UTNav } from '../pages/nav';
+import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+import { StatusBar } from '@ionic-native/status-bar/ngx';
 
-import { StatusBar } from '@ionic-native/status-bar';
-import { SplashScreen } from '@ionic-native/splash-screen';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
 
-import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { IonicStorageModule } from '@ionic/storage';
-import { Calendar } from '@ionic-native/calendar';
+import { Calendar } from '@ionic-native/calendar/ngx';
 import { GoogleMaps } from "@ionic-native/google-maps";
-import { HttpModule } from '@angular/http';
+import { HTTP } from '@ionic-native/http/ngx';
+import { Keyboard } from '@ionic-native/keyboard/ngx';
+import { CallNumber } from '@ionic-native/call-number/ngx';
+
+import { UTLogin } from './utlogin';
 
 @NgModule({
-  declarations: [
-    MyApp,
-    SchedulePage,
-    MapPage,
-    MoneyPage,
-    ResourcesPage,
-    TabsPage
-  ],
+  declarations: [AppComponent],
+  entryComponents: [],
   imports: [
     BrowserModule,
-    HttpModule,
-    IonicModule.forRoot(MyApp),
-    IonicStorageModule.forRoot()
-  ],
-  bootstrap: [IonicApp],
-  entryComponents: [
-    MyApp,
-    SchedulePage,
-    MapPage,
-    MoneyPage,
-    ResourcesPage,
-    TabsPage
+    IonicModule.forRoot(),
+    IonicStorageModule.forRoot(),
+    AppRoutingModule
   ],
   providers: [
     StatusBar,
     SplashScreen,
     InAppBrowser,
     GoogleMaps,
-    UTNav,
     Calendar,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
-  ]
+    Keyboard,
+    UTLogin,
+    HTTP,
+    CallNumber,
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+  ],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}

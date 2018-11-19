@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Money</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button mini color="secondary" (click)="fetchAccounts()"><ion-icon name="refresh"></ion-icon></ion-fab-button>
+  </ion-fab>
+
+  <div>
+    <ion-grid>
+      <ion-row>
+
+        <ion-col *ngFor='let acc of accounts' size="6">
+            <ion-card>
+              <ion-card-header>
+                {{ acc.name }}
+              </ion-card-header>
+              <ion-card-content>
+                <p><b>${{ acc.balance }}</b><p>
+                <br>
+                <div>
+                  <ion-badge color="{{ getStatusColor(acc.status) }}" class="status">{{ acc.status }}</ion-badge>
+                </div>
+              </ion-card-content>
+              <hr>
+              <ion-row>
+                <ion-col>
+                  <ion-button size="small" fill="solid" (click)="viewHistory(acc)">
+                    <ion-icon name="list"></ion-icon>
+                    <ion-label>History</ion-label>
+                  </ion-button>
+                </ion-col>
+                <ion-col>
+                  <ion-button size="small" fill="solid" (click)="addFunds(acc)">
+                    <ion-icon name="cash"></ion-icon>
+                    <ion-label>Add Funds</ion-label>
+                  </ion-button>
+                </ion-col>
+              </ion-row>
+            </ion-card>
+        </ion-col>
+
+      </ion-row>
+    </ion-grid>
+  </div>
+
+
+
+  <!-- Login prompt -->
+  <div style="text-align: center;" *ngIf="!accounts || accounts.length == 0">
+    <ion-chip>
+      <ion-icon (click)="fetchAccounts()" name="refresh" color="secondary"></ion-icon>
+      <ion-label>Add your accounts</ion-label>
+    </ion-chip>
+  </div>
+
+</ion-content>

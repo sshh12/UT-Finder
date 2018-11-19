@@ -1,0 +1,37 @@
+<ion-header>
+
+  <ion-toolbar color="primary">
+
+    <ion-title>Map</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button fill="outline" icon-only  (click)="showSURE()" color="light">SURE Walk</ion-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+
+  <ion-toolbar no-border-top>
+    <ion-searchbar placeholder="Where..." (ionInput)="search($event)" (keyup.enter)="closeKeyboard()"></ion-searchbar>
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+
+    <div id="map_canvas">
+
+    <ion-fab vertical="top" horizontal="end" slot="fixed">
+        <ion-fab-button mini color="secondary"><ion-icon name="map"></ion-icon></ion-fab-button>
+        <ion-fab-list>
+          <ion-fab-button color="tertiary" (click)="showBuses()"><ion-icon name="bus"></ion-icon></ion-fab-button>
+          <ion-fab-button color="success" (click)="showFood()"><ion-icon name="pizza"></ion-icon></ion-fab-button>
+        </ion-fab-list>
+    </ion-fab>
+
+    <ion-fab mini vertical="center" horizontal="end" slot="fixed" #fabw>
+      <ion-fab-button mini color="light" (click)="showWeather()"><ion-icon name="rainy"></ion-icon></ion-fab-button>
+    </ion-fab>
+
+  </div>
+
+</ion-content>
