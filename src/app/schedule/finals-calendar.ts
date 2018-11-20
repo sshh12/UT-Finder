@@ -29,14 +29,32 @@ export class FinalsCalendar {
   }
 
   dayOffset(start: Date, end: Date) {
+
+    console.log(start, end);
+
     let startTemp = new Date(start);
     startTemp.setHours(10);
     startTemp.setMinutes(0);
+
     let endTemp = new Date(end);
     endTemp.setHours(10);
     endTemp.setMinutes(0);
+
     let diff = endTemp.getTime() - startTemp.getTime();
-    return Math.round(diff / (1000 * 60 * 60 * 24));
+    let numDays = Math.round(diff / (1000 * 60 * 60 * 24));
+    let nonWeekendDays = numDays;
+
+    // remove weekends
+    let iterDate = new Date(startTemp);
+    for(let i = 0; i < numDays; i++) {
+      if(iterDate.getDay() == 0 || iterDate.getDay() == 6) {
+        nonWeekendDays--;
+      }
+      iterDate.setTime(iterDate.getTime() + 1000 * 60 * 60 * 24);
+    }
+
+    return nonWeekendDays;
+
   }
 
   generate() {
@@ -79,13 +97,17 @@ export class FinalsCalendar {
     ]];
 
     let numDays = this.dayOffset(firstDate, lastDate) + 1;
+    let date = new Date(firstDate.getTime());
     for(let i = 0; i < numDays; i++) {
-      let date = new Date(firstDate.getTime() + 1000 * 60 * 60 * 24 * i);
       let label = `${date.getMonth() + 1}/${date.getDate()}`
       calendarMatrix[0].push({
         label: label,
         class: 'day-header'
-      })
+      });
+      date.setTime(date.getTime() + 1000 * 60 * 60 * 24);
+      while(date.getDay() == 0 || date.getDay() == 6) {
+        date.setTime(date.getTime() + 1000 * 60 * 60 * 24);
+      }
     }
 
     for(let i = 5 + this.scheduleOffset; i <= 22; i++) {
