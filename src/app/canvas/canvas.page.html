@@ -6,6 +6,8 @@
 
 <ion-content>
 
+  <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
+
   <ion-fab vertical="bottom" horizontal="end" slot="fixed" #fab>
       <ion-fab-button mini color="secondary" (click)="fetchGrades()"><ion-icon name="refresh"></ion-icon></ion-fab-button>
   </ion-fab>
@@ -13,7 +15,7 @@
   <ion-list>
 
     <ion-item *ngFor='let course of courses'>
-      <ion-label>{{ course.title }}</ion-label>
+      <ion-label (click)="openAssignments(course)">{{ course.title }}</ion-label>
       <ion-badge color='success' *ngIf='course.grade > 0' slot="end">{{ course.grade }}%</ion-badge>
     </ion-item>
 

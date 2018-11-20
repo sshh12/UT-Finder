@@ -84,6 +84,14 @@ export class UTLogin {
                 );
                 await browser.executeScript({ code: "LoginSubmit('Log In')" });
 
+                // do it again cause ios broke
+                await browser.executeScript(
+                   { code: `document.getElementById('IDToken1').value = "${username}";` }
+                );
+                await browser.executeScript(
+                   { code: `document.getElementById('IDToken2').value = "${password}"` }
+                );
+
               }
 
             }
@@ -155,7 +163,7 @@ export class UTLogin {
 
               let alert = await this.alertCtrl.create({
                 header: 'Login',
-                message: 'If you choose save, your password will be stored locally on only your device.',
+                message: 'Your login will be stored solely on your device.',
                 inputs: [
                   {
                     name: 'EID',

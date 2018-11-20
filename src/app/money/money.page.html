@@ -6,6 +6,8 @@
 
 <ion-content padding>
 
+  <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
+
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button mini color="secondary" (click)="fetchAccounts()"><ion-icon name="refresh"></ion-icon></ion-fab-button>
   </ion-fab>
@@ -29,13 +31,13 @@
               <hr>
               <ion-row>
                 <ion-col>
-                  <ion-button size="small" fill="solid" (click)="viewHistory(acc)">
+                  <ion-button size="small" fill="outline" (click)="viewHistory(acc)">
                     <ion-icon name="list"></ion-icon>
                     <ion-label>History</ion-label>
                   </ion-button>
                 </ion-col>
                 <ion-col>
-                  <ion-button size="small" fill="solid" (click)="addFunds(acc)">
+                  <ion-button size="small" fill="outline" (click)="addFunds(acc)">
                     <ion-icon name="cash"></ion-icon>
                     <ion-label>Add Funds</ion-label>
                   </ion-button>

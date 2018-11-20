@@ -25,6 +25,7 @@ class Account {
 export class MoneyPage {
 
     accounts: Array<Account> = []; // current accounts
+    loading: boolean = false;
 
     constructor(private utauth: UTLogin,
                 private storage: Storage,
@@ -76,6 +77,8 @@ export class MoneyPage {
 
     async fetchAccounts() { // get account balances
 
+      this.loading = true;
+
       let tableHTML = await this.utauth.fetchTable("https://utdirect.utexas.edu/hfis/diningDollars.WBX", "<th>Balance  </th>");
       let wioHTML = await this.utauth.getPage("https://utdirect.utexas.edu/acct/rec/wio/wio_home.WBX");
 
@@ -95,6 +98,8 @@ export class MoneyPage {
         await alert.present();
 
       }
+
+      this.loading = false;
 
     }
 

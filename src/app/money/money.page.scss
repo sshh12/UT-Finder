@@ -8,3 +8,20 @@ ion-card-header,
 ion-item {
   text-align: center;
 }
+
+ion-spinner {
+  margin: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  width: 60px !important;
+}
+
+hr {
+  height: 1px;
+  background-color: #808080;
+  border-width: 0.1;
+  box-sizing: content-box;
+}

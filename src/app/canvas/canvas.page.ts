@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Storage } from '@ionic/storage';
 
 import { UTLogin } from '../utlogin';
+import { Router, ActivatedRoute } from '@angular/router';
 
 class Course {
   canvasID: number;
@@ -14,7 +15,9 @@ class Course {
 class Assignment {
   canvasID: number;
   name: string;
-  grade: number;
+  title: string;
+  score: number;
+  maxscore: number;
 }
 
 @Component({
@@ -25,10 +28,14 @@ class Assignment {
 export class CanvasPage {
 
     courses: Array<Course> = [];
-    userID: number;
+    userID: number = 0;
     accountID: number;
 
-    constructor(private utauth: UTLogin, private storage: Storage) {
+    loading: boolean = false;
+
+    constructor(private utauth: UTLogin,
+                private storage: Storage,
+                public router: Router) {
 
       storage.get('canvas:courses').then((courses) => { // check cache
         if(courses && courses.length > 0) {
@@ -36,15 +43,22 @@ export class CanvasPage {
         }
       });
 
+      storage.get('canvas:userID').then((userID) => { // check cache
+        if(userID && userID != 0) {
+          this.userID = userID;
+        }
+      });
+
     }
 
     async fetchGrades() {
+
+      this.loading = true;
 
       let canvasCourses = await this.utauth.getCanvas('courses');
       let courses: Array<Course> = [];
 
       // get all courses
-
       for(let course of canvasCourses) {
 
         // ensure active course
@@ -58,7 +72,10 @@ export class CanvasPage {
         }
 
         this.accountID = course.account_id;
-        this.userID = course.enrollments[0].user_id;
+
+        if(course.enrollments[0] && this.userID == 0) {
+          this.userID = course.enrollments[0].user_id;
+        }
 
         courses.push({
           canvasID: course.id,
@@ -69,7 +86,6 @@ export class CanvasPage {
       }
 
       // look up enrollments
-
       let canvasEnrollments = await this.utauth.getCanvas(`users/${this.userID}/enrollments`);
 
       for(let enroll of canvasEnrollments) {
@@ -92,30 +108,14 @@ export class CanvasPage {
           course.grade = 0;
         }
 
-        // locate assignments
-        let canvasAssignments = await this.utauth.getCanvas(`courses/${course.canvasID}/assignments`);
-        let assigns: Array<Assignment> = [];
-
-        /*for(let assignment of canvasAssignments) {
-
-          // download assignment grades
-          let assignGrades = await this.utauth.getCanvas(`courses/${course.canvasID}/assignments/${assignment.id}/submissions/${this.userID}`);
-          let grade = assignGrades.score;
-
-          assigns.push({
-            canvasID: assignment.id,
-            name: assignment.name,
-            grade: grade
-          });
-
-        }*/
-
-        course.assignments = assigns;
+        course.assignments = [];
 
       }
 
       this.courses = courses;
+      this.storage.set('canvas:userID', this.userID);
       this.storage.set('canvas:courses', courses);
+      this.loading = false;
 
     }
 
@@ -131,5 +131,68 @@ export class CanvasPage {
       return matrix;
 
     }
+
+    openAssignments(course: Course) {
+
+      this.router.navigate(['/assignments'],
+        {
+          queryParams: {
+            course: JSON.stringify(course),
+            userID: ""+this.userID,
+            accountID: ""+this.accountID
+          }
+        }
+      );
+
+    }
+
+}
+
+@Component({
+  templateUrl: 'assignments.page.html',
+  styleUrls: ['canvas.page.scss']
+})
+export class AssignmentsPage {
+
+  course: Course;
+  userID: number;
+  loading: boolean = false;
+
+  constructor(private route: ActivatedRoute, private utauth: UTLogin) {
+    this.route.queryParams.subscribe(params => {
+      this.course = JSON.parse(params.course);
+      this.userID = parseInt(params.userID);
+      if(this.course.assignments.length == 0) {
+        this.fetchAssignments();
+      }
+    });
+  }
+
+  async fetchAssignments() {
+
+    this.loading = true;
+
+    let canvasAssignments = await this.utauth.getCanvas(`courses/${this.course.canvasID}/assignments`);
+    let assigns: Array<Assignment> = [];
+
+    for(let assignment of canvasAssignments) {
+
+      // download assignment grades
+      let assignGrades = await this.utauth.getCanvas(`courses/${this.course.canvasID}/assignments/${assignment.id}/submissions/${this.userID}`);
+
+      assigns.push({
+        canvasID: assignment.id,
+        name: assignment.name,
+        title: assignment.name.replace(/\b\w{2,4} \d{5}\s*-?\s*/, '').trim(),
+        score: assignGrades.score,
+        maxscore: assignment.points_possible
+      });
+
+    }
+
+    this.course.assignments = assigns;
+    this.loading = false;
+
+  }
 
 }

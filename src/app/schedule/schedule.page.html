@@ -22,6 +22,8 @@
 
 <ion-content padding>
 
+  <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
+
   <ion-fab vertical="bottom" horizontal="end" slot="fixed" #fab>
       <ion-fab-button mini color="secondary" (click)="fetchSchedule()"><ion-icon name="add"></ion-icon></ion-fab-button>
   </ion-fab>
@@ -47,9 +49,9 @@
       </ion-grid>
 
       <!-- Login prompt -->
-      <div style="text-align: center;" *ngIf="currentCalendar.classes.length == 0">
-        <ion-chip>
-          <ion-icon (click)="fetchSchedule()" name="add" color="secondary"></ion-icon>
+      <div style="text-align: center;" *ngIf="currentCalendar.classes.length == 0 && !loading">
+        <ion-chip (click)="fetchSchedule()">
+          <ion-icon name="add" color="secondary"></ion-icon>
           <ion-label>Add Schedule</ion-label>
         </ion-chip>
       </div>
@@ -66,9 +68,9 @@
         </ion-row>
       </ion-grid>
 
-      <div style="text-align: center;" *ngIf="futureCalendar.classes.length == 0">
-        <ion-chip>
-          <ion-icon (click)="fetchSchedule()" name="add" color="secondary"></ion-icon>
+      <div style="text-align: center;" *ngIf="futureCalendar.classes.length == 0 && !loading">
+        <ion-chip (click)="fetchSchedule()">
+          <ion-icon name="add" color="secondary"></ion-icon>
           <ion-label>Add Future Schedule</ion-label>
         </ion-chip>
       </div>
@@ -85,9 +87,9 @@
         </ion-row>
       </ion-grid>
 
-      <div style="text-align: center;" *ngIf="finalsCalendar.finals.length == 0">
-        <ion-chip>
-          <ion-icon (click)="fetchSchedule()" name="add" color="secondary"></ion-icon>
+      <div style="text-align: center;" *ngIf="finalsCalendar.finals.length == 0 && !loading">
+        <ion-chip (click)="fetchSchedule()">
+          <ion-icon name="add" color="secondary"></ion-icon>
           <ion-label>Add Finals</ion-label>
         </ion-chip>
       </div>

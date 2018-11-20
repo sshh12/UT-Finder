@@ -1,6 +1,6 @@
 import { Component, ApplicationRef, ViewChild } from '@angular/core';
 import { Calendar } from '@ionic-native/calendar/ngx';
-import { Content, AlertController } from '@ionic/angular';
+import { Content, AlertController  } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 
 import { UTLogin } from '../utlogin';
@@ -21,6 +21,7 @@ export class SchedulePage {
     timeNowBarOffset: number = -100; // current time bar offset
 
     scheduleView: string = 'current';
+    loading: boolean = false;
 
     @ViewChild(Content) content: Content;
 
@@ -112,6 +113,8 @@ export class SchedulePage {
         selector = '<b>Course</b>';
       }
 
+      this.loading = true;
+
       let tableHTML: string = await this.utauth.fetchTable(url, selector);
 
       try {
@@ -151,6 +154,8 @@ export class SchedulePage {
         await alert.present();
 
       }
+
+      this.loading = false;
 
     }
 
