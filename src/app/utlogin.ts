@@ -47,7 +47,7 @@ export class UTLogin {
 
             let curUrl = await browser.executeScript({ code: "window.location.href" }) + "";
 
-            if(curUrl.includes("www.utexas.edu") || curUrl.includes("utdirect.utexas.edu")) { // this means the user is prob already logged in
+            if(curUrl.includes('https://utdirect.utexas.edu')) { // this means the user is prob already logged in
 
               clearInterval(this.checker);
               browser.close();
@@ -88,7 +88,7 @@ export class UTLogin {
 
             }
 
-          }, 400);
+          }, 800);
 
         });
 
@@ -119,7 +119,7 @@ export class UTLogin {
 
               let curUrl = await browser.executeScript({ code: "window.location.href" }) + "";
 
-              if(curUrl.includes("utexas.instructure.com/courses")) { // this means the user is prob already logged in
+              if(curUrl.includes("https://utexas.instructure.com/courses")) { // this means the user is prob already logged in
 
                 clearInterval(this.checker);
                 browser.close();
@@ -128,7 +128,7 @@ export class UTLogin {
 
               }
 
-            }, 200);
+            }, 800);
 
           });
 
@@ -155,6 +155,7 @@ export class UTLogin {
 
               let alert = await this.alertCtrl.create({
                 header: 'Login',
+                message: 'If you choose save, your password will be stored locally on only your device.',
                 inputs: [
                   {
                     name: 'EID',
@@ -256,7 +257,7 @@ export class UTLogin {
 
   async getPage(url: string) : Promise<string> {
     let resp = await this.doHTTP(url);
-    console.log(url, resp.data);
+    console.log(url, 'UTCookies: ' + this.utLoginCookie, resp.data, );
     return resp.data;
   }
 
