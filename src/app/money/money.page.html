@@ -53,9 +53,9 @@
 
 
   <!-- Login prompt -->
-  <div style="text-align: center;" *ngIf="!accounts || accounts.length == 0">
-    <ion-chip>
-      <ion-icon (click)="fetchAccounts()" name="refresh" color="secondary"></ion-icon>
+  <div style="text-align: center;" *ngIf="accounts.length == 0 && !loading">
+    <ion-chip (click)="fetchAccounts()">
+      <ion-icon name="refresh" color="secondary"></ion-icon>
       <ion-label>Add your accounts</ion-label>
     </ion-chip>
   </div>

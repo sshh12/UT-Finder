@@ -180,10 +180,13 @@ export class AssignmentsPage {
       // download assignment grades
       let assignGrades = await this.utauth.getCanvas(`courses/${this.course.canvasID}/assignments/${assignment.id}/submissions/${this.userID}`);
 
+      let title = assignment.name;
+      title = title.replace(/\b\w{2,4} \d{5}\s*-?\s*/, '').replace('Submission Only - ', '').trim();
+
       assigns.push({
         canvasID: assignment.id,
         name: assignment.name,
-        title: assignment.name.replace(/\b\w{2,4} \d{5}\s*-?\s*/, '').trim(),
+        title: title,
         score: assignGrades.score,
         maxscore: assignment.points_possible
       });

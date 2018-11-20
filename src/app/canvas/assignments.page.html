@@ -23,6 +23,11 @@
       <ion-badge color='success' *ngIf='assign.score && assign.score > 0' slot='end'>{{ assign.score }}/{{ assign.maxscore }}</ion-badge>
     </ion-item>
 
+    <ion-item>
+      <ion-label>Exams/Quizzes not yet available.</ion-label>
+      <ion-badge color='danger' slot='end'>0/0</ion-badge>
+    </ion-item>
+
   </ion-list>
 
 </ion-content>

@@ -21,4 +21,11 @@
 
   </ion-list>
 
+  <div style="text-align: center;" *ngIf="courses.length == 0 && !loading">
+    <ion-chip (click)="fetchGrades()">
+      <ion-icon name="refresh" color="secondary"></ion-icon>
+      <ion-label>Add Canvas</ion-label>
+    </ion-chip>
+  </div>
+
 </ion-content>
