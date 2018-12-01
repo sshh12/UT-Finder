@@ -117,6 +117,7 @@ export class FinalsCalendar {
     }
 
     this.addFinals(calendarMatrix);
+    this.checkFinalsToday();
 
     this.weekMatrix = calendarMatrix;
 
@@ -177,6 +178,42 @@ export class FinalsCalendar {
           }
 
       }
+
+    }
+
+  }
+
+  async checkFinalsToday() {
+
+    let now = new Date();
+    let finalsToday = [];
+    for(let final of this.finals) {
+      if(!final.exists) {
+        continue;
+      }
+      let date = final.startDate;
+      if(date.getMonth() == now.getMonth() && date.getDate() == now.getDate()) {
+        finalsToday.push(final);
+      }
+    }
+
+    if(finalsToday.length == 1) {
+
+      let alert = await this.altCtrl.create({
+        header: 'Finals',
+        subHeader: `Good luck on your ${finalsToday[0].title} Final today! 💯👍`,
+        buttons: ['Dismiss']
+      });
+      await alert.present();
+
+    } else if(finalsToday.length > 1){
+
+      let alert = await this.altCtrl.create({
+        header: 'Finals',
+        subHeader: `Good luck on your ${finalsToday.length} finals today! 💯👍`,
+        buttons: ['Dismiss']
+      });
+      await alert.present();
 
     }
 
