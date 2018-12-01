@@ -42,7 +42,6 @@ export class FinalsCalendar {
   }
 
   dayOffset(date: Date, days: Array<any>) : number {
-    alert(days + " " + this.dayOfTheYear(date) + " " + days.indexOf(this.dayOfTheYear(date)));
     return days.indexOf("" + this.dayOfTheYear(date))
   }
 
