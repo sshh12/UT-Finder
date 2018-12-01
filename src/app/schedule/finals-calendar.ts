@@ -28,40 +28,30 @@ export class FinalsCalendar {
     return time * 60 - 228 - this.scheduleOffset * 60;
   }
 
-  dayOffset(start: Date, end: Date) {
+  dayOfTheYear(date: Date) : number { // date -> day of year
+    let dateUTC = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+    let startUTC = Date.UTC(date.getFullYear(), 0, 0);
+    let daySize = 24 * 60 * 60 * 1000;
+    return (dateUTC - startUTC) / daySize;
+  }
 
-    console.log(start, end);
+  dateFromDay(dayNum: number) : Date { // day of year -> date
+    let date = new Date(new Date().getFullYear(), 0);
+    date.setDate(dayNum);
+    return date;
+  }
 
-    let startTemp = new Date(start);
-    startTemp.setHours(10);
-    startTemp.setMinutes(0);
-
-    let endTemp = new Date(end);
-    endTemp.setHours(10);
-    endTemp.setMinutes(0);
-
-    let diff = endTemp.getTime() - startTemp.getTime();
-    let numDays = Math.round(diff / (1000 * 60 * 60 * 24));
-    let nonWeekendDays = numDays;
-
-    // remove weekends
-    let iterDate = new Date(startTemp);
-    for(let i = 0; i < numDays; i++) {
-      if(iterDate.getDay() == 0 || iterDate.getDay() == 6) {
-        nonWeekendDays--;
-      }
-      iterDate.setTime(iterDate.getTime() + 1000 * 60 * 60 * 24);
-    }
-
-    return nonWeekendDays;
-
+  dayOffset(date: Date, days: Array<any>) : number {
+    alert(days + " " + this.dayOfTheYear(date) + " " + days.indexOf(this.dayOfTheYear(date)));
+    return days.indexOf("" + this.dayOfTheYear(date))
   }
 
   generate() {
 
     // calculate the calendar offset to display only relevent time period
-    let firstDate = new Date(9e12);
-    let lastDate = new Date(0);
+    let firstDate: Date = new Date(9e12);
+    let lastDate: Date = new Date(0);
+    let dayMap: { [key:number]:boolean; } = {};
 
     let minStartIndex = 999;
     for(let final of this.finals) {
@@ -78,8 +68,12 @@ export class FinalsCalendar {
         lastDate = final.endDate;
       }
 
+      dayMap[this.dayOfTheYear(final.startDate)] = true;
+
     }
     this.scheduleOffset = minStartIndex - 1; // ignore header index
+
+    let days: Array<any> = Object.keys(dayMap).sort((a: any, b: any) => a - b);
 
     for(let final of this.finals) {
 
@@ -87,7 +81,7 @@ export class FinalsCalendar {
         continue;
       }
 
-      let offset = this.dayOffset(firstDate, final.startDate);
+      let offset = this.dayOffset(final.startDate, days);
       final.dayIndex = offset + 1;
 
     }
@@ -96,18 +90,14 @@ export class FinalsCalendar {
       null
     ]];
 
-    let numDays = this.dayOffset(firstDate, lastDate) + 1;
-    let date = new Date(firstDate.getTime());
+    let numDays = days.length;
     for(let i = 0; i < numDays; i++) {
+      let date = this.dateFromDay(days[i] as number);
       let label = `${date.getMonth() + 1}/${date.getDate()}`
       calendarMatrix[0].push({
         label: label,
         class: 'day-header'
       });
-      date.setTime(date.getTime() + 1000 * 60 * 60 * 24);
-      while(date.getDay() == 0 || date.getDay() == 6) {
-        date.setTime(date.getTime() + 1000 * 60 * 60 * 24);
-      }
     }
 
     for(let i = 5 + this.scheduleOffset; i <= 22; i++) {
