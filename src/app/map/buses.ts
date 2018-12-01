@@ -17,5 +17,7 @@ export let busRoutes: BusRoute[] = [ // https://www.capmetro.org/busroutes/#!
   {num: 672, name: 'Lakeshore', dir: 'I'},
   {num: 680, name: 'North Riverside/Lakeshore', dir: 'I'},
   {num: 681, name: 'Intramural Fields/Far West', dir: 'I'},
-  {num: 682, name: 'Forty Acres/East Campus', dir: 'C'}
+  {num: 682, name: 'Forty Acres/East Campus', dir: 'C'},
+  {num: 801, name: 'North Lamar/South Congress', dir: 'N'},
+  {num: 803, name: 'Burnet/South Lamar', dir: 'N'}
 ];
