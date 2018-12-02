@@ -19,13 +19,11 @@
   <ion-list>
 
     <ion-item *ngFor='let assign of course.assignments'>
-      <ion-label>{{ assign.title }}</ion-label>
-      <ion-badge color='success' *ngIf='assign.score && assign.score > 0' slot='end'>{{ assign.score }}/{{ assign.maxscore }}</ion-badge>
-    </ion-item>
-
-    <ion-item>
-      <ion-label>Exams/Quizzes not yet available.</ion-label>
-      <ion-badge color='danger' slot='end'>0/0</ion-badge>
+      <ion-label>
+        {{ assign.title }}
+        <p>{{ assign.gradetype }} ({{ assign.due }})</p>
+      </ion-label>
+      <ion-badge color='{{ assign.score == "?" ? "light" : "success" }}' slot='end'>{{ assign.score }}/{{ assign.maxscore }}</ion-badge>
     </ion-item>
 
   </ion-list>
