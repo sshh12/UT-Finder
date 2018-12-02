@@ -13,11 +13,11 @@ class Course {
 }
 
 class Assignment {
-  canvasID: number;
-  name: string;
   title: string;
-  score: number;
-  maxscore: number;
+  gradetype: string;
+  score: string;
+  maxscore: string;
+  due: string;
 }
 
 @Component({
@@ -119,19 +119,6 @@ export class CanvasPage {
 
     }
 
-    getRegexMatrix(re: RegExp, input: string) : Array<any> { // apply regex to input, return a list of matches (each match is an array of groups)
-
-      let matcher;
-      let matrix = [];
-
-      while(matcher = re.exec(input)) {
-        matrix.push(matcher.slice(0));
-      }
-
-      return matrix;
-
-    }
-
     openAssignments(course: Course) {
 
       this.router.navigate(['/assignments'],
@@ -172,29 +159,63 @@ export class AssignmentsPage {
 
     this.loading = true;
 
+    function clean(str) {
+      return str.replace(/(\r\n\t|\n|\r\t)/gm, '').replace(/&nbsp;/g, ' ').replace(/\s{2,}/g, ' ').trim();
+    }
+
+    // this just verifies login
     let canvasAssignments = await this.utauth.getCanvas(`courses/${this.course.canvasID}/assignments`);
+
+    let gradesPage = await this.utauth.getPage(`https://utexas.instructure.com/courses/${this.course.canvasID}/grades`);
+
     let assigns: Array<Assignment> = [];
 
-    for(let assignment of canvasAssignments) {
+    for(let rowMatch of this.getRegexMatrix(/<tr class="student_assignment[\S\s]+?>([\s\S]+?)<\/tr>/g, gradesPage)) {
 
-      // download assignment grades
-      let assignGrades = await this.utauth.getCanvas(`courses/${this.course.canvasID}/assignments/${assignment.id}/submissions/${this.userID}`);
+      let titleMatch = /\/submissions\/\d+">([\S ]+?)<\/a>/g.exec(rowMatch[1])
 
-      let title = assignment.name;
-      title = title.replace(/\b\w{2,4} \d{5}\s*-?\s*/, '').replace('Submission Only - ', '').trim();
+      if(titleMatch != null) {
 
-      assigns.push({
-        canvasID: assignment.id,
-        name: assignment.name,
-        title: title,
-        score: assignGrades.score,
-        maxscore: assignment.points_possible
-      });
+        let title = clean(titleMatch[1]);
+        let context = clean(/<div class="context">([\s\S]+?)<\/div>/g.exec(rowMatch[1])[1]);
+        let due = clean(/<td class="due">([\s\S]+?)<\/td>/g.exec(rowMatch[1])[1]);
+        let score = clean(/<span class="original_score">([\s\S]+?)<\/span>/g.exec(rowMatch[1])[1]);
+        let maxscore = clean(/<td class="possible points_possible">([\s\S]+?)<\/td>/g.exec(rowMatch[1])[1]);
+
+        if(score.length == 0) {
+          score = '?';
+        }
+
+        title = title.replace(/Submission Only\s*-?\s*/, '').replace(/DS \d+\s+-?\s*/, '');
+
+        assigns.push({
+          title: title,
+          gradetype: context,
+          score: score,
+          maxscore: maxscore,
+          due: due
+        });
+
+      }
+      // console.log(rowMatch[1]);
 
     }
 
     this.course.assignments = assigns;
     this.loading = false;
+
+  }
+
+  getRegexMatrix(re: RegExp, input: string) : Array<any> { // apply regex to input, return a list of matches (each match is an array of groups)
+
+    let matcher;
+    let matrix = [];
+
+    while(matcher = re.exec(input)) {
+      matrix.push(matcher.slice(0));
+    }
+
+    return matrix;
 
   }
 

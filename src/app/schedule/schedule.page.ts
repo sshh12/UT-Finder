@@ -1,6 +1,6 @@
 import { Component, ApplicationRef, ViewChild } from '@angular/core';
 import { Calendar } from '@ionic-native/calendar/ngx';
-import { Content, AlertController  } from '@ionic/angular';
+import { Content, AlertController, ToastController  } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 
 import { UTLogin } from '../utlogin';
@@ -22,12 +22,14 @@ export class SchedulePage {
 
     scheduleView: string = 'current';
     loading: boolean = false;
+    warningShown: boolean = false;
 
     @ViewChild(Content) content: Content;
 
     constructor(private ref: ApplicationRef,
                 private storage: Storage,
                 private altCtrl: AlertController,
+                private toastCtrl: ToastController,
                 private calendar: Calendar,
                 private utauth: UTLogin) {
 
@@ -97,6 +99,21 @@ export class SchedulePage {
 
     }
 
+    nextSemesterCode() : string {
+      let now = new Date();
+      let curYear = now.getFullYear();
+      let curMonth = now.getMonth();
+      if(2 <= curMonth && curMonth <= 4) {
+        return `${curYear}6`;
+      } else if(5 <= curMonth && curMonth <= 8) {
+        return `${curYear}9`;
+      } else if(9 <= curMonth && curMonth <= 11) {
+        return `${curYear + 1}2`;
+      } else {
+        return `${curYear}2`;
+      }
+    }
+
     async fetchSchedule() : Promise<void> { // get schedule
 
       let url: string, selector: string;
@@ -105,7 +122,7 @@ export class SchedulePage {
         url = `https://utdirect.utexas.edu/registration/classlist.WBX`;
         selector = '<th>Course</th>';
       } else if(this.scheduleView == 'future') {
-        let sem = '20192'; // TODO calulate this somehow
+        let sem = this.nextSemesterCode();
         url = `https://utdirect.utexas.edu/registration/classlist.WBX?sem=${sem}`;
         selector = '<th>Course</th>';
       } else {
@@ -143,6 +160,16 @@ export class SchedulePage {
 
         this.updateTimeBar();
         // this.content.scrollToPoint(0, this.timeNowBarOffset - 250, 1000);
+
+        if(!this.warningShown) {
+          let toast = await this.toastCtrl.create({
+            message: 'There\'s a 99% chance this is correct but verify just in case.',
+            duration: 5000,
+            position: 'top'
+          })
+          await toast.present();
+          this.warningShown = true;
+        }
 
       } catch {
 
@@ -264,10 +291,8 @@ export class SchedulePage {
       let dateIdx = parseInt(day);
 
       let start = new Date();
-      start.setMonth(monthIdx);
-      start.setDate(dateIdx);
-      start.setMinutes(0);
-      start.setSeconds(0);
+      start.setMonth(monthIdx, dateIdx);
+      start.setHours(0, 0, 0, 0);
       let end = new Date(start);
 
       let [range, suffix] = times.split(' ');

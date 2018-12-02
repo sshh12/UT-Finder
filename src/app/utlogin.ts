@@ -47,7 +47,7 @@ export class UTLogin {
 
             let curUrl = await browser.executeScript({ code: "window.location.href" }) + "";
 
-            if(curUrl.includes('https://utdirect.utexas.edu')) { // this means the user is prob already logged in
+            if(curUrl.includes('https://utdirect.utexas.edu/registration/classlist.WBX')) { // this means the user is prob already logged in
 
               clearInterval(this.checker);
               browser.close();
