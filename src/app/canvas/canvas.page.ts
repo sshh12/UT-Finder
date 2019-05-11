@@ -28,23 +28,23 @@ class Assignment {
 export class CanvasPage {
 
     courses: Array<Course> = [];
-    userID: number = 0;
+    userID = 0;
     accountID: number;
 
-    loading: boolean = false;
+    loading = false;
 
     constructor(private utauth: UTLogin,
                 private storage: Storage,
                 public router: Router) {
 
       storage.get('canvas:courses').then((courses) => { // check cache
-        if(courses && courses.length > 0) {
+        if (courses && courses.length > 0) {
           this.courses = courses;
         }
       });
 
       storage.get('canvas:userID').then((userID) => { // check cache
-        if(userID && userID != 0) {
+        if (userID && userID !== 0) {
           this.userID = userID;
         }
       });
@@ -59,21 +59,21 @@ export class CanvasPage {
       let courses: Array<Course> = [];
 
       // get all courses
-      for(let course of canvasCourses) {
+      for (let course of canvasCourses) {
 
         // ensure active course
-        if(course.enrollments[0].enrollment_state != 'active') {
+        if (course.enrollments[0].enrollment_state != 'active') {
           continue;
         }
 
         // people prob only want to see real courses
-        if(course.name.includes('University Housing')) {
+        if (course.name.includes('University Housing')) {
           continue;
         }
 
         this.accountID = course.account_id;
 
-        if(course.enrollments[0] && this.userID == 0) {
+        if (course.enrollments[0] && this.userID == 0) {
           this.userID = course.enrollments[0].user_id;
         }
 
@@ -88,21 +88,21 @@ export class CanvasPage {
       // look up enrollments
       let canvasEnrollments = await this.utauth.getCanvas(`users/${this.userID}/enrollments`);
 
-      for(let enroll of canvasEnrollments) {
+      for (let enroll of canvasEnrollments) {
 
         // find course attached to enrollment
         let course: Course = null;
-        for(let c of courses) {
-          if(c.canvasID == enroll.course_id) {
+        for (let c of courses) {
+          if (c.canvasID === enroll.course_id) {
             course = c;
             break;
           }
         }
-        if(course == null) {
+        if (course == null) {
           continue;
         }
 
-        if(enroll.grades.current_score) {
+        if (enroll.grades.current_score) {
           course.grade = enroll.grades.current_score;
         } else {
           course.grade = 0;
@@ -125,8 +125,8 @@ export class CanvasPage {
         {
           queryParams: {
             course: JSON.stringify(course),
-            userID: ""+this.userID,
-            accountID: ""+this.accountID
+            userID: '' + this.userID,
+            accountID: '' + this.accountID
           }
         }
       );
@@ -143,13 +143,13 @@ export class AssignmentsPage {
 
   course: Course;
   userID: number;
-  loading: boolean = false;
+  loading = false;
 
   constructor(private route: ActivatedRoute, private utauth: UTLogin) {
     this.route.queryParams.subscribe(params => {
       this.course = JSON.parse(params.course);
-      this.userID = parseInt(params.userID);
-      if(this.course.assignments.length == 0) {
+      this.userID = parseInt(params.userID, 10);
+      if (this.course.assignments.length === 0) {
         this.fetchAssignments();
       }
     });
@@ -170,11 +170,11 @@ export class AssignmentsPage {
 
     let assigns: Array<Assignment> = [];
 
-    for(let rowMatch of this.getRegexMatrix(/<tr class="student_assignment[\S\s]+?>([\s\S]+?)<\/tr>/g, gradesPage)) {
+    for (let rowMatch of this.getRegexMatrix(/<tr class="student_assignment[\S\s]+?>([\s\S]+?)<\/tr>/g, gradesPage)) {
 
-      let titleMatch = /\/submissions\/\d+">([\S ]+?)<\/a>/g.exec(rowMatch[1])
+      let titleMatch = /\/submissions\/\d+">([\S ]+?)<\/a>/g.exec(rowMatch[1]);
 
-      if(titleMatch != null) {
+      if (titleMatch != null) {
 
         let title = clean(titleMatch[1]);
         let context = clean(/<div class="context">([\s\S]+?)<\/div>/g.exec(rowMatch[1])[1]);
@@ -182,7 +182,7 @@ export class AssignmentsPage {
         let score = clean(/<span class="original_score">([\s\S]+?)<\/span>/g.exec(rowMatch[1])[1]);
         let maxscore = clean(/<td class="possible points_possible">([\s\S]+?)<\/td>/g.exec(rowMatch[1])[1]);
 
-        if(score.length == 0) {
+        if (score.length === 0) {
           score = '?';
         }
 
@@ -206,12 +206,12 @@ export class AssignmentsPage {
 
   }
 
-  getRegexMatrix(re: RegExp, input: string) : Array<any> { // apply regex to input, return a list of matches (each match is an array of groups)
+  getRegexMatrix(re: RegExp, input: string): Array<any> { // apply regex to input, return a list of matches (each match is an array of groups)
 
     let matcher;
     let matrix = [];
 
-    while(matcher = re.exec(input)) {
+    while (matcher = re.exec(input)) {
       matrix.push(matcher.slice(0));
     }
 

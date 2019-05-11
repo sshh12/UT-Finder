@@ -16,9 +16,9 @@ export class UTLogin {
   checker: any;
   lastLogged: Date = new Date(0);
 
-  utLoginCookie: string = '';
-  utSCCookie: string = '';
-  canvasCookie: string = '';
+  utLoginCookie = '';
+  utSCCookie = '';
+  canvasCookie = '';
 
   constructor(private iab: InAppBrowser,
               private alertCtrl: AlertController,
@@ -30,12 +30,12 @@ export class UTLogin {
 
   }
 
-  doLogin(username: string, password: string, save: boolean) : Promise<void> { // open the browser and login as the user
+  doLogin(username: string, password: string, save: boolean): Promise<void> { // open the browser and login as the user
 
     return new Promise((resolve) => {
 
-        if(save) {
-          this.storage.set('eid', username)
+        if (save) {
+          this.storage.set('eid', username);
           this.storage.set('password', password);
         }
 
@@ -45,9 +45,10 @@ export class UTLogin {
 
           this.checker = setInterval(async () => {
 
-            let curUrl = await browser.executeScript({ code: "window.location.href" }) + "";
+            const curUrl = await browser.executeScript({ code: 'window.location.href' }) + '';
 
-            if(curUrl.includes('https://utdirect.utexas.edu/registration/classlist.WBX')) { // this means the user is prob already logged in
+            // this means the user is prob already logged in
+            if (curUrl.includes('https://utdirect.utexas.edu/registration/classlist.WBX')) {
 
               clearInterval(this.checker);
               browser.close();
@@ -56,15 +57,15 @@ export class UTLogin {
               this.utSCCookie = await this.getCookie('https://utexas.edu', 'SC');
               resolve();
 
-            } else if (curUrl.startsWith("https://login.utexas.edu")) { // currently on the login page
+            } else if (curUrl.startsWith('https://login.utexas.edu')) { // currently on the login page
 
-              let error = await browser.executeScript(
-                 { code: "document.getElementById('error-message') != null" }
+              const error = await browser.executeScript(
+                 { code: 'document.getElementById(\'error-message\') != null' }
               );
 
-              if(error == 'true') {
+              if (error === 'true') {
 
-                let toast = await this.toastCtrl.create({
+                const toast = await this.toastCtrl.create({
                   message: 'Unable to login 😢',
                   duration: 3000,
                   position: 'top'
@@ -82,7 +83,7 @@ export class UTLogin {
                 await browser.executeScript(
                    { code: `document.getElementById('IDToken2').value = "${password}"` }
                 );
-                await browser.executeScript({ code: "LoginSubmit('Log In')" });
+                await browser.executeScript({ code: 'LoginSubmit(\'Log In\')' });
 
                 // do it again cause ios broke
                 await browser.executeScript(
@@ -112,7 +113,7 @@ export class UTLogin {
 
       return new Promise(async (resolve) => {
 
-          if(this.canvasCookie != '') {
+          if (this.canvasCookie !== '') {
             resolve();
             return;
           }
@@ -125,9 +126,10 @@ export class UTLogin {
 
             this.checker = setInterval(async () => {
 
-              let curUrl = await browser.executeScript({ code: "window.location.href" }) + "";
+              const curUrl = await browser.executeScript({ code: 'window.location.href' }) + '';
 
-              if(curUrl.includes("https://utexas.instructure.com/courses")) { // this means the user is prob already logged in
+              // this means the user is prob already logged in
+              if (curUrl.includes('https://utexas.instructure.com/courses')) {
 
                 clearInterval(this.checker);
                 browser.close();
@@ -148,20 +150,20 @@ export class UTLogin {
 
     }
 
-    checkLogin() : Promise<void> {
+    checkLogin(): Promise<void> {
 
       return new Promise(async (resolve) => {
 
-        let timeSinceLogged = new Date().getTime() - this.lastLogged.getTime();
+        const timeSinceLogged = new Date().getTime() - this.lastLogged.getTime();
 
-        if(timeSinceLogged > 5 * 60 * 1000) { // reset after 5 mins
+        if (timeSinceLogged > 5 * 60 * 1000) { // reset after 5 mins
 
-          let username = await this.storage.get('eid');
-          let password = await this.storage.get('password');
+          const username = await this.storage.get('eid');
+          const password = await this.storage.get('password');
 
-            if(!username || !password) { // need user/pass
+            if (!username || !password) { // need user/pass
 
-              let alert = await this.alertCtrl.create({
+              const alert = await this.alertCtrl.create({
                 header: 'Login',
                 message: 'Your login will be stored solely on your device.',
                 inputs: [
@@ -178,14 +180,14 @@ export class UTLogin {
                   {
                     text: 'Login',
                     handler: async data => {
-                      await this.doLogin(data.EID.toLowerCase(), data.password, false)
+                      await this.doLogin(data.EID.toLowerCase(), data.password, false);
                       resolve();
                     }
                   },
                   {
                     text: 'Login & Save',
                     handler: async data => {
-                      await this.doLogin(data.EID.toLowerCase(), data.password, true)
+                      await this.doLogin(data.EID.toLowerCase(), data.password, true);
                       resolve();
                     }
                   }
@@ -195,7 +197,7 @@ export class UTLogin {
 
             } else { // already have user/pass
 
-              let alert = await this.alertCtrl.create({
+              const alert = await this.alertCtrl.create({
                 header: 'Login',
                 buttons: [
                   {
@@ -210,7 +212,7 @@ export class UTLogin {
                   {
                     text: `As ${username}`,
                     handler: async () => {
-                      await this.doLogin(username, password, false)
+                      await this.doLogin(username, password, false);
                       resolve();
                     }
                   }
@@ -230,7 +232,7 @@ export class UTLogin {
 
   }
 
-  getCookie(url: string, name: string) : Promise<string> {
+  getCookie(url: string, name: string): Promise<string> {
 
     return new Promise<string>(async (resolve) => {
       cookieEmperor.getCookie(url, name,
@@ -240,7 +242,7 @@ export class UTLogin {
 
   }
 
-  async doHTTP(url: string) : Promise<any> { // retrieve page as an authed user
+  async doHTTP(url: string): Promise<any> { // retrieve page as an authed user
 
     await this.checkLogin();
 
@@ -248,7 +250,7 @@ export class UTLogin {
     this.http.setCookie('https://utexas.edu', 'SC=' + this.utSCCookie);
     this.http.setCookie('https://utexas.instructure.com', 'canvas_session=' + this.canvasCookie);
 
-    let resp = await this.http.get(url, {}, {});
+    const resp = await this.http.get(url, {}, {});
 
     return resp;
 
@@ -258,23 +260,23 @@ export class UTLogin {
 
     await this.checkCanvasLogin();
 
-    let rawResp = await this.getPage('https://utexas.instructure.com/api/v1/' + apiURL);
+    const rawResp = await this.getPage('https://utexas.instructure.com/api/v1/' + apiURL);
     return JSON.parse(rawResp.replace('while(1);', ''));
 
   }
 
-  async getPage(url: string) : Promise<string> {
-    let resp = await this.doHTTP(url);
+  async getPage(url: string): Promise<string> {
+    const resp = await this.doHTTP(url);
     console.log(url, 'UTCookies: ' + this.utLoginCookie, resp.data, );
     return resp.data;
   }
 
-  async fetchTable(url: string, include: string) : Promise<string> { // get table from given url
+  async fetchTable(url: string, include: string): Promise<string> { // get table from given url
 
-    let html = await this.getPage(url);
-    let reg = /<table["=\w\s%]*>\s*([\s\S]*?)\s*<\/table>/.exec(html);
+    const html = await this.getPage(url);
+    const reg = /<table["=\w\s%]*>\s*([\s\S]*?)\s*<\/table>/.exec(html);
 
-    if(reg != null && html.includes(include)) {
+    if (reg != null && html.includes(include)) {
       return reg[1];
     }
 
