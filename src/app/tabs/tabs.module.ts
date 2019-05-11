@@ -7,11 +7,6 @@ import { FormsModule } from '@angular/forms';
 import { TabsPageRoutingModule } from './tabs.router.module';
 
 import { TabsPage } from './tabs.page';
-import { SchedulePageModule } from '../schedule/schedule.module';
-import { MapPageModule } from '../map/map.module';
-import { MoneyPageModule } from '../money/money.module';
-import { CanvasPageModule } from '../canvas/canvas.module';
-import { ResourcesPageModule } from '../resources/resources.module';
 
 @NgModule({
   imports: [
@@ -19,11 +14,6 @@ import { ResourcesPageModule } from '../resources/resources.module';
     CommonModule,
     FormsModule,
     TabsPageRoutingModule,
-    SchedulePageModule,
-    MapPageModule,
-    MoneyPageModule,
-    CanvasPageModule,
-    ResourcesPageModule
   ],
   declarations: [TabsPage]
 })

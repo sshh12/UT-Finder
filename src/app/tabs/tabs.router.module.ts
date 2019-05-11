@@ -2,11 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { TabsPage } from './tabs.page';
-import { SchedulePage } from '../schedule/schedule.page';
-import { MapPage } from '../map/map.page';
-import { MoneyPage } from '../money/money.page';
-import { CanvasPage, AssignmentsPage } from '../canvas/canvas.page';
-import { ResourcesPage } from '../resources/resources.page';
 
 const routes: Routes = [
   {
@@ -14,40 +9,45 @@ const routes: Routes = [
     component: TabsPage,
     children: [
       {
-        path: '',
-        redirectTo: '/tabs/(schedule:schedule)',
-        pathMatch: 'full',
-      },
-      {
         path: 'schedule',
-        outlet: 'schedule',
-        component: SchedulePage
+        children: [{
+          path: '',
+          loadChildren: '../schedule/schedule.module#SchedulePageModule'
+        }]
       },
       {
         path: 'map',
-        outlet: 'map',
-        component: MapPage
+        children: [{
+          path: '',
+          loadChildren: '../map/map.module#MapPageModule'
+        }]
       },
       {
         path: 'money',
-        outlet: 'money',
-        component: MoneyPage
+        children: [{
+          path: '',
+          loadChildren: '../money/money.module#MoneyPageModule'
+        }]
       },
       {
         path: 'canvas',
-        outlet: 'canvas',
-        component: CanvasPage
+        children: [{
+          path: '',
+          loadChildren: '../canvas/canvas.module#CanvasPageModule'
+        }]
       },
       {
         path: 'resources',
-        outlet: 'resources',
-        component: ResourcesPage
+        children: [{
+          path: '',
+          loadChildren: '../resources/resources.module#ResourcesPageModule'
+        }]
       }
     ]
   },
   {
     path: '',
-    redirectTo: '/tabs/(schedule:schedule)',
+    redirectTo: '/tabs/schedule',
     pathMatch: 'full'
   }
 ];

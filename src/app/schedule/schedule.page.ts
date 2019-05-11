@@ -1,6 +1,6 @@
 import { Component, ApplicationRef, ViewChild } from '@angular/core';
 import { Calendar } from '@ionic-native/calendar/ngx';
-import { Content, AlertController, ToastController  } from '@ionic/angular';
+import { AlertController, ToastController  } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 
 import { UTLogin } from '../utlogin';
@@ -23,8 +23,6 @@ export class SchedulePage {
     scheduleView: string = 'current';
     loading: boolean = false;
     warningShown: boolean = false;
-
-    @ViewChild(Content) content: Content;
 
     constructor(private ref: ApplicationRef,
                 private storage: Storage,
@@ -159,7 +157,6 @@ export class SchedulePage {
         }
 
         this.updateTimeBar();
-        // this.content.scrollToPoint(0, this.timeNowBarOffset - 250, 1000);
 
         if(!this.warningShown) {
           let toast = await this.toastCtrl.create({
