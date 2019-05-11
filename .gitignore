@@ -32,3 +32,9 @@ $RECYCLE.BIN/
 .DS_Store
 Thumbs.db
 UserInterfaceState.xcuserstate
+
+# UT Finder
+*.jks
+*.keystore
+*.mobileprovision
+*.cer
