@@ -1,19 +1,9 @@
 import { AlertController } from '@ionic/angular';
-
-export class FinalTime {
-    num: number;
-    name: string;
-    title: string;
-    startDate: Date;
-    endDate: Date;
-    location: string;
-    exists: boolean;
-    dayIndex?: number;
-}
+import { FinalTime } from '../backend/ut-api';
 
 export class FinalsCalendar {
 
-  scheduleOffset: number = 0; // use row index to hide the top of calendar
+  scheduleOffset = 0; // use row index to hide the top of calendar
   finals: Array<FinalTime> = [];
   weekMatrix: Array<Array<any>> = [[]]; // calendar
 

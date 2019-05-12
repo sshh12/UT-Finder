@@ -25,11 +25,11 @@
   <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed" #fab>
-      <ion-fab-button mini color="secondary" (click)="fetchSchedule()"><ion-icon name="add"></ion-icon></ion-fab-button>
+      <ion-fab-button size="small" color="secondary" (click)="updateSchedule()"><ion-icon name="add"></ion-icon></ion-fab-button>
   </ion-fab>
 
   <ion-fab vertical="top" horizontal="end" slot="fixed" *ngIf="currentCalendar.classes.length > 0 && scheduleView=='current'">
-   <ion-fab-button mini color="tertiary" (click)="saveToCalendar()"><ion-icon name="download"></ion-icon></ion-fab-button>
+   <ion-fab-button size="small" color="tertiary" (click)="saveToCalendar()"><ion-icon name="download"></ion-icon></ion-fab-button>
   </ion-fab>
 
   <!-- Current Time as line _____ -->
@@ -50,7 +50,7 @@
 
       <!-- Login prompt -->
       <div style="text-align: center;" *ngIf="currentCalendar.classes.length == 0 && !loading">
-        <ion-chip (click)="fetchSchedule()">
+        <ion-chip (click)="updateSchedule()">
           <ion-icon name="add" color="secondary"></ion-icon>
           <ion-label>Add Schedule</ion-label>
         </ion-chip>
@@ -69,7 +69,7 @@
       </ion-grid>
 
       <div style="text-align: center;" *ngIf="futureCalendar.classes.length == 0 && !loading">
-        <ion-chip (click)="fetchSchedule()">
+        <ion-chip (click)="updateSchedule()">
           <ion-icon name="add" color="secondary"></ion-icon>
           <ion-label>Add Future Schedule</ion-label>
         </ion-chip>
@@ -88,7 +88,7 @@
       </ion-grid>
 
       <div style="text-align: center;" *ngIf="finalsCalendar.finals.length == 0 && !loading">
-        <ion-chip (click)="fetchSchedule()">
+        <ion-chip (click)="updateSchedule()">
           <ion-icon name="add" color="secondary"></ion-icon>
           <ion-label>Add Finals</ion-label>
         </ion-chip>

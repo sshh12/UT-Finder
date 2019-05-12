@@ -1,14 +1,5 @@
 import { AlertController } from '@ionic/angular';
-
-export class ClassTime {
-    num: number;
-    name: string;
-    title: string;
-    building: string;
-    room: string;
-    days: Array<string>;
-    timeslot: string;
-}
+import { ClassTime } from '../backend/ut-api';
 
 export class ClassCalendar {
 

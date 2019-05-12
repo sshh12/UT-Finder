@@ -1,7 +1,41 @@
+/// TODO REMOVE
+
+/// TODO REMOVE
+
+
+
+/// TODO REMOVE
+
+
+
+
+/// TODO REMOVE
+
+
+
+/// TODO REMOVE
+
+
+
+
+
+
+/// TODO REMOVE
+
+
+
+
+
+/// TODO REMOVE
+
+
+
+
+
 import { Injectable } from '@angular/core';
-import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { Storage } from '@ionic/storage';
-import { HTTP } from '@ionic-native/http/ngx';
+import { HTTP } from '@ionic-native/http';
 
 import {
   AlertController,

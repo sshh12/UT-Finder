@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
-import { HTTP } from '@ionic-native/http/ngx';
-import { Keyboard } from '@ionic-native/keyboard/ngx';
-import { CallNumber } from '@ionic-native/call-number/ngx';
+import { HTTP } from '@ionic-native/http';
+import { Keyboard } from '@ionic-native/keyboard';
+import { CallNumber } from '@ionic-native/call-number';
 
 import {
   NavController,
@@ -56,7 +56,7 @@ export class MapPage {
   tileOptions: TileOverlayOptions;
   buildings: Array<Building> = [];
 
-  weatherAPIKey: string = '30a796e71ba6c4c2e5e7270dfbbe78a2';
+  weatherAPIKey = '30a796e71ba6c4c2e5e7270dfbbe78a2';
 
   constructor(public navCtrl: NavController,
               private platform: Platform,
@@ -65,10 +65,9 @@ export class MapPage {
               private caller: CallNumber,
               private alertCtrl: AlertController,
               private toastCtrl: ToastController) {
-    //...
   }
 
-  async ngOnInit() {
+  async OnInit() {
     await this.platform.ready();
     await this.loadMap();
   }
