@@ -40,7 +40,7 @@
     <div *ngSwitchCase="'current'">
 
       <!-- Render a fancy Object[][] data structure -->
-      <ion-grid *ngIf="currentCalendar.weekMatrix.length > 1" class='calendar'>
+      <ion-grid *ngIf="currentCalendar.weekMatrix.length > 1 && !loading" class='calendar'>
         <ion-row *ngFor='let row of currentCalendar.weekMatrix'>
           <ion-col *ngFor='let item of row' size="2" class="{{item ? item.class : ''}}" [style.background-color]="(item && item.bg) ? item.bg : ''" (click)="(item && item.click) ? item.click() : ''">
             <p *ngIf='item'>{{ item.label }}</p>
@@ -60,7 +60,7 @@
 
     <div *ngSwitchCase="'future'">
 
-      <ion-grid *ngIf="futureCalendar.weekMatrix.length > 1" class='calendar'>
+      <ion-grid *ngIf="futureCalendar.weekMatrix.length > 1 && !loading" class='calendar'>
         <ion-row *ngFor='let row of futureCalendar.weekMatrix'>
           <ion-col *ngFor='let item of row' size="2" class="{{item ? item.class : ''}}" [style.background-color]="(item && item.bg) ? item.bg : ''" (click)="(item && item.click) ? item.click() : ''">
             <p *ngIf='item'>{{ item.label }}</p>
@@ -79,7 +79,7 @@
 
     <div *ngSwitchCase="'finals'">
 
-      <ion-grid *ngIf="finalsCalendar.weekMatrix.length > 1" class='calendar'>
+      <ion-grid *ngIf="finalsCalendar.weekMatrix.length > 1 && !loading" class='calendar'>
         <ion-row *ngFor='let row of finalsCalendar.weekMatrix'>
           <ion-col *ngFor='let item of row' size="2" class="{{item ? item.class : ''}}" [style.background-color]="(item && item.bg) ? item.bg : ''" (click)="(item && item.click) ? item.click() : ''">
             <p *ngIf='item'>{{ item.label }}</p>

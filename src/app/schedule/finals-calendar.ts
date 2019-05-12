@@ -12,27 +12,27 @@ export class FinalsCalendar {
   }
 
   calculateTimeBarOffset(time: number) {
-    if(this.finals.length == 0) {
+    if (this.finals.length === 0) {
       return -100;
     }
     return time * 60 - 228 - this.scheduleOffset * 60;
   }
 
-  dayOfTheYear(date: Date) : number { // date -> day of year
+  dayOfTheYear(date: Date): number { // date -> day of year
     let dateUTC = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
     let startUTC = Date.UTC(date.getFullYear(), 0, 0);
     let daySize = 24 * 60 * 60 * 1000;
     return (dateUTC - startUTC) / daySize;
   }
 
-  dateFromDay(dayNum: number) : Date { // day of year -> date
+  dateFromDay(dayNum: number): Date { // day of year -> date
     let date = new Date(new Date().getFullYear(), 0);
     date.setDate(dayNum);
     return date;
   }
 
-  dayOffset(date: Date, days: Array<any>) : number {
-    return days.indexOf("" + this.dayOfTheYear(date))
+  dayOffset(date: Date, days: Array<any>): number {
+    return days.indexOf('' + this.dayOfTheYear(date));
   }
 
   generate() {
@@ -40,20 +40,20 @@ export class FinalsCalendar {
     // calculate the calendar offset to display only relevent time period
     let firstDate: Date = new Date(9e12);
     let lastDate: Date = new Date(0);
-    let dayMap: { [key:number]:boolean; } = {};
+    let dayMap: { [key: number]: boolean; } = {};
 
     let minStartIndex = 999;
-    for(let final of this.finals) {
+    for (let final of this.finals) {
 
-      if(!final.exists) {
+      if (!final.exists) {
         continue;
       }
       minStartIndex = Math.min(minStartIndex, this.getFinalIndex(final));
 
-      if(final.startDate.getTime() < firstDate.getTime()) {
+      if (final.startDate.getTime() < firstDate.getTime()) {
         firstDate = final.startDate;
       }
-      if(final.endDate.getTime() > lastDate.getTime()) {
+      if (final.endDate.getTime() > lastDate.getTime()) {
         lastDate = final.endDate;
       }
 
@@ -64,9 +64,9 @@ export class FinalsCalendar {
 
     let days: Array<any> = Object.keys(dayMap).sort((a: any, b: any) => a - b);
 
-    for(let final of this.finals) {
+    for (let final of this.finals) {
 
-      if(!final.exists) {
+      if (!final.exists) {
         continue;
       }
 
@@ -80,29 +80,29 @@ export class FinalsCalendar {
     ]];
 
     let numDays = days.length;
-    for(let i = 0; i < numDays; i++) {
+    for (let i = 0; i < numDays; i++) {
       let date = this.dateFromDay(days[i] as number);
-      let label = `${date.getMonth() + 1}/${date.getDate()}`
+      let label = `${date.getMonth() + 1}/${date.getDate()}`;
       calendarMatrix[0].push({
         label: label,
         class: 'day-header'
       });
     }
 
-    for(let i = 5 + this.scheduleOffset; i <= 22; i++) {
+    for (let i = 5 + this.scheduleOffset; i <= 22; i++) {
 
       let timeString;
-      if(i > 12) {
+      if (i > 12) {
         timeString = '' + (i - 12);
       } else {
         timeString = '' + i;
       }
 
-      if(timeString.length < 2) {
+      if (timeString.length < 2) {
         timeString = ' ' + timeString;
       }
 
-      calendarMatrix.push([{label: timeString, class:'time-header'}, null, null, null, null, null]);
+      calendarMatrix.push([{label: timeString, class: 'time-header'}, null, null, null, null, null]);
 
     }
 
@@ -113,10 +113,10 @@ export class FinalsCalendar {
 
   }
 
-  getFinalIndex(final: FinalTime, start=true) : number { // convert time to row index in matrix
-
+  getFinalIndex(final: FinalTime, start = true): number {
+    // convert time to row index in matrix
     let hour;
-    if(start) {
+    if (start) {
       hour = final.startDate.getHours();
     } else {
       hour = final.endDate.getHours();
@@ -128,11 +128,11 @@ export class FinalsCalendar {
 
   }
 
-  addFinals(calendarMatrix) : void { // adds finals to matrix
+  addFinals(calendarMatrix) {
+    // adds finals to matrix
+    for (let final of this.finals) {
 
-    for(let final of this.finals) {
-
-      if(!final.exists) {
+      if (!final.exists) {
         continue;
       }
 
@@ -151,18 +151,18 @@ export class FinalsCalendar {
 
       let dayIndex: number = final.dayIndex;
 
-      for(let i = startIndex; i < endIndex; i++) {
+      for (let i = startIndex; i < endIndex; i++) {
 
-          if(i == startIndex) {
+          if (i === startIndex) {
             calendarMatrix[i][dayIndex] = {
               label: final.name,
-              class:'class-slot start-slot',
+              class: 'class-slot start-slot',
               bg: this.getColor(final),
               click: onClick};
           } else {
             calendarMatrix[i][dayIndex] = {
               label: '\x00',
-              class:'class-slot end-slot',
+              class: 'class-slot end-slot',
               bg: this.getColor(final),
               click: onClick};
           }
@@ -177,17 +177,17 @@ export class FinalsCalendar {
 
     let now = new Date();
     let finalsToday = [];
-    for(let final of this.finals) {
-      if(!final.exists) {
+    for (let final of this.finals) {
+      if (!final.exists) {
         continue;
       }
       let date = final.startDate;
-      if(date.getMonth() == now.getMonth() && date.getDate() == now.getDate()) {
+      if (date.getMonth() === now.getMonth() && date.getDate() === now.getDate()) {
         finalsToday.push(final);
       }
     }
 
-    if(finalsToday.length == 1) {
+    if (finalsToday.length === 1) {
 
       let alert = await this.altCtrl.create({
         header: 'Finals',
@@ -196,7 +196,7 @@ export class FinalsCalendar {
       });
       await alert.present();
 
-    } else if(finalsToday.length > 1){
+    } else if (finalsToday.length > 1) {
 
       let alert = await this.altCtrl.create({
         header: 'Finals',
@@ -209,18 +209,18 @@ export class FinalsCalendar {
 
   }
 
-  getColor(event: FinalTime) : string { // Simple func to convert classname to unique color
-
+  getColor(event: FinalTime): string {
+    // Simple func to convert classname to unique color
     let prefix = event.name.substring(0, event.name.lastIndexOf(' '));
     let sum = 0;
 
-    for(let i = 0; i < prefix.length; i++) {
+    for (let i = 0; i < prefix.length; i++) {
       sum += prefix.charCodeAt(i);
     }
 
     let hue = Math.floor((sum % 30) / 30 * 360);
 
-    return `hsl(${hue}, 50%, 85%)`
+    return `hsl(${hue}, 50%, 85%)`;
 
   }
 

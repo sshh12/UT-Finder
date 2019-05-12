@@ -96,21 +96,6 @@ export class SchedulePage {
 
     }
 
-    nextSemesterCode(): string {
-      let now = new Date();
-      let curYear = now.getFullYear();
-      let curMonth = now.getMonth();
-      if (2 <= curMonth && curMonth <= 4) {
-        return `${curYear}6`;
-      } else if (5 <= curMonth && curMonth <= 8) {
-        return `${curYear}9`;
-      } else if (9 <= curMonth && curMonth <= 11) {
-        return `${curYear + 1}2`;
-      } else {
-        return `${curYear}2`;
-      }
-    }
-
     async updateSchedule() {
 
       this.loading = true;
@@ -126,8 +111,11 @@ export class SchedulePage {
         this.currentCalendar.generate();
         this.storage.set('schedule:classes', classes);
       } else {
-        let sem = this.nextSemesterCode();
-        let classes = await this.utapi.fetchSchedule(sem);
+        let sems = this.utapi.getSemesterCodes();
+        let classes = await this.utapi.fetchSchedule(sems[1]);
+        if (classes.length === 0) {
+          classes = await this.utapi.fetchSchedule(sems[2]);
+        }
         this.futureCalendar.classes = classes;
         this.futureCalendar.generate();
         this.storage.set('schedule:futureclasses', classes);

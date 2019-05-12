@@ -183,7 +183,7 @@ export class UTAPI {
 
             if (!username || !password) { // need user/pass
 
-              const alert = await this.alertCtrl.create({
+              let alert = await this.alertCtrl.create({
                 header: 'Login',
                 message: 'Your login will be stored solely on your device.',
                 inputs: [
@@ -213,11 +213,16 @@ export class UTAPI {
                   }
                 ]
               });
+              alert.onDidDismiss().then((event) => {
+                if (event.role === 'backdrop') {
+                  resolve(false);
+                }
+              });
               await alert.present();
 
             } else { // already have user/pass
 
-              const alert = await this.alertCtrl.create({
+              let alert = await this.alertCtrl.create({
                 header: 'Login',
                 buttons: [
                   {
@@ -236,6 +241,11 @@ export class UTAPI {
                     }
                   }
                 ]
+              });
+              alert.onDidDismiss().then((event) => {
+                if (event.role === 'backdrop') {
+                  resolve(false);
+                }
               });
               await alert.present();
 
@@ -404,6 +414,27 @@ export class UTAPI {
 
     return finals;
 
+  }
+
+  getSemesterCodes(): string[] {
+    let now = new Date();
+    let curYear = now.getFullYear();
+    let curMonth = now.getMonth();
+    let codes = [];
+    if (0 <= curMonth && curMonth <= 4) {
+      codes.push(`${curYear}2`);
+      codes.push(`${curYear}6`);
+      codes.push(`${curYear}9`);
+    } else if (5 <= curMonth && curMonth <= 7) {
+      codes.push(`${curYear}6`);
+      codes.push(`${curYear}9`);
+      codes.push(`${curYear + 1}2`);
+    } else {
+      codes.push(`${curYear}9`);
+      codes.push(`${curYear + 1}2`);
+      codes.push(`${curYear + 1}6`);
+    }
+    return codes;
   }
 
   parseDateRange(month: string, day: string, times: string): Array<Date> {
