@@ -1,5 +1,5 @@
 import { Component, ApplicationRef } from '@angular/core';
-import { Calendar } from '@ionic-native/calendar';
+import { Calendar } from '@ionic-native/calendar/ngx';
 import { AlertController, ToastController  } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 

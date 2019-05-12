@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
-import { InAppBrowser } from '@ionic-native/in-app-browser';
-import { CallNumber } from '@ionic-native/call-number';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { CallNumber } from '@ionic-native/call-number/ngx';
 
 @Component({
   selector: 'page-resources',

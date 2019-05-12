@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 
-import { HTTP } from '@ionic-native/http';
-import { Keyboard } from '@ionic-native/keyboard';
-import { CallNumber } from '@ionic-native/call-number';
+import { HTTP } from '@ionic-native/http/ngx';
+import { Keyboard } from '@ionic-native/keyboard/ngx';
+import { CallNumber } from '@ionic-native/call-number/ngx';
 
 import {
   NavController,

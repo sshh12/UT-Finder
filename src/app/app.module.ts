@@ -6,15 +6,15 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { IonicStorageModule } from '@ionic/storage';
-import { Calendar } from '@ionic-native/calendar';
+import { Calendar } from '@ionic-native/calendar/ngx';
 import { GoogleMaps } from '@ionic-native/google-maps';
-import { HTTP } from '@ionic-native/http';
-import { Keyboard } from '@ionic-native/keyboard';
-import { CallNumber } from '@ionic-native/call-number';
+import { HTTP } from '@ionic-native/http/ngx';
+import { Keyboard } from '@ionic-native/keyboard/ngx';
+import { CallNumber } from '@ionic-native/call-number/ngx';
 
-import { UTLogin } from './utlogin';
+import { UTLogin } from './utlogin'; // TODO REMOVE
 import { UTAPI } from './backend/ut-api';
 
 @NgModule({

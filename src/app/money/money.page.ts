@@ -9,7 +9,7 @@ import { Storage } from '@ionic/storage';
 
 import { UTLogin } from '../utlogin';
 
-import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 
 class Account {
     name: string;

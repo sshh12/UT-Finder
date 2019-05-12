@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { Storage } from '@ionic/storage';
-import { HTTP } from '@ionic-native/http';
+import { HTTP } from '@ionic-native/http/ngx';
 import {
   AlertController,
   ToastController
@@ -50,7 +50,7 @@ export class UTAPI {
 
   }
 
-  doLogin(username: string, password: string, save: boolean): Promise<void> { // open the browser and login as the user
+  doLogin(username: string, password: string, save: boolean): Promise<void> {
 
     return new Promise((resolve) => {
 
@@ -77,8 +77,8 @@ export class UTAPI {
             this.utSCCookie = await this.getCookie('https://utexas.edu', 'SC');
             resolve();
 
-          } else if (curUrl.startsWith('https://login.utexas.edu')) { // currently on the login page
-
+          } else if (curUrl.startsWith('https://login.utexas.edu')) {
+            // currently on the login page
             const error = await browser.executeScript(
                { code: 'document.getElementById(\'error-message\') != null' }
             );
