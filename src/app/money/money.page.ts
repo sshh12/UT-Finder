@@ -19,7 +19,7 @@ class Account {
 })
 export class MoneyPage {
 
-    accounts: Array<MoneyAccount> = []; // current accounts
+    accounts: Array<MoneyAccount> = [];
 
     loading = false;
     outdated = true;
@@ -29,7 +29,7 @@ export class MoneyPage {
                 private altCtrl: AlertController,
                 private toastCtrl: ToastController) {
 
-      storage.get('accounts').then((accounts) => { // check cache
+      storage.get('accounts').then((accounts) => {
         if (accounts && accounts.length > 0) {
           this.accounts = accounts;
         }

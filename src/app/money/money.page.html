@@ -9,7 +9,7 @@
   <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button size="small" color="secondary" (click)="updateAccounts()"><ion-icon name="add"></ion-icon></ion-fab-button>
+    <ion-fab-button size="small" color="secondary" (click)="updateAccounts()"><ion-icon name="{{ accounts.length == 0 ? 'add' : 'refresh' }}"></ion-icon></ion-fab-button>
   </ion-fab>
 
   <div *ngIf="!loading">
