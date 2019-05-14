@@ -14,9 +14,7 @@
 
 <ion-content>
 
-  <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
-
-  <ion-list *ngIf="!loading && course">
+  <ion-list *ngIf="course">
 
     <ion-item *ngFor='let assign of course.assignments'>
       <ion-label>

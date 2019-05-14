@@ -1,10 +1,27 @@
 # UT-Finder
 
-A simple app for simple things. [@UT](https://www.utexas.edu/)
+A simple app for finding your way around [UT Austin](https://www.utexas.edu/).
 
 ## Releases
 - [Apple](https://itunes.apple.com/us/app/ut-finder/id1436096236)
 - [Android](https://play.google.com/store/apps/details?id=io.sshh.utfinder)
+
+```
+A student made app for the University of Texas at Austin.
+
+Features
+
+-> Schedule
+-> Export Classes
+-> Map
+-> Weather
+-> Dine In/Bevo Bucks
+-> Canvas
+-> Campus Resources
+-> Call a SURE Walk
+-> Things from MyUT
+-> Swag
+```
 
 ## Screenshots
 
