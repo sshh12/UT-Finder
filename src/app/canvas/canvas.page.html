@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>Canvas</ion-title>
+    <ion-title>Grades</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -9,22 +9,31 @@
   <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed" #fab>
-      <ion-fab-button size="small" color="secondary" (click)="fetchGrades()"><ion-icon name="refresh"></ion-icon></ion-fab-button>
+      <ion-fab-button size="small" color="secondary" (click)="updateGrades()"><ion-icon name="{{ courses.length == 0 ? 'add' : 'refresh' }}"></ion-icon></ion-fab-button>
   </ion-fab>
 
-  <ion-list>
+  <ion-list *ngIf="!loading">
 
-    <ion-item *ngFor='let course of courses'>
-      <ion-label (click)="openAssignments(course)">{{ course.title }}</ion-label>
-      <ion-badge color='success' *ngIf='course.grade > 0' slot="end">{{ course.grade }}%</ion-badge>
-    </ion-item>
+    <div *ngFor='let course of courses'>
+      <ion-item *ngIf='course.grade > 0'>
+        <ion-label (click)="showAssignments(course)">{{ course.title }}</ion-label>
+        <ion-badge color='success' slot="end">{{ course.grade.toFixed(2) }}%</ion-badge>
+      </ion-item>
+    </div>
 
   </ion-list>
 
-  <div style="text-align: center;" *ngIf="courses.length == 0 && !loading">
-    <ion-chip (click)="fetchGrades()">
+  <div style="text-align: center;" *ngIf="outdated && courses.length != 0 && !loading">
+    <ion-chip (click)="updateGrades()">
       <ion-icon name="refresh" color="secondary"></ion-icon>
-      <ion-label>Add Canvas</ion-label>
+      <ion-label>Load Latest Grades</ion-label>
+    </ion-chip>
+  </div>
+
+  <div style="text-align: center;" *ngIf="courses.length == 0 && !loading">
+    <ion-chip (click)="updateGrades()">
+      <ion-icon name="add" color="secondary"></ion-icon>
+      <ion-label>Add Canvas Courses</ion-label>
     </ion-chip>
   </div>
 

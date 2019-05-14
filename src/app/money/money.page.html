@@ -50,6 +50,13 @@
     </ion-grid>
   </div>
 
+  <div style="text-align: center;" *ngIf="outdated && accounts.length != 0 && !loading">
+    <ion-chip (click)="updateAccounts()">
+      <ion-icon name="refresh" color="secondary"></ion-icon>
+      <ion-label>Load Latest Balance</ion-label>
+    </ion-chip>
+  </div>
+
   <!-- Login prompt -->
   <div style="text-align: center;" *ngIf="accounts.length == 0 && !loading">
     <ion-chip (click)="updateAccounts()">

@@ -3,10 +3,10 @@
   <ion-toolbar color="primary">
 
     <ion-buttons slot="start">
-      <ion-back-button text="Back" defaultHref="/tabs/(canvas:canvas)"></ion-back-button>
+      <ion-back-button text=""></ion-back-button>
     </ion-buttons>
 
-    <ion-title>{{ course ? course.title : 'Assignments'}}</ion-title>
+    <ion-title>{{ course ? course.title : 'Assignments' }}</ion-title>
 
   </ion-toolbar>
 
@@ -16,14 +16,15 @@
 
   <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
 
-  <ion-list>
+  <ion-list *ngIf="!loading && course">
 
     <ion-item *ngFor='let assign of course.assignments'>
       <ion-label>
         {{ assign.title }}
-        <p>{{ assign.gradetype }} ({{ assign.due }})</p>
+        <p>{{ assign.gradetype }} {{ assign.due != '' ? '(' + assign.due + ')' : '' }}</p>
       </ion-label>
-      <ion-badge color='{{ assign.score == "?" ? "light" : "success" }}' slot='end'>{{ assign.score }}/{{ assign.maxscore }}</ion-badge>
+      <ion-badge *ngIf="!showDecimalScores" (click)="toggleScoreFormat()" color='{{ assign.score == "?" ? "light" : "success" }}' slot='end'>{{ assign.score }}/{{ assign.maxscore }}</ion-badge>
+      <ion-badge *ngIf="showDecimalScores" (click)="toggleScoreFormat()" color='{{ assign.score == "?" ? "light" : "success" }}' slot='end'>{{ assign.score == '?' ? '--.--' : (+assign.score / +assign.maxscore * 100).toFixed(2) }}%</ion-badge>
     </ion-item>
 
   </ion-list>

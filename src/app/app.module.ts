@@ -13,8 +13,6 @@ import { GoogleMaps } from '@ionic-native/google-maps';
 import { HTTP } from '@ionic-native/http/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { CallNumber } from '@ionic-native/call-number/ngx';
-
-import { UTLogin } from './utlogin'; // TODO REMOVE
 import { UTAPI } from './backend/ut-api';
 
 @NgModule({
@@ -33,7 +31,6 @@ import { UTAPI } from './backend/ut-api';
     GoogleMaps,
     Calendar,
     Keyboard,
-    UTLogin,
     UTAPI,
     HTTP,
     CallNumber,

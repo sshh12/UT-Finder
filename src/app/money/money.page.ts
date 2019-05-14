@@ -20,7 +20,9 @@ class Account {
 export class MoneyPage {
 
     accounts: Array<MoneyAccount> = []; // current accounts
+
     loading = false;
+    outdated = true;
 
     constructor(private utapi: UTAPI,
                 private storage: Storage,
@@ -77,6 +79,7 @@ export class MoneyPage {
 
         this.accounts = await this.utapi.fetchAccounts();
         this.storage.set('accounts', this.accounts);
+        this.outdated = false;
 
       } catch {
 

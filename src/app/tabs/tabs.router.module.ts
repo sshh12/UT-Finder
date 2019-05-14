@@ -34,6 +34,9 @@ const routes: Routes = [
         children: [{
           path: '',
           loadChildren: '../canvas/canvas.module#CanvasPageModule'
+        }, {
+          path: 'assignments',
+          loadChildren: '../canvas/assignments.module#AssignmentsPageModule'
         }]
       },
       {

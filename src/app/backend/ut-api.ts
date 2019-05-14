@@ -36,6 +36,22 @@ export class MoneyAccount {
     status: string;
 }
 
+export class Course {
+  canvasID: number;
+  name: string;
+  title: string;
+  grade?: number;
+  assignments?: Array<Assignment> = [];
+}
+
+export class Assignment {
+  title: string;
+  gradetype: string;
+  score: string;
+  maxscore: string;
+  due: string;
+}
+
 @Injectable()
 export class UTAPI {
 
@@ -45,6 +61,8 @@ export class UTAPI {
   utLoginCookie = '';
   utSCCookie = '';
   canvasCookie = '';
+  canvasAccountID = 0;
+  canvasUserID = 0;
 
   constructor(private iab: InAppBrowser,
               private alertCtrl: AlertController,
@@ -441,6 +459,125 @@ export class UTAPI {
     accounts.push(...this.parseWIO(wioHTML));
 
     return accounts;
+
+  }
+
+  async fetchCourses(): Promise<Course[]> {
+
+    if (!await this.ensureCanvasLogin()) {
+      return [];
+    }
+
+    let canvasCourses = await this.getCanvas('courses');
+    let courses: Course[] = [];
+
+    // get all courses
+    for (let course of canvasCourses) {
+
+      // ensure active course
+      if (course.enrollments[0].enrollment_state !== 'active') {
+        continue;
+      }
+
+      // people prob only want to see real courses
+      if (course.name.includes('University Housing')) {
+        continue;
+      }
+
+      this.canvasAccountID = course.account_id;
+
+      if (course.enrollments[0] && this.canvasUserID === 0) {
+        this.canvasUserID = course.enrollments[0].user_id;
+      }
+
+      courses.push({
+        canvasID: course.id,
+        name: course.name,
+        title: course.name.replace(/\w\w\d\d -/, '').replace(/\s+\(\d+\)\s*/, '').trim()
+      });
+
+    }
+
+    // look up enrollments
+    let canvasEnrollments = await this.getCanvas(`users/${this.canvasUserID}/enrollments`);
+
+    for (let enroll of canvasEnrollments) {
+
+      // find course attached to enrollment
+      let course: Course = null;
+      for (let c of courses) {
+        if (c.canvasID === enroll.course_id) {
+          course = c;
+          break;
+        }
+      }
+      if (course == null) {
+        continue;
+      }
+
+      if (enroll.grades.current_score) {
+        course.grade = enroll.grades.current_score;
+      } else {
+        course.grade = 0;
+      }
+
+      course.assignments = [];
+
+    }
+
+    return courses;
+
+  }
+
+  async fetchAssignments(course: Course): Promise<Assignment[]> {
+
+    if (!await this.ensureCanvasLogin()) {
+      return [];
+    }
+
+    function clean(str) {
+      return str.replace(/(\r\n\t|\n|\r\t)/gm, '').replace(/&nbsp;/g, ' ').replace(/\s{2,}/g, ' ').trim();
+    }
+
+    if (this.canvasUserID === 0) {
+      await this.fetchCourses();
+    }
+
+    let gradesPage = await this.getPage(`https://utexas.instructure.com/courses/${course.canvasID}/grades`);
+
+    let assigns: Assignment[] = [];
+
+    for (let rowMatch of this.getRegexMatrix(/<tr class="student_assignment[\S\s]+?>([\s\S]+?)<\/tr>/g, gradesPage)) {
+
+      let titleMatch = /\/submissions\/\d+">([\S ]+?)<\/a>/g.exec(rowMatch[1]);
+
+      if (titleMatch != null) {
+
+        let title = clean(titleMatch[1]);
+        let context = clean(/<div class="context">([\s\S]+?)<\/div>/g.exec(rowMatch[1])[1]);
+        let due = clean(/<td class="due">([\s\S]+?)<\/td>/g.exec(rowMatch[1])[1]);
+        let score = clean(/<span class="original_score">([\s\S]+?)<\/span>/g.exec(rowMatch[1])[1]);
+        let maxscore = clean(/<td class="possible points_possible">([\s\S]+?)<\/td>/g.exec(rowMatch[1])[1]);
+
+        if (score.length === 0) {
+          score = '?';
+        }
+
+        title = title.replace(/Submission Only\s*-?\s*/, '').replace(/DS \d+\s+-?\s*/, '');
+
+        assigns.push({
+          title: title,
+          gradetype: context,
+          score: score,
+          maxscore: maxscore,
+          due: due
+        });
+
+      }
+
+    }
+
+    return assigns;
 
   }
 
