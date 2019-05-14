@@ -124,7 +124,7 @@ export class SchedulePage {
       this.updateTimeBar();
 
       let toast = await this.toastCtrl.create({
-        message: 'Check this with the offical website.',
+        message: 'Please check this with the offical website. 👌',
         duration: 3000,
         position: 'top'
       });
@@ -176,7 +176,7 @@ export class SchedulePage {
 
             let name = classtime.name;
             let place = `${classtime.building} ${classtime.room}`;
-            let notes = `(#${classtime.num}) ${classtime.title}`;
+            let notes = `${classtime.title} (#${classtime.num})`;
 
             for (let day of classtime.days) {
 
@@ -199,7 +199,7 @@ export class SchedulePage {
           this.calendar.requestWritePermission().then((perm) => {
             if (perm) {
               this.calendar.createCalendar('Classes');
-              this.saveToCalendar(false);
+              this.saveToCalendar(true);
             }
           });
         }

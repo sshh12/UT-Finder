@@ -79,9 +79,9 @@ export class UTAPI {
 
           } else if (curUrl.startsWith('https://login.utexas.edu')) {
             // currently on the login page
-            const error = await browser.executeScript(
+            let error = await browser.executeScript(
                { code: 'document.getElementById(\'error-message\') != null' }
-            );
+            ) + '';
 
             if (error === 'true') {
 

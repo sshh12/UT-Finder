@@ -91,7 +91,7 @@ export class ClassCalendar {
       let onClick = async () => {
         let alert = await this.altCtrl.create({
           header: classtime.name,
-          subHeader: `(#${classtime.num}) ${classtime.title}`,
+          subHeader: `${classtime.title} (#${classtime.num})`,
           message: `${classtime.building} ${classtime.room} @ ${classtime.timeslot}`,
           buttons: ['Dismiss']
         });

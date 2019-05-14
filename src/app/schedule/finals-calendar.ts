@@ -142,8 +142,8 @@ export class FinalsCalendar {
       let onClick = async () => {
         let alert = await this.altCtrl.create({
           header: final.name,
-          subHeader: `(#${final.num}) ${final.title}`,
-          message: `@ ${final.location}, ${final.startDate.toLocaleString()} to ${final.endDate.toLocaleString()}`,
+          subHeader: `${final.title} (#${final.num})`,
+          message: `${final.location} @ ${final.startDate.toLocaleTimeString()} to ${final.endDate.toLocaleTimeString()}`,
           buttons: ['Dismiss']
         });
         await alert.present();
