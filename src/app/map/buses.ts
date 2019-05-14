@@ -3,7 +3,7 @@ export class BusRoute {
   num: number;
   name: string;
   dir: string;
-};
+}
 
 export let busRoutes: BusRoute[] = [ // https://www.capmetro.org/busroutes/#!
   {num: 640, name: 'Forty Acres', dir: 'C'},

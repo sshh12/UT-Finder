@@ -1,16 +1,13 @@
-import { Component } from '@angular/core';
-
+import { Component, OnInit } from '@angular/core';
 import { HTTP } from '@ionic-native/http/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { CallNumber } from '@ionic-native/call-number/ngx';
-
 import {
   NavController,
   AlertController,
   ToastController,
   Platform,
 } from '@ionic/angular';
-
 import {
   GoogleMaps,
   GoogleMap,
@@ -24,11 +21,10 @@ import {
   Polygon,
   MarkerIcon
 } from '@ionic-native/google-maps';
+import { WeatherAPI } from '../backend/weather-api';
+import { MapsAPI, MapLocation } from '../backend/maps-api';
 
 import { busRoutes, BusRoute } from './buses';
-import { foodPlaces, FoodPlace } from './food';
-
-import { BackupMap } from './backup-map'; // b/c website breaks
 
 class Building {
   name: string; // A Building Center
@@ -43,7 +39,7 @@ class Building {
   templateUrl: 'map.page.html',
   styleUrls: ['map.page.scss']
 })
-export class MapPage {
+export class MapPage implements OnInit {
 
   utCenter: ILatLng = {
     lat: 30.285512,
@@ -52,11 +48,8 @@ export class MapPage {
 
   // Maps
   map: GoogleMap;
-  mapData: any;
+  places: MapLocation[] = [];
   tileOptions: TileOverlayOptions;
-  buildings: Array<Building> = [];
-
-  weatherAPIKey = '30a796e71ba6c4c2e5e7270dfbbe78a2';
 
   constructor(public navCtrl: NavController,
               private platform: Platform,
@@ -64,12 +57,13 @@ export class MapPage {
               private keyboard: Keyboard,
               private caller: CallNumber,
               private alertCtrl: AlertController,
-              private toastCtrl: ToastController) {
+              private toastCtrl: ToastController,
+              private weatherAPI: WeatherAPI,
+              private mapAPI: MapsAPI) {
   }
 
-  async OnInit() {
-    await this.platform.ready();
-    await this.loadMap();
+  ngOnInit() {
+    this.platform.ready().then(() => this.loadMap());
   }
 
   clearMap() {
@@ -81,20 +75,34 @@ export class MapPage {
     this.keyboard.hide();
   }
 
-  search(event: any) { // Handle search bar
+  search(event: any) {
 
     this.clearMap();
 
-    let query = event.target.value.toLowerCase();
+    let query;
+    try {
+      query = event.target.value.toLowerCase();
+    } catch {
+      query = event.toLowerCase();
+    }
 
     if (query && query.trim() !== '') {
 
-      for(let building of this.buildings) {
+      console.log(this.places);
 
-        if(building._repr.includes(query)) {
+      let hits = 0;
+
+      for (let place of this.places) {
+
+        if (place.repr.includes(query)) {
+
+          hits++;
+          if (hits > 10) {
+            break;
+          }
 
           let icon: MarkerIcon = {
-            url: 'assets/map-building.png',
+            url: place.iconURL,
             size: {
               width: 32,
               height: 32
@@ -102,8 +110,8 @@ export class MapPage {
           };
 
           let options: MarkerOptions = { // Create a marker for results
-            title: building.name,
-            position: building.location,
+            title: place.name,
+            position: place.location,
             visible: true,
             animation: null,
             flat: false,
@@ -123,50 +131,27 @@ export class MapPage {
 
   }
 
-  loadMapFromJSON(mapJSON: any) { // TODO delete when UT fixes their stuff
-
-    this.buildings = [];
-
-    for (let i in mapJSON.features) { // Copied from https://maps.utexas.edu/js/controller.js
-      let current = mapJSON.features[i];
-
-      if (current.properties &&
-        current.properties.Building_A &&
-        current.properties.Building_A.length > 2 &&
-        current.properties.BldFAMIS_N &&
-        current.properties.BldFAMIS_N.length > 2) {
-
-        let repr = current.properties.Building_A + current.properties.BldFAMIS_N;
-        repr = repr.toLowerCase();
-
-        let [lat, lng] = current.properties.centroid.split(", ");
-        this.buildings.push({
-          name: current.properties.Building_A,
-          symbol: current.properties.BldFAMIS_N,
-          location: {lat: parseFloat(lat), lng: parseFloat(lng)},
-          _repr: repr,
-          rawJSON: current
-        });
-
-      }
+  addLocations(locations: MapLocation[]) {
+    for (let loc of locations) {
+      loc.repr = (loc.name + loc.abbr + loc.type).toLowerCase();
     }
-
+    this.places.push(...locations);
   }
 
-  async loadMap() { // Init the map and tile data
+  async loadMap() {
 
-    try {
-      let mapData = await this.http.get('https://maps.utexas.edu/data/utm.json', {}, {});
-      this.loadMapFromJSON(JSON.parse(mapData.data));
-    } catch {
-      this.loadMapFromJSON(BackupMap);
-    }
+    this.mapAPI.fetchUTBuildings().then((locations) => {
+      this.addLocations(locations);
+    });
+    this.mapAPI.fetchFoodPlaces().then((locations) => {
+      this.addLocations(locations);
+    });
 
     let mapOptions: GoogleMapOptions = {
       mapType: GoogleMapsMapTypeId.HYBRID,
       camera: {
          target: this.utCenter,
-         zoom: 16
+         zoom: 15
        },
        styles: [
          {
@@ -182,12 +167,13 @@ export class MapPage {
 
     this.map = GoogleMaps.create('map_canvas', mapOptions);
 
-    this.tileOptions = { // Copied from https://maps.utexas.edu/js/controller.js
+    // Copied from https://maps.utexas.edu/js/controller.js
+    this.tileOptions = {
       getTile: (x: number, y: number, zoom: number) => {
         let z2 = Math.pow(2, zoom);
-        x = x >= 0 ? x : z2 + x
-        if ((13 <= zoom) && (zoom <= 21)) {
-          return "https://maps.utexas.edu/map_tiler/" + zoom + "/" + x + "/" + y + ".png";
+        x = x >= 0 ? x : z2 + x;
+        if (13 <= zoom && zoom <= 21) {
+          return `https://maps.utexas.edu/map_tiler/${zoom}/${x}/${y}.png`;
         }
         return null;
       },
@@ -203,42 +189,15 @@ export class MapPage {
   }
 
   showFood() {
-
     this.closeKeyboard();
-    this.clearMap();
-
-    for(let foodPlace of foodPlaces) {
-
-      let icon: MarkerIcon = {
-        url: 'assets/map-food.png',
-        size: {
-          width: 32,
-          height: 32
-        }
-      };
-
-      let options: MarkerOptions = {
-        title: foodPlace.name,
-        icon: icon,
-        position: {lat: foodPlace.lat, lng: foodPlace.lng},
-        visible: true,
-        animation: null,
-        flat: false,
-        zIndex: 9999
-      };
-
-      this.map.addMarker(options).then((marker: Marker) => {
-      });
-
-    }
-
+    this.search('food');
   }
 
   async showBuses() {
 
     this.closeKeyboard();
 
-    if(!this.map) {
+    if (!this.map) {
       this.loadMap();
     }
 
@@ -257,7 +216,7 @@ export class MapPage {
 
     let checked = true;
 
-    for(let route of busRoutes) {
+    for (let route of busRoutes) {
 
       alertOptions.inputs.push({
         type: 'radio',
@@ -281,19 +240,19 @@ export class MapPage {
     this.clearMap();
 
     let date: Date = new Date();
-    let dateString: string = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+    let dateString = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 
     let url = `https://www.capmetro.org/planner/s_routetrace.php?route=${route.num}&dir=${route.dir}&date=${dateString}&opts=30`;
 
     let routeData = await this.http.get(url, {}, {});
     let json = JSON.parse(routeData.data);
 
-    if(json.status != 'OK') {
+    if (json.status !== 'OK') {
       let toast = await this.toastCtrl.create({
         message: 'Route not available 😢',
         duration: 3000,
         position: 'top'
-      })
+      });
       await toast.present();
       return;
     }
@@ -306,7 +265,7 @@ export class MapPage {
       lng: json.trace[0][1]
     });
 
-    for(let i = 1; i < json.trace.length; i++) { // undo weird compression algo
+    for (let i = 1; i < json.trace.length; i++) { // undo weird compression algo
       traceCoords.push({
         lat: traceCoords[i-1].lat + json.trace[i][0] / 1000000,
         lng: traceCoords[i-1].lng + json.trace[i][1] / 1000000
@@ -330,7 +289,7 @@ export class MapPage {
 
     // ----- Stops
 
-    for(let stop of json.stops) {
+    for (let stop of json.stops) {
 
       let stopData = await this.http.get(`https://www.capmetro.org/planner/s_stopinfo.asp?stopid=${stop.id}&opt=2`, {}, {});
       let stopJson = JSON.parse(stopData.data);
@@ -362,20 +321,11 @@ export class MapPage {
 
   async showWeather() {
 
-    let weatherData = await this.http.get(`http://api.openweathermap.org/data/2.5/weather?lat=${this.utCenter.lat}&lon=${this.utCenter.lng}&appid=${this.weatherAPIKey}`, {}, {});
-
-    let weather = JSON.parse(weatherData.data);
-
-    let temp = Math.round((weather.main.temp - 273.15) * 9 / 5 + 32);
-
-    let conditions = [];
-    for(let cond of weather.weather) {
-      conditions.push(cond.description);
-    }
+    let weather = await this.weatherAPI.fetchWeather(this.utCenter.lat, this.utCenter.lng);
 
     let alert = await this.alertCtrl.create({
       header: 'Weather',
-      message: `It's ${temp}°F with ${conditions.join(", ")}`
+      message: `It's ${weather.temp}°F with ${weather.conditions.join(', ')}`
     });
     await alert.present();
 

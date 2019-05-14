@@ -14,6 +14,8 @@ import { HTTP } from '@ionic-native/http/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { UTAPI } from './backend/ut-api';
+import { WeatherAPI } from './backend/weather-api';
+import { MapsAPI } from './backend/maps-api';
 
 @NgModule({
   declarations: [AppComponent],
@@ -31,9 +33,11 @@ import { UTAPI } from './backend/ut-api';
     GoogleMaps,
     Calendar,
     Keyboard,
-    UTAPI,
     HTTP,
     CallNumber,
+    UTAPI,
+    WeatherAPI,
+    MapsAPI,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]
