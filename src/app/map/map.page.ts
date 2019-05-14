@@ -88,8 +88,6 @@ export class MapPage implements OnInit {
 
     if (query && query.trim() !== '') {
 
-      console.log(this.places);
-
       let hits = 0;
 
       for (let place of this.places) {
@@ -97,7 +95,7 @@ export class MapPage implements OnInit {
         if (place.repr.includes(query)) {
 
           hits++;
-          if (hits > 10) {
+          if (hits > 100) {
             break;
           }
 
@@ -267,8 +265,8 @@ export class MapPage implements OnInit {
 
     for (let i = 1; i < json.trace.length; i++) { // undo weird compression algo
       traceCoords.push({
-        lat: traceCoords[i-1].lat + json.trace[i][0] / 1000000,
-        lng: traceCoords[i-1].lng + json.trace[i][1] / 1000000
+        lat: traceCoords[i - 1].lat + json.trace[i][0] / 1000000,
+        lng: traceCoords[i - 1].lng + json.trace[i][1] / 1000000
       });
     }
 
