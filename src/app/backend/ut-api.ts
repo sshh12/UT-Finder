@@ -30,6 +30,12 @@ export class FinalTime {
     dayIndex?: number;
 }
 
+export class MoneyAccount {
+    name: string;
+    balance: number;
+    status: string;
+}
+
 @Injectable()
 export class UTAPI {
 
@@ -48,6 +54,10 @@ export class UTAPI {
 
     this.http.disableRedirect(false);
 
+  }
+
+  openNewTab(url: string) {
+    this.iab.create(url, '_blank', {location: 'no'});
   }
 
   doLogin(username: string, password: string, save: boolean): Promise<void> {
@@ -416,6 +426,24 @@ export class UTAPI {
 
   }
 
+  async fetchAccounts(): Promise<MoneyAccount[]> {
+
+    if (!await this.ensureUTLogin()) {
+      return [];
+    }
+
+    let accounts: MoneyAccount[] = [];
+
+    let tableHTML = await this.fetchHTMLFromTable('https://utdirect.utexas.edu/hfis/diningDollars.WBX', '<th>Balance  </th>');
+    let wioHTML = await this.getPage('https://utdirect.utexas.edu/acct/rec/wio/wio_home.WBX');
+
+    accounts.push(...this.parseAccountsTable(tableHTML));
+    accounts.push(...this.parseWIO(wioHTML));
+
+    return accounts;
+
+  }
+
   getSemesterCodes(): string[] {
     let now = new Date();
     let curYear = now.getFullYear();
@@ -459,6 +487,55 @@ export class UTAPI {
     }
 
     return [start, end];
+
+  }
+
+  parseAccountsTable(tableHTML: string): Array<MoneyAccount> { // Convert HTML to classes
+
+    let accounts: Array<MoneyAccount> = [];
+
+    for (let rowMatch of this.getRegexMatrix(/tr\s*?class=\"datarow\">([\s\S]+?)<\/tr/g, tableHTML)) {
+
+      let colsMatch = this.getRegexMatrix(/td\s*?>([\s\S]+?)<\/td/g, rowMatch[1]);
+
+      let name = colsMatch[0][1];
+      let balance = parseFloat(colsMatch[1][1].replace('$ ', ''));
+      let status = colsMatch[2][1];
+
+      accounts.push({
+        name: name,
+        balance: balance,
+        status: status
+      });
+
+    }
+
+    return accounts;
+
+  }
+
+  parseWIO(wioHTML: string): Array<MoneyAccount> {
+
+    let accounts: Array<MoneyAccount> = [];
+
+    let amtMatches = this.getRegexMatrix(/td\s*?class=\"item_amt\">([\s\S]+?)<\/td/g, wioHTML);
+
+    let clean = (s) => s.replace(/(\r\n\t|\n|\r\t)/gm, '').replace('&#44;', '').replace('&#46;', '.').replace(' ', '').replace('$', '');
+
+    if (amtMatches.length === 0) {
+      return [];
+    }
+
+    let bal = parseFloat(clean(amtMatches[0][1]));
+
+    // For now only one account
+    accounts.push({
+      name: 'What I Owe',
+      balance: bal,
+      status: 'Active'
+    });
+
+    return accounts;
 
   }
 

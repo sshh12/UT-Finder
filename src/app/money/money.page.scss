@@ -21,7 +21,12 @@ ion-spinner {
 
 hr {
   height: 1px;
-  background-color: #808080;
+  background-color: #c6c6c6;
   border-width: 0.1;
   box-sizing: content-box;
+}
+
+.full-btn {
+  width: 100%;
+  padding-right: 5px;
 }

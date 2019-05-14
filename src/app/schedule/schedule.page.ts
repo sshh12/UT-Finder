@@ -100,35 +100,48 @@ export class SchedulePage {
 
       this.loading = true;
 
-      if (this.scheduleView === 'finals') {
-        let finals = await this.utapi.fetchFinals();
-        this.finalsCalendar.finals = finals;
-        this.finalsCalendar.generate();
-        this.storage.set('schedule:finals', finals);
-      } else if (this.scheduleView === 'current') {
-        let classes = await this.utapi.fetchSchedule();
-        this.currentCalendar.classes = classes;
-        this.currentCalendar.generate();
-        this.storage.set('schedule:classes', classes);
-      } else {
-        let sems = this.utapi.getSemesterCodes();
-        let classes = await this.utapi.fetchSchedule(sems[1]);
-        if (classes.length === 0) {
-          classes = await this.utapi.fetchSchedule(sems[2]);
+      try {
+
+        if (this.scheduleView === 'finals') {
+          let finals = await this.utapi.fetchFinals();
+          this.finalsCalendar.finals = finals;
+          this.finalsCalendar.generate();
+          this.storage.set('schedule:finals', finals);
+        } else if (this.scheduleView === 'current') {
+          let classes = await this.utapi.fetchSchedule();
+          this.currentCalendar.classes = classes;
+          this.currentCalendar.generate();
+          this.storage.set('schedule:classes', classes);
+        } else {
+          let sems = this.utapi.getSemesterCodes();
+          let classes = await this.utapi.fetchSchedule(sems[1]);
+          if (classes.length === 0) {
+            classes = await this.utapi.fetchSchedule(sems[2]);
+          }
+          this.futureCalendar.classes = classes;
+          this.futureCalendar.generate();
+          this.storage.set('schedule:futureclasses', classes);
         }
-        this.futureCalendar.classes = classes;
-        this.futureCalendar.generate();
-        this.storage.set('schedule:futureclasses', classes);
+
+        this.updateTimeBar();
+
+        let toast = await this.toastCtrl.create({
+          message: 'Please check this with the offical website 👌',
+          duration: 3000,
+          position: 'top'
+        });
+        await toast.present();
+
+      } catch {
+
+        let alert = await this.altCtrl.create({
+          header: 'Error',
+          subHeader: 'Something is weird with your schedule 😔',
+          buttons: ['Dismiss']
+        });
+        await alert.present();
+
       }
-
-      this.updateTimeBar();
-
-      let toast = await this.toastCtrl.create({
-        message: 'Please check this with the offical website. 👌',
-        duration: 3000,
-        position: 'top'
-      });
-      await toast.present();
 
       this.loading = false;
 

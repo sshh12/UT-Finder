@@ -62,7 +62,7 @@ export class CanvasPage {
       for (let course of canvasCourses) {
 
         // ensure active course
-        if (course.enrollments[0].enrollment_state != 'active') {
+        if (course.enrollments[0].enrollment_state !== 'active') {
           continue;
         }
 
@@ -73,7 +73,7 @@ export class CanvasPage {
 
         this.accountID = course.account_id;
 
-        if (course.enrollments[0] && this.userID == 0) {
+        if (course.enrollments[0] && this.userID === 0) {
           this.userID = course.enrollments[0].user_id;
         }
 
