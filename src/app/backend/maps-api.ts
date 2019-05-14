@@ -18,11 +18,19 @@ let PLACES = [
   {name: 'Jester City Limits', lat: 30.282856, lng: -97.736759},
   {name: 'Jester Pizza', lat: 30.283102, lng: -97.736604},
   {name: 'Taco Cabana', lat: 30.285180, lng: -97.735934},
-  {name: 'Zen', lat: 30.285024, lng:  -97.735937},
-  {name: 'Chick-fil-A', lat: 30.284926, lng: -97.736007},
-  {name: 'Chick-fil-A', lat: 30.286697, lng: -97.741164},
   {name: 'Qualcomm Cafe', lat: 30.286197, lng: -97.736889},
   {name: 'Panda Express', lat: 30.286916, lng: -97.741161},
+  {name: 'Halal Bros', lat: 30.292533, lng: -97.741647},
+  {name: 'In-N-Out', lat: 30.292216, lng: -97.741654},
+  {name: 'Whataburger', lat: 30.293458, lng: -97.742170},
+  {name: 'Cabo Bob\'s', lat: 30.295704, lng: -97.744204},
+  {name: 'Torchy\'s Tacos', lat: 30.293710, lng: -97.741730},
+  {name: 'Madam Mam\'s', lat: 30.290672, lng: -97.742399},
+  {name: 'Caffe Medici', lat: 30.285541, lng: -97.742003},
+  {name: 'Pluckers Wing Bar', lat: 30.286330, lng: -97.744990},
+  {name: 'Mango Mango', lat: 30.286705, lng: -97.744907},
+  {name: 'Raku Sushi', lat: 30.286634, lng: -97.744928},
+  {name: 'Thai, How Are You?', lat: 30.284213, lng: -97.742339}
 ];
 
 @Injectable()
@@ -87,7 +95,7 @@ export class MapsAPI {
 
     let results = [];
     let pageToken;
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 4; i++) {
       let url;
       if (i === 0) {
         url = `${this.googleNearbyURL}?key=${this.googleAPIKey}&location=30.285512,-97.735946&radius=2000&keyword=food`;
@@ -98,7 +106,7 @@ export class MapsAPI {
       let mapJSON = JSON.parse(resp.data);
       results.push(...mapJSON.results);
       pageToken = mapJSON.next_page_token;
-      await sleep(500);
+      await sleep(800);
     }
 
     for (let place of results) {

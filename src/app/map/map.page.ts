@@ -23,16 +23,7 @@ import {
 } from '@ionic-native/google-maps';
 import { WeatherAPI } from '../backend/weather-api';
 import { MapsAPI, MapLocation } from '../backend/maps-api';
-
-import { busRoutes, BusRoute } from './buses';
-
-class Building {
-  name: string; // A Building Center
-  symbol: string; // ABC
-  location: ILatLng;
-  rawJSON: any;
-  _repr: string;
-}
+import { BusAPI, BusRoute } from '../backend/bus-api';
 
 @Component({
   selector: 'page-map',
@@ -51,15 +42,14 @@ export class MapPage implements OnInit {
   places: MapLocation[] = [];
   tileOptions: TileOverlayOptions;
 
-  constructor(public navCtrl: NavController,
-              private platform: Platform,
-              private http: HTTP,
+  constructor(private platform: Platform,
               private keyboard: Keyboard,
               private caller: CallNumber,
               private alertCtrl: AlertController,
               private toastCtrl: ToastController,
               private weatherAPI: WeatherAPI,
-              private mapAPI: MapsAPI) {
+              private mapAPI: MapsAPI,
+              private busAPI: BusAPI) {
   }
 
   ngOnInit() {
@@ -107,7 +97,7 @@ export class MapPage implements OnInit {
             }
           };
 
-          let options: MarkerOptions = { // Create a marker for results
+          let options: MarkerOptions = {
             title: place.name,
             position: place.location,
             visible: true,
@@ -207,45 +197,35 @@ export class MapPage implements OnInit {
         }, {
           text: 'Show',
           handler: (data: any) => {
-            this.renderRoute(JSON.parse(data));
+            this.showRoute(JSON.parse(data));
           }
         }]
     };
 
     let checked = true;
 
-    for (let route of busRoutes) {
-
+    for (let route of await this.busAPI.fetchRoutes()) {
       alertOptions.inputs.push({
         type: 'radio',
         label: `${route.num} ${route.name}`,
         value: JSON.stringify(route),
         checked: checked
       });
-
       checked = false;
-
     }
 
     let alert = await this.alertCtrl.create(alertOptions);
-
     await alert.present();
 
   }
 
-  async renderRoute(route: BusRoute) { // Render a specific route
+  async showRoute(route: BusRoute) {
 
     this.clearMap();
 
-    let date: Date = new Date();
-    let dateString = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+    let routeData = await this.busAPI.fetchRouteData(route);
 
-    let url = `https://www.capmetro.org/planner/s_routetrace.php?route=${route.num}&dir=${route.dir}&date=${dateString}&opts=30`;
-
-    let routeData = await this.http.get(url, {}, {});
-    let json = JSON.parse(routeData.data);
-
-    if (json.status !== 'OK') {
+    if (!routeData) {
       let toast = await this.toastCtrl.create({
         message: 'Route not available 😢',
         duration: 3000,
@@ -255,23 +235,8 @@ export class MapPage implements OnInit {
       return;
     }
 
-    // ----- Outline
-    let traceCoords: ILatLng[] = [];
-
-    traceCoords.push({
-      lat: json.trace[0][0],
-      lng: json.trace[0][1]
-    });
-
-    for (let i = 1; i < json.trace.length; i++) { // undo weird compression algo
-      traceCoords.push({
-        lat: traceCoords[i - 1].lat + json.trace[i][0] / 1000000,
-        lng: traceCoords[i - 1].lng + json.trace[i][1] / 1000000
-      });
-    }
-
     let polyOptions: PolylineOptions = {
-      points: traceCoords,
+      points: routeData.routeCoords,
       strokeColor: '#1070AF',
       fillColor: '#00000000', // no fill
       strokeWidth: 10,
@@ -280,17 +245,9 @@ export class MapPage implements OnInit {
       clickable: false
     };
 
-    this.map.addPolygon(polyOptions).then((polygon: Polygon) => {
-    });
+    this.map.addPolygon(polyOptions).then((polygon: Polygon) => {});
 
-    // -----
-
-    // ----- Stops
-
-    for (let stop of json.stops) {
-
-      let stopData = await this.http.get(`https://www.capmetro.org/planner/s_stopinfo.asp?stopid=${stop.id}&opt=2`, {}, {});
-      let stopJson = JSON.parse(stopData.data);
+    for (let stop of routeData.stops) {
 
       let icon: MarkerIcon = {
         url: 'assets/map-front-bus.png',
@@ -301,17 +258,16 @@ export class MapPage implements OnInit {
       };
 
       let options: MarkerOptions = {
-        title: stopJson.name,
+        title: stop.name,
         icon: icon,
-        position: {lat: stop.latLng[0], lng: stop.latLng[1]},
+        position: stop.position,
         visible: true,
         animation: null,
         flat: false,
         zIndex: 9999
       };
 
-      this.map.addMarker(options).then((marker: Marker) => {
-      });
+      this.map.addMarker(options).then((marker: Marker) => { });
 
     }
 

@@ -16,6 +16,7 @@ import { CallNumber } from '@ionic-native/call-number/ngx';
 import { UTAPI } from './backend/ut-api';
 import { WeatherAPI } from './backend/weather-api';
 import { MapsAPI } from './backend/maps-api';
+import { BusAPI } from './backend/bus-api';
 
 @NgModule({
   declarations: [AppComponent],
@@ -38,6 +39,7 @@ import { MapsAPI } from './backend/maps-api';
     UTAPI,
     WeatherAPI,
     MapsAPI,
+    BusAPI,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]
