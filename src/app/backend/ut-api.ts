@@ -40,6 +40,7 @@ export class Course {
   canvasID: number;
   name: string;
   title: string;
+  code: string;
   grade?: number;
   assignments?: Array<Assignment> = [];
 }
@@ -471,11 +472,10 @@ export class UTAPI {
     let canvasCourses = await this.getCanvas('courses');
     let courses: Course[] = [];
 
-    // get all courses
     for (let course of canvasCourses) {
 
       // ensure active course
-      if (course.enrollments[0].enrollment_state !== 'active') {
+      if (!course.enrollments || course.enrollments[0].enrollment_state !== 'active') {
         continue;
       }
 
@@ -486,13 +486,14 @@ export class UTAPI {
 
       this.canvasAccountID = course.account_id;
 
-      if (course.enrollments[0] && this.canvasUserID === 0) {
+      if (this.canvasUserID === 0) {
         this.canvasUserID = course.enrollments[0].user_id;
       }
 
       courses.push({
         canvasID: course.id,
         name: course.name,
+        code: course.course_code,
         title: course.name.replace(/\w\w\d\d -/, '').replace(/\s+\(\d+\)\s*/, '').trim()
       });
 
@@ -504,14 +505,10 @@ export class UTAPI {
     for (let enroll of canvasEnrollments) {
 
       // find course attached to enrollment
-      let course: Course = null;
-      for (let c of courses) {
-        if (c.canvasID === enroll.course_id) {
-          course = c;
-          break;
-        }
-      }
-      if (course == null) {
+      let course: Course = courses.find((course) => {
+        return course.canvasID === enroll.course_id;
+      });
+      if (!course) {
         continue;
       }
 
@@ -520,7 +517,6 @@ export class UTAPI {
       } else {
         course.grade = 0;
       }
-
       course.assignments = [];
 
     }

@@ -49,6 +49,10 @@ export class CanvasPage {
       this.router.navigateByUrl('/tabs/canvas/assignments?course=' + course.canvasID);
     }
 
+    getIcon(course: Course) {
+      return getCourseIcon(course);
+    }
+
 }
 
 @Component({
@@ -77,4 +81,25 @@ export class AssignmentsPage {
     this.showDecimalScores = !this.showDecimalScores;
   }
 
+}
+
+// Map class subjects to font-awesome icons
+let ICONS = {
+  'ast': 'meteor',
+  'c s': 'laptop-code',
+  'gov': 'landmark',
+  'his': 'scroll',
+  'm': 'calculator',
+  'mis': 'wifi',
+  'mus': 'music',
+  'ped': 'dumbbell',
+  'ugs': 'school'
+}
+
+function getCourseIcon(course) {
+  let subject = course.code.match(/([A-Z ]+) \d+\w*/)[1].toLowerCase();
+  if(subject in ICONS) {
+    return ICONS[subject];
+  }
+  return "chalkboard-teacher";
 }

@@ -21,8 +21,18 @@
         {{ assign.title }}
         <p>{{ assign.gradetype }} {{ assign.due != '' ? '(' + assign.due + ')' : '' }}</p>
       </ion-label>
-      <ion-badge *ngIf="!showDecimalScores" (click)="toggleScoreFormat()" color='{{ assign.score == "?" ? "light" : "success" }}' slot='end'>{{ assign.score }}/{{ assign.maxscore }}</ion-badge>
-      <ion-badge *ngIf="showDecimalScores" (click)="toggleScoreFormat()" color='{{ assign.score == "?" ? "light" : "success" }}' slot='end'>{{ assign.score == '?' ? '--.--' : (+assign.score / +assign.maxscore * 100).toFixed(2) }}%</ion-badge>
+      <ion-badge *ngIf="!showDecimalScores" 
+                 (click)="toggleScoreFormat()" 
+                 color='{{ assign.score == "?" ? "light" : "success" }}' 
+                 slot='end'>
+        {{ assign.score }}/{{ assign.maxscore }}
+      </ion-badge>
+      <ion-badge *ngIf="showDecimalScores" 
+                 (click)="toggleScoreFormat()" 
+                 color='{{ assign.score == "?" ? "light" : "success" }}' 
+                 slot='end'>
+        {{ assign.score == '?' ? '--.--' : (+assign.score / +assign.maxscore * 100).toFixed(2) }}%
+      </ion-badge>
     </ion-item>
 
   </ion-list>
