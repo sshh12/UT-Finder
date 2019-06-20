@@ -43,9 +43,7 @@ export class BusAPI {
   }
 
   fetchRoutes(): Promise<BusRoute[]> {
-    return new Promise((resolve) => {
-      resolve(busRoutes);
-    });
+    return Promise.resolve(busRoutes);
   }
 
   async fetchRouteData(route: BusRoute): Promise<RouteData> {
@@ -53,10 +51,15 @@ export class BusAPI {
     let date: Date = new Date();
     let dateString = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
     let url = `https://www.capmetro.org/planner/s_routetrace.php?route=${route.num}&dir=${route.dir}&date=${dateString}&opts=30`;
+    let routeData;
 
-    let routeData = await this.http.get(url, {}, {});
+    try {
+      routeData = await this.http.get(url, {}, {});
+    } catch(error) {
+      return null;
+    }
+
     let json = JSON.parse(routeData.data);
-
     if (json.status !== 'OK') {
       return null;
     }

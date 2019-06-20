@@ -178,7 +178,7 @@ export class MapPage implements OnInit {
 
   showFood() {
     this.closeKeyboard();
-    this.search('food');
+    this.search('FoodLocation');
   }
 
   async showBuses() {
