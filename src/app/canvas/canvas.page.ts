@@ -85,21 +85,44 @@ export class AssignmentsPage {
 
 // Map class subjects to font-awesome icons
 let ICONS = {
+  'acc': 'money-check-alt',
+  'ase': 'plane',
+  'ant': 'users',
   'ast': 'meteor',
+  'arc': 'vihara',
+  'bch': 'flask',
+  'bio': 'kiwi-bird',
+  'b a': 'user-tie',
+  'ch':  'atom',
+  'c c': 'gopuram',
+  'com': 'comments',
   'c s': 'laptop-code',
+  'eco': 'dollar-sign',
+  'e e': 'microchip',
+  'grg': 'globe-americas',
   'gov': 'landmark',
   'his': 'scroll',
-  'm': 'calculator',
+  'm'  : 'calculator',
+  'm e': 'cogs',
   'mis': 'wifi',
   'mus': 'music',
+  'n':   'stethoscope',
+  'phl': 'book-reader',
+  'phy': 'lightbulb',
   'ped': 'dumbbell',
-  'ugs': 'school'
-}
+  'rhe': 'edit',
+  'sds': 'chart-bar',
+  'ugs': 'school',
+  'wgs': 'female'
+};
 
-function getCourseIcon(course) {
-  let subject = course.code.match(/([A-Z ]+) \d+\w*/)[1].toLowerCase();
-  if(subject in ICONS) {
-    return ICONS[subject];
+function getCourseIcon(course: Course): String {
+  let subjectMatch = course.code.match(/([A-Z ]+) \w?\d+\w*/);
+  if(subjectMatch[1]) {
+    let subject = subjectMatch[1].toLowerCase();
+    if(subject in ICONS) {
+      return ICONS[subject];
+    }
   }
   return "chalkboard-teacher";
 }
