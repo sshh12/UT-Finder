@@ -6,3 +6,17 @@
 ion-content.map {
   --background: transparent;
 }
+
+.bus-badge {
+  padding: 5px 5px 5px 5px;
+  position: relative;
+  top: 4px;
+  margin-right: 8px;
+}
+
+.route-normal {
+  background-color: rgb(0, 105, 170);
+}
+.route-rapid {
+  background-color: rgb(125, 125, 125);
+}
