@@ -21,7 +21,7 @@ export let PLACES = [
     {name: 'Thai, How Are You?', lat: 30.284213, lng: -97.742339},
     {name: 'Zen', lat: 30.284953, lng: -97.735983},
     {name: 'Chick-fil-A', lat: 30.285003, lng: -97.736040},
-    {name: 'Chick-fil-A', lat:30.281784, lng: -97.743158},
+    {name: 'Chick-fil-A', lat: 30.281755, lng: -97.743159},
     {name: 'Littlefield Patio Cafe', lat: 30.289290, lng: -97.739406},
     {name: 'Pizza Press', lat: 30.290677, lng: -97.742043},
     {name: 'Madam Mam\'s', lat: 30.290700, lng: -97.742401},
@@ -29,5 +29,13 @@ export let PLACES = [
     {name: 'Don', lat: 30.292911, lng: -97.741747},
     {name: 'Cabo Bob\'s', lat: 30.295717, lng: -97.744188},
     {name: 'Taco Bell', let: 30.282840, lng: -97.742336},
-    {name: 'Raising Cain\'s Chicken Fingers', lat: 30.281621, lng: -97.742524}
+    {name: 'Raising Cain\'s Chicken Fingers', lat: 30.281621, lng: -97.742524},
+    {name: 'Sushi Niichi', lat: 30.287709, lng: -97.745567},
+    {name: 'The Clay Pit', lat: 30.278945, lng: -97.742434},
+    {name: 'Sushi Junai', lat: 30.279035, lng: -97.741638},
+    {name: 'TCBY', lat: 30.281221, lng: -97.740788},
+    {name: 'Pizza Hut', lat: 30.281307, lng: -97.741427},
+    {name: 'Papa John\'s Pizza', lat: 30.281304, lng: -97.742239},
+    {name: 'Domino\'s Pizza', lat: 30.282156, lng: -97.742446},
+    {name: 'Quiznos', lat: 30.286597, lng: -97.741289}
 ];

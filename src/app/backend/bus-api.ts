@@ -27,6 +27,9 @@ class LiveBusLocation {
 
 // https://www.capmetro.org/busroutes/#!
 export let busRoutes: BusRoute[] = [
+  {num: 1, type: 'MetroBus', name: 'North Lamar/South Congress', dir: 'N'},
+  {num: 3, type: 'MetroBus', name: 'Burnet/Manchaca', dir: 'N'},
+  {num: 19, type: 'MetroBus', name: 'Bull Creek', dir: 'N'},
   {num: 640, type: 'MetroBus', name: 'Forty Acres', dir: 'C'},
   {num: 641, type: 'MetroBus', name: 'East Campus', dir: 'E'},
   {num: 642, type: 'MetroBus', name: 'West Campus', dir: 'K'},
