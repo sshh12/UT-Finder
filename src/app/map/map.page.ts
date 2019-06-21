@@ -22,6 +22,7 @@ import {
   MarkerIcon
 } from '@ionic-native/google-maps';
 import { WeatherAPI } from '../backend/weather-api';
+import { TowerAPI } from '../backend/tower-api';
 import { MapsAPI, MapLocation } from '../backend/maps-api';
 import { BusAPI, BusRoute } from '../backend/bus-api';
 
@@ -32,7 +33,7 @@ import { BusAPI, BusRoute } from '../backend/bus-api';
 })
 export class MapPage implements OnInit {
 
-  utCenter: ILatLng = {
+  mapCenter: ILatLng = {
     lat: 30.285512,
     lng: -97.735946
   };
@@ -56,7 +57,8 @@ export class MapPage implements OnInit {
               private toastCtrl: ToastController,
               private weatherAPI: WeatherAPI,
               private mapAPI: MapsAPI,
-              private busAPI: BusAPI) {
+              private busAPI: BusAPI,
+              private TowerAPI: TowerAPI) {
   }
 
   ngOnInit() {
@@ -123,11 +125,32 @@ export class MapPage implements OnInit {
     this.mapAPI.fetchFoodPlaces().then((locations) => {
       this.addLocations(locations);
     });
+    
+    this.TowerAPI.fetchTowerState().then((towerState) => {
+      let icon: MarkerIcon = {
+        url: towerState.iconURL,
+        size: {
+          width: 36,
+          height: 36
+        }
+      };
+      let options: MarkerOptions = {
+        title: towerState.text,
+        snippet: towerState.subtext,
+        position: towerState.position,
+        visible: true,
+        animation: null,
+        flat: false,
+        icon: icon,
+        zIndex: 9999
+      };
+      this.map.addMarker(options);
+    })
 
     let mapOptions: GoogleMapOptions = {
       mapType: GoogleMapsMapTypeId.HYBRID,
       camera: {
-         target: this.utCenter,
+         target: this.mapCenter,
          zoom: 15
        },
        styles: [
@@ -335,7 +358,7 @@ export class MapPage implements OnInit {
   async showWeather() {
 
     this.loading = true;
-    let weather = await this.weatherAPI.fetchWeather(this.utCenter.lat, this.utCenter.lng);
+    let weather = await this.weatherAPI.fetchWeather(this.mapCenter.lat, this.mapCenter.lng);
     this.loading = false;
 
     let alert = await this.alertCtrl.create({
