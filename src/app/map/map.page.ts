@@ -107,9 +107,7 @@ export class MapPage implements OnInit {
             zIndex: 9999
           };
 
-          this.map.addMarker(options).then((marker: Marker) => {
-            marker.showInfoWindow();
-          });
+          this.map.addMarker(options);
 
         }
 
@@ -184,6 +182,28 @@ export class MapPage implements OnInit {
   async showBuses() {
 
     this.closeKeyboard();
+
+    /// DEBUG
+    for(let busLoc of await this.busAPI.fetchBusLocations()) {
+      let icon: MarkerIcon = {
+        url: 'assets/map-front-bus.png',
+        size: {
+          width: 32,
+          height: 32
+        }
+      };
+      let options: MarkerOptions = {
+        title: busLoc.routeId,
+        icon: icon,
+        position: busLoc.position,
+        visible: true,
+        animation: null,
+        flat: false,
+        zIndex: 9999
+      };
+      this.map.addMarker(options);
+    }
+    /// GUBED
 
     if (!this.map) {
       this.loadMap();
@@ -267,7 +287,7 @@ export class MapPage implements OnInit {
         zIndex: 9999
       };
 
-      this.map.addMarker(options).then((marker: Marker) => { });
+      this.map.addMarker(options);
 
     }
 
