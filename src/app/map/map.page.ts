@@ -16,9 +16,9 @@ import {
   TileOverlayOptions,
   MarkerOptions,
   Marker,
+  Polyline,
   ILatLng,
   PolylineOptions,
-  Polygon,
   MarkerIcon
 } from '@ionic-native/google-maps';
 import { WeatherAPI } from '../backend/weather-api';
@@ -39,13 +39,15 @@ export class MapPage implements OnInit {
 
   // Maps
   map: GoogleMap;
-  places: MapLocation[] = [];
   tileOptions: TileOverlayOptions;
   loading = false;
 
+  places: MapLocation[] = [];
+  placeMarkers: { [key: string]: Marker; } = {};
+
   showBusRoute: BusRoute = null;
   liveBusInterval: any = 0;
-  liveBusMarkers: { [key: string]: Marker; } = {};
+  busMarkers: { [key: string]: Marker | Polyline; } = {};
 
   constructor(private platform: Platform,
               private keyboard: Keyboard,
@@ -69,48 +71,18 @@ export class MapPage implements OnInit {
 
     let query;
     try {
-      query = event.target.value.toLowerCase();
+      query = event.target.value;
     } catch {
-      query = event.toLowerCase();
+      query = event;
     }
+    query = query.toLowerCase().trim();
 
-    if (query && query.trim() !== '') {
-
-      let hits = 0;
-
-      for (let place of this.places) {
-
-        if (place.repr.includes(query)) {
-
-          hits++;
-          if (hits > 100) {
-            break;
-          }
-
-          let icon: MarkerIcon = {
-            url: place.iconURL,
-            size: {
-              width: 32,
-              height: 32
-            }
-          };
-
-          let options: MarkerOptions = {
-            title: place.name,
-            position: place.location,
-            visible: true,
-            animation: null,
-            flat: false,
-            icon: icon,
-            zIndex: 9999
-          };
-
-          this.map.addMarker(options);
-
-        }
-
+    for (let place of this.places) {
+      if (query.length != 0 && place.repr.includes(query)) {
+        this.placeMarkers[place.name].setVisible(true);
+      } else {
+        this.placeMarkers[place.name].setVisible(false);
       }
-
     }
 
   }
@@ -118,11 +90,32 @@ export class MapPage implements OnInit {
   addLocations(locations: MapLocation[]) {
     for (let loc of locations) {
       loc.repr = (loc.name + loc.abbr + loc.type).toLowerCase();
+      let icon: MarkerIcon = {
+        url: loc.iconURL,
+        size: {
+          width: 32,
+          height: 32
+        }
+      };
+      let options: MarkerOptions = {
+        title: loc.name,
+        position: loc.location,
+        visible: false,
+        animation: null,
+        flat: false,
+        icon: icon,
+        zIndex: 9999
+      };
+      this.map.addMarker(options).then(marker => {
+        this.placeMarkers[loc.name] = marker;
+      });
     }
     this.places.push(...locations);
   }
 
   async loadMap() {
+
+    this.loading = true;
 
     this.mapAPI.fetchUTBuildings().then((locations) => {
       this.addLocations(locations);
@@ -167,6 +160,9 @@ export class MapPage implements OnInit {
       zIndex: 20,
       opacity: 1.0
     };
+    await this.map.addTileOverlay(this.tileOptions);
+
+    this.loading = false;
 
   }
 
@@ -218,6 +214,8 @@ export class MapPage implements OnInit {
     this.showBusRoute = route;
     this.loading = true;
 
+    Object.values(this.placeMarkers).map(marker => marker.setVisible(false));
+
     let routeData = await this.busAPI.fetchRouteData(route);
 
     if (!routeData) {
@@ -227,6 +225,7 @@ export class MapPage implements OnInit {
         position: 'top'
       });
       await toast.present();
+      this.loading = false;
       return;
     }
 
@@ -238,7 +237,9 @@ export class MapPage implements OnInit {
       strokeOpacity: 1.0,
       clickable: false
     };
-    this.map.addPolyline(polyOptions);
+    this.map.addPolyline(polyOptions).then(line => {
+      this.busMarkers[stop.name] = line;
+    });
 
     for (let stop of routeData.stops) {
 
@@ -258,7 +259,9 @@ export class MapPage implements OnInit {
         flat: false,
         zIndex: 9999
       };
-      this.map.addMarker(options);
+      this.map.addMarker(options).then(marker => {
+        this.busMarkers[stop.name] = marker;
+      });
 
     }
 
@@ -279,9 +282,9 @@ export class MapPage implements OnInit {
 
     for (let busLocation of buses) {
 
-      if(busLocation.id in this.liveBusMarkers) {
+      if(busLocation.id in this.busMarkers) {
 
-        this.liveBusMarkers[busLocation.id].setPosition(busLocation.position);
+        (this.busMarkers[busLocation.id] as Marker).setPosition(busLocation.position);
 
       } else {
 
@@ -299,10 +302,11 @@ export class MapPage implements OnInit {
           visible: true,
           animation: null,
           flat: true,
-          zIndex: 9999
+          zIndex: 99999
         };
-        let marker = await this.map.addMarker(options);
-        this.liveBusMarkers[busLocation.id] = marker;
+        this.map.addMarker(options).then(marker => {
+          this.busMarkers[busLocation.id] = marker;
+        });
 
       }
 
@@ -322,15 +326,17 @@ export class MapPage implements OnInit {
   async closeBusView() {
     clearInterval(this.liveBusInterval);
     this.showBusRoute = null;
-    for(let key in this.liveBusMarkers) {
-      this.liveBusMarkers[key].remove();
+    for(let key in this.busMarkers) {
+      this.busMarkers[key].remove();
     }
-    this.liveBusMarkers = {};
+    this.busMarkers = {};
   }
 
   async showWeather() {
 
+    this.loading = true;
     let weather = await this.weatherAPI.fetchWeather(this.utCenter.lat, this.utCenter.lng);
+    this.loading = false;
 
     let alert = await this.alertCtrl.create({
       header: 'Weather',
