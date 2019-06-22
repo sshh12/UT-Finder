@@ -10,8 +10,17 @@
 
   </ion-toolbar>
 
-  <ion-toolbar no-border-top>
+  <ion-toolbar *ngIf='!showBusRoute' no-border-top>
     <ion-searchbar placeholder="Where..." (ionInput)="search($event)" (keyup.enter)="closeKeyboard()"></ion-searchbar>
+    <ion-progress-bar *ngIf='loading' type="indeterminate"></ion-progress-bar>
+  </ion-toolbar>
+
+  <ion-toolbar *ngIf='showBusRoute' no-border-top>
+    <ion-buttons slot="end">
+      <ion-icon *ngIf='!loading' (click)="closeBusView()" slot="icon-only" name="close"></ion-icon>
+    </ion-buttons>
+    <ion-title><ion-badge class="bus-badge {{getRouteStyle(showBusRoute)}}">{{showBusRoute.num}}</ion-badge> {{showBusRoute.name}}</ion-title>
+    <ion-progress-bar *ngIf='loading' type="indeterminate"></ion-progress-bar>
   </ion-toolbar>
 
 </ion-header>
@@ -20,16 +29,13 @@
 
     <div id="map_canvas">
 
-    <ion-fab vertical="top" horizontal="end" slot="fixed">
+    <ion-fab vertical="top" horizontal="end" slot="fixed" *ngIf='!showBusRoute'>
         <ion-fab-button size="small" color="secondary"><ion-icon name="map"></ion-icon></ion-fab-button>
         <ion-fab-list>
           <ion-fab-button color="tertiary" (click)="showBuses()"><ion-icon name="bus"></ion-icon></ion-fab-button>
           <ion-fab-button color="success" (click)="showFood()"><ion-icon name="pizza"></ion-icon></ion-fab-button>
+          <ion-fab-button color="light" (click)="showWeather()"><ion-icon name="rainy"></ion-icon></ion-fab-button>
         </ion-fab-list>
-    </ion-fab>
-
-    <ion-fab mini vertical="center" horizontal="end" slot="fixed" #fabw>
-      <ion-fab-button size="small" color="light" (click)="showWeather()"><ion-icon name="rainy"></ion-icon></ion-fab-button>
     </ion-fab>
 
   </div>

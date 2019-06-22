@@ -15,6 +15,7 @@ import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { UTAPI } from './backend/ut-api';
 import { WeatherAPI } from './backend/weather-api';
+import { TowerAPI } from './backend/tower-api';
 import { MapsAPI } from './backend/maps-api';
 import { BusAPI } from './backend/bus-api';
 
@@ -38,6 +39,7 @@ import { BusAPI } from './backend/bus-api';
     CallNumber,
     UTAPI,
     WeatherAPI,
+    TowerAPI,
     MapsAPI,
     BusAPI,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }

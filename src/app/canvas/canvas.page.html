@@ -15,9 +15,13 @@
   <ion-list *ngIf="!loading">
 
     <div *ngFor='let course of courses'>
-      <ion-item *ngIf='course.grade > 0'>
-        <ion-label (click)="showAssignments(course)">{{ course.title }}</ion-label>
-        <ion-badge color='success' slot="end">{{ course.grade.toFixed(2) }}%</ion-badge>
+      <ion-item *ngIf='course.grade && course.grade > 0'>
+        <div class="course-icon"><i class="fa fa-{{ getIcon(course) }}" slot="start"></i></div>
+        <ion-label>
+          <h2 (click)="showAssignments(course)">{{ course.title }}</h2>
+          <p>{{ course.code }}</p>
+        </ion-label>
+        <ion-badge color='success' slot="end">{{ course.grade ? course.grade.toFixed(2) : '-' }}%</ion-badge>
       </ion-item>
     </div>
 

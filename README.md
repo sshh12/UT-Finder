@@ -11,12 +11,12 @@ A student made app for the University of Texas at Austin.
 
 Features
 
--> Schedule
--> Export Classes
+-> Class and Finals Schedules
 -> Map
 -> Weather
 -> Dine In/Bevo Bucks
--> Canvas
+-> Live Bus Routes
+-> Canvas Grades
 -> Campus Resources
 -> Call a SURE Walk
 -> Things from MyUT

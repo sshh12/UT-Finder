@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HTTP } from '@ionic-native/http/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { ActivatedRoute  } from '@angular/router';
 import {
   NavController,
   AlertController,
@@ -16,12 +17,13 @@ import {
   TileOverlayOptions,
   MarkerOptions,
   Marker,
+  Polyline,
   ILatLng,
   PolylineOptions,
-  Polygon,
   MarkerIcon
 } from '@ionic-native/google-maps';
 import { WeatherAPI } from '../backend/weather-api';
+import { TowerAPI } from '../backend/tower-api';
 import { MapsAPI, MapLocation } from '../backend/maps-api';
 import { BusAPI, BusRoute } from '../backend/bus-api';
 
@@ -32,33 +34,50 @@ import { BusAPI, BusRoute } from '../backend/bus-api';
 })
 export class MapPage implements OnInit {
 
-  utCenter: ILatLng = {
+  mapCenter: ILatLng = {
     lat: 30.285512,
     lng: -97.735946
   };
 
   // Maps
   map: GoogleMap;
-  places: MapLocation[] = [];
+  mapLoaded = false;
   tileOptions: TileOverlayOptions;
+  loading = false;
+
+  places: MapLocation[] = [];
+  placeMarkers: { [key: string]: Marker; } = {};
+
+  showBusRoute: BusRoute = null;
+  liveBusInterval: any = 0;
+  busMarkers: { [key: string]: Marker | Polyline; } = {};
 
   constructor(private platform: Platform,
               private keyboard: Keyboard,
               private caller: CallNumber,
               private alertCtrl: AlertController,
               private toastCtrl: ToastController,
+              private aroute: ActivatedRoute,
               private weatherAPI: WeatherAPI,
               private mapAPI: MapsAPI,
-              private busAPI: BusAPI) {
+              private busAPI: BusAPI,
+              private TowerAPI: TowerAPI) {
+
+    this.aroute.queryParams.subscribe((params) => {
+      if(params.search) {
+        let waitForLoad = setInterval(() => {
+          if(this.mapLoaded) {
+            this.search(params.search);
+            clearInterval(waitForLoad);
+          }
+        }, 100);
+      }
+    });
+
   }
 
   ngOnInit() {
     this.platform.ready().then(() => this.loadMap());
-  }
-
-  clearMap() {
-    this.map.clear();
-    this.map.addTileOverlay(this.tileOptions);
   }
 
   closeKeyboard() {
@@ -67,54 +86,20 @@ export class MapPage implements OnInit {
 
   search(event: any) {
 
-    this.clearMap();
-
     let query;
     try {
-      query = event.target.value.toLowerCase();
+      query = event.target.value;
     } catch {
-      query = event.toLowerCase();
+      query = event;
     }
+    query = query.toLowerCase().trim();
 
-    if (query && query.trim() !== '') {
-
-      let hits = 0;
-
-      for (let place of this.places) {
-
-        if (place.repr.includes(query)) {
-
-          hits++;
-          if (hits > 100) {
-            break;
-          }
-
-          let icon: MarkerIcon = {
-            url: place.iconURL,
-            size: {
-              width: 32,
-              height: 32
-            }
-          };
-
-          let options: MarkerOptions = {
-            title: place.name,
-            position: place.location,
-            visible: true,
-            animation: null,
-            flat: false,
-            icon: icon,
-            zIndex: 9999
-          };
-
-          this.map.addMarker(options).then((marker: Marker) => {
-            marker.showInfoWindow();
-          });
-
-        }
-
+    for (let place of this.places) {
+      if (query.length != 0 && place.repr.includes(query)) {
+        this.placeMarkers[place.name].setVisible(true);
+      } else {
+        this.placeMarkers[place.name].setVisible(false);
       }
-
     }
 
   }
@@ -122,11 +107,33 @@ export class MapPage implements OnInit {
   addLocations(locations: MapLocation[]) {
     for (let loc of locations) {
       loc.repr = (loc.name + loc.abbr + loc.type).toLowerCase();
+      let icon: MarkerIcon = {
+        url: loc.iconURL,
+        size: {
+          width: 32,
+          height: 32
+        }
+      };
+      let options: MarkerOptions = {
+        title: loc.name,
+        snippet: loc.abbr,
+        position: loc.location,
+        visible: false,
+        animation: null,
+        flat: false,
+        icon: icon,
+        zIndex: 9999
+      };
+      this.map.addMarker(options).then(marker => {
+        this.placeMarkers[loc.name] = marker;
+      });
     }
     this.places.push(...locations);
   }
 
   async loadMap() {
+
+    this.loading = true;
 
     this.mapAPI.fetchUTBuildings().then((locations) => {
       this.addLocations(locations);
@@ -134,11 +141,31 @@ export class MapPage implements OnInit {
     this.mapAPI.fetchFoodPlaces().then((locations) => {
       this.addLocations(locations);
     });
+    this.TowerAPI.fetchTowerState().then((towerState) => {
+      let icon: MarkerIcon = {
+        url: towerState.iconURL,
+        size: {
+          width: 36,
+          height: 36
+        }
+      };
+      let options: MarkerOptions = {
+        title: towerState.text,
+        snippet: towerState.subtext,
+        position: towerState.position,
+        visible: true,
+        animation: null,
+        flat: false,
+        icon: icon,
+        zIndex: 9999
+      };
+      this.map.addMarker(options);
+    });
 
     let mapOptions: GoogleMapOptions = {
       mapType: GoogleMapsMapTypeId.HYBRID,
       camera: {
-         target: this.utCenter,
+         target: this.mapCenter,
          zoom: 15
        },
        styles: [
@@ -171,14 +198,16 @@ export class MapPage implements OnInit {
       zIndex: 20,
       opacity: 1.0
     };
+    await this.map.addTileOverlay(this.tileOptions);
 
-    this.clearMap();
+    this.mapLoaded = true;
+    this.loading = false;
 
   }
 
   showFood() {
     this.closeKeyboard();
-    this.search('food');
+    this.search('FoodLocation');
   }
 
   async showBuses() {
@@ -190,7 +219,7 @@ export class MapPage implements OnInit {
     }
 
     let alertOptions = {
-      header: 'Bus Routes',
+      header: 'Metro Routes',
       inputs: [],
       buttons: [{
           text: 'cancel'
@@ -221,42 +250,45 @@ export class MapPage implements OnInit {
 
   async showRoute(route: BusRoute) {
 
-    this.clearMap();
+    this.showBusRoute = route;
+    this.loading = true;
+
+    Object.values(this.placeMarkers).map(marker => marker.setVisible(false));
 
     let routeData = await this.busAPI.fetchRouteData(route);
 
     if (!routeData) {
       let toast = await this.toastCtrl.create({
-        message: 'Route not available 😢',
+        message: 'Route data not available 😢',
         duration: 3000,
         position: 'top'
       });
       await toast.present();
+      this.loading = false;
       return;
     }
 
     let polyOptions: PolylineOptions = {
       points: routeData.routeCoords,
-      strokeColor: '#1070AF',
-      fillColor: '#00000000', // no fill
+      color: '#1070AF',
       strokeWidth: 10,
       zIndex: 99,
       strokeOpacity: 1.0,
       clickable: false
     };
-
-    this.map.addPolygon(polyOptions).then((polygon: Polygon) => {});
+    this.map.addPolyline(polyOptions).then(line => {
+      this.busMarkers[stop.name] = line;
+    });
 
     for (let stop of routeData.stops) {
 
       let icon: MarkerIcon = {
-        url: 'assets/map-front-bus.png',
+        url: 'assets/map-bus-stop.png',
         size: {
           width: 32,
           height: 32
         }
       };
-
       let options: MarkerOptions = {
         title: stop.name,
         icon: icon,
@@ -266,16 +298,84 @@ export class MapPage implements OnInit {
         flat: false,
         zIndex: 9999
       };
-
-      this.map.addMarker(options).then((marker: Marker) => { });
+      this.map.addMarker(options).then(marker => {
+        this.busMarkers[stop.name] = marker;
+      });
 
     }
 
+    await this.updateBusLocations();
+    this.liveBusInterval = setInterval(() => {
+      this.updateBusLocations();
+    }, 1000 * 16);
+
+    this.loading = false;
+
+  }
+
+  async updateBusLocations() {
+
+    let buses = (await this.busAPI.fetchBusLocations()).filter(busLocation => {
+      return busLocation.routeId == String(this.showBusRoute.num);
+    });  
+
+    for (let busLocation of buses) {
+
+      if(busLocation.id in this.busMarkers) {
+
+        (this.busMarkers[busLocation.id] as Marker).setPosition(busLocation.position);
+
+      } else {
+
+        let icon: MarkerIcon = {
+          url: 'assets/map-front-bus.png',
+          size: {
+            width: 32,
+            height: 32
+          }
+        };
+        let options: MarkerOptions = {
+          title: busLocation.routeId,
+          icon: icon,
+          position: busLocation.position,
+          visible: true,
+          animation: null,
+          flat: true,
+          zIndex: 99999
+        };
+        this.map.addMarker(options).then(marker => {
+          this.busMarkers[busLocation.id] = marker;
+        });
+
+      }
+
+
+    }
+  }
+
+  getRouteStyle(route: BusRoute): String {
+    if(route.num < 800) {
+      return 'route-normal';
+    } else if(route.num < 900) {
+      return 'route-rapid';
+    }
+    return '';
+  }
+
+  async closeBusView() {
+    clearInterval(this.liveBusInterval);
+    this.showBusRoute = null;
+    for(let key in this.busMarkers) {
+      this.busMarkers[key].remove();
+    }
+    this.busMarkers = {};
   }
 
   async showWeather() {
 
-    let weather = await this.weatherAPI.fetchWeather(this.utCenter.lat, this.utCenter.lng);
+    this.loading = true;
+    let weather = await this.weatherAPI.fetchWeather(this.mapCenter.lat, this.mapCenter.lng);
+    this.loading = false;
 
     let alert = await this.alertCtrl.create({
       header: 'Weather',

@@ -7,6 +7,14 @@ import {
   ToastController
 } from '@ionic/angular';
 
+const DEMO_EID = 'utdemo';
+import {
+  SCHEDULE_DATA,
+  MONEY_DATA,
+  CANVAS_DATA,
+  CANVAS_ASSIGNMENT_DATA
+} from './demo-db';
+
 declare var cookieEmperor;
 
 export class ClassTime {
@@ -40,6 +48,7 @@ export class Course {
   canvasID: number;
   name: string;
   title: string;
+  code: string;
   grade?: number;
   assignments?: Array<Assignment> = [];
 }
@@ -63,6 +72,7 @@ export class UTAPI {
   canvasCookie = '';
   canvasAccountID = 0;
   canvasUserID = 0;
+  usingDemoAccount = false;
 
   constructor(private iab: InAppBrowser,
               private alertCtrl: AlertController,
@@ -85,6 +95,15 @@ export class UTAPI {
       if (save) {
         this.storage.set('eid', username);
         this.storage.set('password', password);
+      }
+
+      if(username == DEMO_EID) {
+        this.lastLogged = new Date();
+        this.utLoginCookie = DEMO_EID;
+        this.utSCCookie = DEMO_EID;
+        this.usingDemoAccount = true;
+        resolve();
+        return;
       }
 
       const browser = this.iab.create('https://utdirect.utexas.edu/registration/classlist.WBX', '_blank', {location: 'no'});
@@ -163,7 +182,7 @@ export class UTAPI {
 
         await this.ensureUTLogin();
 
-        if (this.canvasCookie !== '') {
+        if (this.canvasCookie !== '' || this.usingDemoAccount) {
           resolve(true);
           return;
         }
@@ -209,53 +228,53 @@ export class UTAPI {
           const username = await this.storage.get('eid');
           const password = await this.storage.get('password');
 
-            if (!username || !password) { // need user/pass
+          if (!username || !password) { // need user/pass
 
-              let alert = await this.alertCtrl.create({
-                header: 'Login',
-                message: 'Your login will be stored solely on your device.',
-                inputs: [
-                  {
-                    name: 'EID',
-                    placeholder: 'abc12345'
-                  }, {
-                    name: 'password',
-                    placeholder: 'password',
-                    type: 'password'
-                  }
-                ],
-                buttons: [
-                  {
-                    text: 'Login',
-                    handler: async data => {
-                      await this.doLogin(data.EID.toLowerCase(), data.password, false);
-                      resolve(true);
-                    }
-                  },
-                  {
-                    text: 'Login & Save',
-                    handler: async data => {
-                      await this.doLogin(data.EID.toLowerCase(), data.password, true);
-                      resolve(true);
-                    }
-                  }
-                ]
-              });
-              alert.onDidDismiss().then((event) => {
-                if (event.role === 'backdrop') {
-                  resolve(false);
+            let alert = await this.alertCtrl.create({
+              header: 'Login',
+              message: 'Your login will be stored solely on your device.',
+              inputs: [
+                {
+                  name: 'EID',
+                  placeholder: 'abc12345'
+                }, {
+                  name: 'password',
+                  placeholder: 'password',
+                  type: 'password'
                 }
-              });
-              await alert.present();
+              ],
+              buttons: [
+                {
+                  text: 'Login',
+                  handler: async data => {
+                    await this.doLogin(data.EID.toLowerCase(), data.password, false);
+                    resolve(true);
+                  }
+                },
+                {
+                  text: 'Login & Save',
+                  handler: async data => {
+                    await this.doLogin(data.EID.toLowerCase(), data.password, true);
+                    resolve(true);
+                  }
+                }
+              ]
+            });
+            alert.onDidDismiss().then((event) => {
+              if (event.role === 'backdrop') {
+                resolve(false);
+              }
+            });
+            await alert.present();
 
-            } else { // already have user/pass
+          } else { // already have user/pass
 
-              let alert = await this.alertCtrl.create({
-                header: 'Login',
-                buttons: [
-                  {
-                    text: 'New Login',
-                    handler: async () => {
+            let alert = await this.alertCtrl.create({
+              header: 'Login',
+              buttons: [
+                {
+                  text: 'New Login',
+                  handler: async () => {
                       await this.storage.set('eid', '');
                       await this.storage.set('password', '');
                       resolve(await this.ensureUTLogin());
@@ -298,12 +317,9 @@ export class UTAPI {
   }
 
   async getCanvas(apiURL: string) {
-
     await this.ensureCanvasLogin();
-
     const rawResp = await this.getPage('https://utexas.instructure.com/api/v1/' + apiURL);
     return JSON.parse(rawResp.replace('while(1);', ''));
-
   }
 
   async getPage(url: string): Promise<string> {
@@ -337,6 +353,10 @@ export class UTAPI {
     if (sem) {
       url = `https://utdirect.utexas.edu/registration/classlist.WBX?sem=${sem}`;
       selector = '<th>Course</th>';
+    }
+
+    if(this.usingDemoAccount) {
+      return sem ? SCHEDULE_DATA.OTHER : SCHEDULE_DATA.NOW;
     }
 
     let tableHTML = await this.fetchHTMLFromTable(url, selector);
@@ -450,6 +470,10 @@ export class UTAPI {
       return [];
     }
 
+    if(this.usingDemoAccount) {
+      return MONEY_DATA;
+    }
+
     let accounts: MoneyAccount[] = [];
 
     let tableHTML = await this.fetchHTMLFromTable('https://utdirect.utexas.edu/hfis/diningDollars.WBX', '<th>Balance  </th>');
@@ -468,14 +492,17 @@ export class UTAPI {
       return [];
     }
 
+    if (this.usingDemoAccount) {
+      return CANVAS_DATA;
+    }
+
     let canvasCourses = await this.getCanvas('courses');
     let courses: Course[] = [];
 
-    // get all courses
     for (let course of canvasCourses) {
 
       // ensure active course
-      if (course.enrollments[0].enrollment_state !== 'active') {
+      if (!course.enrollments || course.enrollments[0].enrollment_state !== 'active') {
         continue;
       }
 
@@ -486,13 +513,14 @@ export class UTAPI {
 
       this.canvasAccountID = course.account_id;
 
-      if (course.enrollments[0] && this.canvasUserID === 0) {
+      if (this.canvasUserID === 0) {
         this.canvasUserID = course.enrollments[0].user_id;
       }
 
       courses.push({
         canvasID: course.id,
         name: course.name,
+        code: course.course_code,
         title: course.name.replace(/\w\w\d\d -/, '').replace(/\s+\(\d+\)\s*/, '').trim()
       });
 
@@ -504,14 +532,10 @@ export class UTAPI {
     for (let enroll of canvasEnrollments) {
 
       // find course attached to enrollment
-      let course: Course = null;
-      for (let c of courses) {
-        if (c.canvasID === enroll.course_id) {
-          course = c;
-          break;
-        }
-      }
-      if (course == null) {
+      let course: Course = courses.find((course) => {
+        return course.canvasID === enroll.course_id;
+      });
+      if (!course) {
         continue;
       }
 
@@ -520,7 +544,6 @@ export class UTAPI {
       } else {
         course.grade = 0;
       }
-
       course.assignments = [];
 
     }
@@ -535,12 +558,16 @@ export class UTAPI {
       return [];
     }
 
-    function clean(str) {
-      return str.replace(/(\r\n\t|\n|\r\t)/gm, '').replace(/&nbsp;/g, ' ').replace(/\s{2,}/g, ' ').trim();
-    }
-
     if (this.canvasUserID === 0) {
       await this.fetchCourses();
+    }
+
+    if (this.usingDemoAccount) {
+      return CANVAS_ASSIGNMENT_DATA.DEFAULT;
+    }
+
+    function clean(str) {
+      return str.replace(/(\r\n\t|\n|\r\t)/gm, '').replace(/&nbsp;/g, ' ').replace(/\s{2,}/g, ' ').trim();
     }
 
     let gradesPage = await this.getPage(`https://utexas.instructure.com/courses/${course.canvasID}/grades`);
@@ -635,7 +662,7 @@ export class UTAPI {
 
       let colsMatch = this.getRegexMatrix(/td\s*?>([\s\S]+?)<\/td/g, rowMatch[1]);
 
-      let name = colsMatch[0][1];
+      let name = colsMatch[0][1].trim();
       let balance = parseFloat(colsMatch[1][1].replace('$ ', ''));
       let status = colsMatch[2][1];
 

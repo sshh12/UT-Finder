@@ -38,3 +38,8 @@ UserInterfaceState.xcuserstate
 *.keystore
 *.mobileprovision
 *.cer
+
+# Dev
+.vs/*
+.vs-code/*
+*.code-workspace

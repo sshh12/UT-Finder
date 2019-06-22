@@ -1,5 +1,6 @@
 import { AlertController } from '@ionic/angular';
 import { ClassTime } from '../backend/ut-api';
+import { Router  } from '@angular/router';
 
 export class ClassCalendar {
 
@@ -7,8 +8,8 @@ export class ClassCalendar {
   classes: Array<ClassTime> = [];
   weekMatrix: Array<Array<any>> = [[]]; // calendar
 
-  constructor(private altCtrl: AlertController) {
-
+  constructor(private altCtrl: AlertController,
+              private router: Router) {
   }
 
   calculateTimeBarOffset(time: number) {
@@ -93,7 +94,17 @@ export class ClassCalendar {
           header: classtime.name,
           subHeader: `${classtime.title} (#${classtime.num})`,
           message: `${classtime.building} ${classtime.room} @ ${classtime.timeslot}`,
-          buttons: ['Dismiss']
+          buttons: [
+            {
+              text: 'Close'
+            },
+            {
+              text: 'See on Map',
+              handler: () => {
+                this.router.navigateByUrl('/tabs/map?search=' + classtime.building);
+              }
+            }
+          ]
         });
         await alert.present();
       };

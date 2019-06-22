@@ -49,6 +49,10 @@ export class CanvasPage {
       this.router.navigateByUrl('/tabs/canvas/assignments?course=' + course.canvasID);
     }
 
+    getIcon(course: Course) {
+      return getCourseIcon(course);
+    }
+
 }
 
 @Component({
@@ -77,4 +81,48 @@ export class AssignmentsPage {
     this.showDecimalScores = !this.showDecimalScores;
   }
 
+}
+
+// Map class subjects to font-awesome icons
+let ICONS = {
+  'acc': 'money-check-alt',
+  'ase': 'plane',
+  'ant': 'users',
+  'ast': 'meteor',
+  'arc': 'vihara',
+  'bch': 'flask',
+  'bio': 'kiwi-bird',
+  'b a': 'user-tie',
+  'ch':  'atom',
+  'c c': 'gopuram',
+  'com': 'comments',
+  'c s': 'laptop-code',
+  'eco': 'dollar-sign',
+  'e e': 'microchip',
+  'grg': 'globe-americas',
+  'gov': 'landmark',
+  'his': 'scroll',
+  'm'  : 'calculator',
+  'm e': 'cogs',
+  'mis': 'wifi',
+  'mus': 'music',
+  'n':   'stethoscope',
+  'phl': 'book-reader',
+  'phy': 'lightbulb',
+  'ped': 'dumbbell',
+  'rhe': 'edit',
+  'sds': 'chart-bar',
+  'ugs': 'school',
+  'wgs': 'female'
+};
+
+function getCourseIcon(course: Course): String {
+  let subjectMatch = course.code.match(/([A-Z ]+) \w?\d+\w*/);
+  if(subjectMatch[1]) {
+    let subject = subjectMatch[1].toLowerCase();
+    if(subject in ICONS) {
+      return ICONS[subject];
+    }
+  }
+  return "chalkboard-teacher";
 }
