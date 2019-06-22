@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HTTP } from '@ionic-native/http/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { ActivatedRoute  } from '@angular/router';
 import {
   NavController,
   AlertController,
@@ -40,6 +41,7 @@ export class MapPage implements OnInit {
 
   // Maps
   map: GoogleMap;
+  mapLoaded = false;
   tileOptions: TileOverlayOptions;
   loading = false;
 
@@ -55,10 +57,23 @@ export class MapPage implements OnInit {
               private caller: CallNumber,
               private alertCtrl: AlertController,
               private toastCtrl: ToastController,
+              private aroute: ActivatedRoute,
               private weatherAPI: WeatherAPI,
               private mapAPI: MapsAPI,
               private busAPI: BusAPI,
               private TowerAPI: TowerAPI) {
+
+    this.aroute.queryParams.subscribe((params) => {
+      if(params.search) {
+        let waitForLoad = setInterval(() => {
+          if(this.mapLoaded) {
+            this.search(params.search);
+            clearInterval(waitForLoad);
+          }
+        }, 100);
+      }
+    });
+
   }
 
   ngOnInit() {
@@ -101,6 +116,7 @@ export class MapPage implements OnInit {
       };
       let options: MarkerOptions = {
         title: loc.name,
+        snippet: loc.abbr,
         position: loc.location,
         visible: false,
         animation: null,
@@ -125,7 +141,6 @@ export class MapPage implements OnInit {
     this.mapAPI.fetchFoodPlaces().then((locations) => {
       this.addLocations(locations);
     });
-    
     this.TowerAPI.fetchTowerState().then((towerState) => {
       let icon: MarkerIcon = {
         url: towerState.iconURL,
@@ -145,7 +160,7 @@ export class MapPage implements OnInit {
         zIndex: 9999
       };
       this.map.addMarker(options);
-    })
+    });
 
     let mapOptions: GoogleMapOptions = {
       mapType: GoogleMapsMapTypeId.HYBRID,
@@ -185,6 +200,7 @@ export class MapPage implements OnInit {
     };
     await this.map.addTileOverlay(this.tileOptions);
 
+    this.mapLoaded = true;
     this.loading = false;
 
   }
@@ -288,8 +304,8 @@ export class MapPage implements OnInit {
 
     }
 
-    this.updateBusLocations();
-    this.liveBusInterval = setInterval(async () => {
+    await this.updateBusLocations();
+    this.liveBusInterval = setInterval(() => {
       this.updateBusLocations();
     }, 1000 * 16);
 

@@ -43,8 +43,6 @@ export class TowerAPI {
       });
     }
 
-    console.log(news);
-
     return news;
 
   }

@@ -2,6 +2,7 @@ import { Component, ApplicationRef } from '@angular/core';
 import { Calendar } from '@ionic-native/calendar/ngx';
 import { AlertController, ToastController  } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
+import { Router  } from '@angular/router';
 
 import { UTAPI } from '../backend/ut-api';
 import { ClassCalendar } from './class-calendar';
@@ -28,10 +29,11 @@ export class SchedulePage {
                 private altCtrl: AlertController,
                 private toastCtrl: ToastController,
                 private calendar: Calendar,
-                private utapi: UTAPI) {
+                private utapi: UTAPI,
+                private router: Router) {
 
-      this.currentCalendar = new ClassCalendar(altCtrl);
-      this.futureCalendar = new ClassCalendar(altCtrl);
+      this.currentCalendar = new ClassCalendar(altCtrl, router);
+      this.futureCalendar = new ClassCalendar(altCtrl, router);
       this.finalsCalendar = new FinalsCalendar(altCtrl);
 
       storage.get('schedule:classes').then((classes) => {
@@ -102,16 +104,20 @@ export class SchedulePage {
 
       try {
 
+        let noItemsFound = false;
+
         if (this.scheduleView === 'finals') {
           let finals = await this.utapi.fetchFinals();
           this.finalsCalendar.finals = finals;
           this.finalsCalendar.generate();
           this.storage.set('schedule:finals', finals);
+          noItemsFound = (finals.length == 0);
         } else if (this.scheduleView === 'current') {
           let classes = await this.utapi.fetchSchedule();
           this.currentCalendar.classes = classes;
           this.currentCalendar.generate();
           this.storage.set('schedule:classes', classes);
+          noItemsFound = (classes.length == 0);
         } else {
           let sems = this.utapi.getSemesterCodes();
           let classes = await this.utapi.fetchSchedule(sems[1]);
@@ -121,16 +127,26 @@ export class SchedulePage {
           this.futureCalendar.classes = classes;
           this.futureCalendar.generate();
           this.storage.set('schedule:futureclasses', classes);
+          noItemsFound = (classes.length == 0);
         }
 
         this.updateTimeBar();
 
-        let toast = await this.toastCtrl.create({
-          message: 'Please check this with the offical website 👌',
-          duration: 3000,
-          position: 'top'
-        });
-        await toast.present();
+        if(noItemsFound) {
+          let toast = await this.toastCtrl.create({
+            message: 'Looks like you don\'t have any scheduled 🤷',
+            duration: 3000,
+            position: 'top'
+          });
+          await toast.present();
+        } else {
+          let toast = await this.toastCtrl.create({
+            message: 'Please check this with the offical website 👌',
+            duration: 3000,
+            position: 'top'
+          });
+          await toast.present();
+        }
 
       } catch {
 
