@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { Storage } from '@ionic/storage';
+import { SecureStorage, SecureStorageObject } from '@ionic-native/secure-storage/ngx';
 import { HTTP } from '@ionic-native/http/ngx';
 import {
   AlertController,
@@ -73,15 +74,32 @@ export class UTAPI {
   canvasAccountID = 0;
   canvasUserID = 0;
   usingDemoAccount = false;
+  secStorage: SecureStorageObject = null;
 
   constructor(private iab: InAppBrowser,
               private alertCtrl: AlertController,
               private toastCtrl: ToastController,
               private http: HTTP,
-              private storage: Storage) {
+              private storage: Storage,
+              private secureStorage: SecureStorage) {
 
     this.http.disableRedirect(false);
+    this.initStorage();
+  }
 
+  async initStorage() {
+    this.secStorage = await this.secureStorage.create('ut_finder_secure');
+    // Migrate old storage
+    let password = await this.storage.get('password');
+    try {
+      await this.secStorage.get('password');
+    } catch(e) {
+      await this.secStorage.set('password', '');
+    }
+    if(password) {
+      await this.secStorage.set('password', password);
+    }
+    await this.storage.set('password', null);
   }
 
   openNewTab(url: string) {
@@ -94,7 +112,7 @@ export class UTAPI {
 
       if (save) {
         this.storage.set('eid', username);
-        this.storage.set('password', password);
+        this.secStorage.set('password', password);
       }
 
       if(username == DEMO_EID) {
@@ -226,7 +244,7 @@ export class UTAPI {
         if (timeSinceLogged > 20 * 60 * 1000) { // reset after 20 mins
 
           const username = await this.storage.get('eid');
-          const password = await this.storage.get('password');
+          const password = await this.secStorage.get('password');
 
           if (!username || !password) { // need user/pass
 
@@ -276,7 +294,7 @@ export class UTAPI {
                   text: 'New Login',
                   handler: async () => {
                       await this.storage.set('eid', '');
-                      await this.storage.set('password', '');
+                      await this.secStorage.set('password', '');
                       resolve(await this.ensureUTLogin());
                     }
                   },

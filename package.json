@@ -12,7 +12,8 @@
     "android-dev": "ionic cordova run android",
     "android-deploy": "ionic cordova build android --release --rollup --prod && jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore publish/utfinder-release-key.jks platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk utfinderkey && zipalign -v 4 platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk UTFinder.apk",
     "ios-deploy": "ionic cordova build ios --rollup --prod",
-    "clean": "shx rm -rf plugins && shx rm -rf platforms/*"
+    "clean": "shx rm -rf plugins && shx rm -rf platforms/*",
+    "lab": "ionic serve --lab"
   },
   "dependencies": {
     "@angular/common": "~7.0.0",
@@ -29,6 +30,7 @@
     "@ionic-native/http": "^5.5.1",
     "@ionic-native/in-app-browser": "^5.5.1",
     "@ionic-native/keyboard": "^5.5.1",
+    "@ionic-native/secure-storage": "^5.12.0",
     "@ionic-native/splash-screen": "^5.5.1",
     "@ionic-native/status-bar": "^5.5.1",
     "@ionic/angular": "^4.4.0",
@@ -46,12 +48,13 @@
     "cordova-plugin-inappbrowser": "^3.0.0",
     "cordova-plugin-ionic-keyboard": "^2.1.3",
     "cordova-plugin-ionic-webview": "^2.4.1",
+    "cordova-plugin-secure-storage": "3.0.2",
     "cordova-plugin-splashscreen": "^5.0.2",
     "cordova-plugin-statusbar": "^2.4.2",
     "cordova-plugin-whitelist": "^1.3.3",
     "core-js": "^2.5.4",
-    "node-sass": "^4.10.0",
-    "npm": "^6.4.1",
+    "ionic": "^4.12.0",
+    "node-sass": "4.9.3",
     "rxjs": "^6.3.3",
     "rxjs-compat": "^6.3.3",
     "zone.js": "~0.8.26"
@@ -101,7 +104,8 @@
       "cordova-plugin-cookieemperor": {},
       "cordova-plugin-advanced-http": {},
       "call-number": {},
-      "mx.ferreyra.callnumber": {}
+      "mx.ferreyra.callnumber": {},
+      "cordova-plugin-secure-storage": {}
     },
     "platforms": [
       "android"
