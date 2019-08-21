@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router, RouterEvent } from '@angular/router';
+import { UTAPI } from '../backend/ut-api';
 
 @Component({
   selector: 'menu',
@@ -10,7 +11,7 @@ export class MenuPage {
 
   selectedPath = '';
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private utapi: UTAPI) {
     this.router.events.subscribe((event: RouterEvent) => {
       if (event && event.url) {
         this.selectedPath = event.url;

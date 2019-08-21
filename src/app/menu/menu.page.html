@@ -3,17 +3,15 @@
 
     <ion-header>
       <ion-toolbar color="primary">
-        <ion-item color="primary">
+        <ion-item *ngIf="utapi.account" color="primary">
           <ion-avatar slot="start">
             <img src="assets/avatar.png">
           </ion-avatar>
-          <ion-label>ss86692</ion-label>
+          <ion-label>{{ utapi.account.eid }}</ion-label>
         </ion-item>
-        <ion-buttons slot="end">
-          <ion-button>
-            <ion-icon slot="icon-only" name="exit"></ion-icon>
-          </ion-button>
-        </ion-buttons>
+        <ion-item *ngIf="!utapi.account" color="primary">
+          <ion-label>Menu</ion-label>
+        </ion-item>
       </ion-toolbar>
     </ion-header>
 

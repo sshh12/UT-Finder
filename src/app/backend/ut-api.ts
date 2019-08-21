@@ -62,6 +62,13 @@ export class Assignment {
   due: string;
 }
 
+export class AccountInfo {
+  eid: string;
+  name: string;
+  names: string[];
+  birthday: Date;
+}
+
 @Injectable()
 export class UTAPI {
 
@@ -75,6 +82,7 @@ export class UTAPI {
   canvasUserID = 0;
   usingDemoAccount = false;
   secStorage: SecureStorageObject = null;
+  account: AccountInfo = null;
 
   constructor(private iab: InAppBrowser,
               private alertCtrl: AlertController,
@@ -100,6 +108,7 @@ export class UTAPI {
       await this.secStorage.set('password', password);
     }
     await this.storage.set('password', null);
+    this.account = await this.storage.get('account');
   }
 
   openNewTab(url: string) {
@@ -140,6 +149,8 @@ export class UTAPI {
             this.lastLogged = new Date();
             this.utLoginCookie = await this.getCookie('https://utdirect.utexas.edu', 'utlogin-prod');
             this.utSCCookie = await this.getCookie('https://utexas.edu', 'SC');
+            this.account = await this.fetchAccountInfo();
+            this.storage.set('account', this.account);
             resolve();
 
           } else if (curUrl.startsWith('https://login.utexas.edu')) {
@@ -295,6 +306,7 @@ export class UTAPI {
                   handler: async () => {
                       await this.storage.set('eid', '');
                       await this.secStorage.set('password', '');
+                      await this.storage.set('account', null);
                       resolve(await this.ensureUTLogin());
                     }
                   },
@@ -325,13 +337,11 @@ export class UTAPI {
   }
 
   getCookie(url: string, name: string): Promise<string> {
-
     return new Promise<string>(async (resolve) => {
       cookieEmperor.getCookie(url, name,
         (c) => resolve(c.cookieValue),
         () => resolve(''));
     });
-
   }
 
   async getCanvas(apiURL: string) {
@@ -357,6 +367,26 @@ export class UTAPI {
     }
 
     return '';
+
+  }
+
+  async fetchAccountInfo(): Promise<AccountInfo> {
+
+    if (!await this.ensureUTLogin()) {
+      return null;
+    }
+
+    let html = await this.getPage('https://utdirect.utexas.edu/apps/utd/all_my_addresses/');
+    let name = html.match(/upd_name" value="([^"]+)"/)[1];
+    let bdayString = html.match(/Date of Birth:[<\/span> cl="fied_vu]+(\d\d\/\d\d\/\d\d)/)[1];
+    let names = name.split(/[, ]+/);
+    names.push(names.shift());
+    return {
+      name: name,
+      names: names,
+      birthday: new Date(bdayString),
+      eid: await this.storage.get('eid')
+    };
 
   }
 
