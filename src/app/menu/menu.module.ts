@@ -19,6 +19,10 @@ const routes: Routes = [
         loadChildren: '../safety/safety.module#SafetyPageModule'
       },
       {
+        path: 'voting',
+        loadChildren: '../voting/voting.module#VotingPageModule'
+      },
+      {
         path: 'links',
         loadChildren: '../resources/resources.module#ResourcesPageModule'
       }

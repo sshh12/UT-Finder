@@ -4,7 +4,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 
 @Component({
-  selector: 'page-resources',
+  selector: 'page-safety',
   templateUrl: 'safety.page.html',
   styleUrls: ['safety.page.scss']
 })
