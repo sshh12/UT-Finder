@@ -1,5 +1,8 @@
 <ion-header>
   <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button autoHide="false"></ion-menu-button>
+    </ion-buttons>
     <ion-title>Money</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -9,7 +12,9 @@
   <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button size="small" color="secondary" (click)="updateAccounts()"><ion-icon name="{{ accounts.length == 0 ? 'add' : 'refresh' }}"></ion-icon></ion-fab-button>
+    <ion-fab-button size="small" color="secondary" (click)="updateAccounts()">
+      <ion-icon name="{{ accounts.length == 0 ? 'add' : 'refresh' }}"></ion-icon>
+    </ion-fab-button>
   </ion-fab>
 
   <div *ngIf="!loading">
@@ -17,33 +22,34 @@
       <ion-row>
 
         <ion-col *ngFor='let acc of accounts' size="6">
-            <ion-card>
-              <ion-card-header>
-                {{ acc.name }}
-              </ion-card-header>
-              <ion-card-content>
-                <p><b>${{ acc.balance }}</b><p>
-                <br>
-                <div>
-                  <ion-badge color="{{ getStatusColor(acc.status) }}" class="status">{{ acc.status }}</ion-badge>
-                </div>
-              </ion-card-content>
-              <hr>
-              <ion-row>
-                <ion-col>
-                  <ion-button class="full-btn" size="small" fill="outline" (click)="viewHistory(acc)">
-                    <ion-icon name="list"></ion-icon>
-                    <ion-label>History</ion-label>
-                  </ion-button>
-                </ion-col>
-                <ion-col>
-                  <ion-button class="full-btn" size="small" fill="outline" (click)="addFunds(acc)">
-                    <ion-icon name="cash"></ion-icon>
-                    <ion-label>Add Funds</ion-label>
-                  </ion-button>
-                </ion-col>
-              </ion-row>
-            </ion-card>
+          <ion-card>
+            <ion-card-header>
+              {{ acc.name }}
+            </ion-card-header>
+            <ion-card-content>
+              <p><b>${{ acc.balance }}</b>
+                <p>
+                  <br>
+                  <div>
+                    <ion-badge color="{{ getStatusColor(acc.status) }}" class="status">{{ acc.status }}</ion-badge>
+                  </div>
+            </ion-card-content>
+            <hr>
+            <ion-row>
+              <ion-col>
+                <ion-button class="full-btn" size="small" fill="outline" (click)="viewHistory(acc)">
+                  <ion-icon name="list"></ion-icon>
+                  <ion-label>History</ion-label>
+                </ion-button>
+              </ion-col>
+              <ion-col>
+                <ion-button class="full-btn" size="small" fill="outline" (click)="addFunds(acc)">
+                  <ion-icon name="cash"></ion-icon>
+                  <ion-label>Add Funds</ion-label>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-card>
         </ion-col>
 
       </ion-row>

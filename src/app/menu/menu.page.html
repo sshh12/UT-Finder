@@ -1,0 +1,41 @@
+<ion-split-pane>
+  <ion-menu contentId="content">
+
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Menu</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <ion-list>
+        <ion-menu-toggle auto-hide="false">
+          <ion-item routerDirection="root">
+            <ion-label>
+              Classes
+            </ion-label>
+          </ion-item>
+          <ion-item routerDirection="root">
+            <ion-label>
+              UTPD / Safety
+            </ion-label>
+          </ion-item>
+          <ion-item routerDirection="root">
+            <ion-label>
+              Voting
+            </ion-label>
+          </ion-item>
+          <ion-item routerDirection="root">
+            <ion-label>
+              Resources
+            </ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-content>
+
+  </ion-menu>
+
+  <ion-router-outlet id="content" main></ion-router-outlet>
+
+</ion-split-pane>
