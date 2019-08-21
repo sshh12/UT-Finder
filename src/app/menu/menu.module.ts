@@ -15,6 +15,10 @@ const routes: Routes = [
         loadChildren: '../tabs/tabs.module#TabsPageModule'
       },
       {
+        path: 'safety',
+        loadChildren: '../safety/safety.module#SafetyPageModule'
+      },
+      {
         path: 'links',
         loadChildren: '../resources/resources.module#ResourcesPageModule'
       }
