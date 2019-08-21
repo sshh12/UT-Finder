@@ -31,10 +31,6 @@ const routes: Routes = [
           path: 'assignments',
           loadChildren: '../canvas/assignments.module#AssignmentsPageModule'
         }]
-      },
-      {
-        path: 'resources',
-        loadChildren: '../resources/resources.module#ResourcesPageModule'
       }
     ]
   },
