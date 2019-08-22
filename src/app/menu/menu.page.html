@@ -31,27 +31,14 @@
               Voting
             </ion-label>
           </ion-item>
-          <ion-item routerDirection="root">
+          <ion-item routerDirection="root" [routerLink]="'/menu/sports'" routerDirection="forward">
             <ion-label>
               Sports
             </ion-label>
           </ion-item>
-          <ion-item-divider>
-            <ion-label>Links</ion-label>
-          </ion-item-divider>
           <ion-item [routerLink]="'/menu/links'" routerDirection="forward">
             <ion-label>
-              Academics
-            </ion-label>
-          </ion-item>
-          <ion-item [routerLink]="'/menu/links'" routerDirection="forward">
-            <ion-label>
-              Finance
-            </ion-label>
-          </ion-item>
-          <ion-item [routerLink]="'/menu/links'" routerDirection="forward">
-            <ion-label>
-              Misc
+              Misc Links
             </ion-label>
           </ion-item>
         </ion-menu-toggle>

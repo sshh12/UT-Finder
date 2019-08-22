@@ -23,6 +23,10 @@ const routes: Routes = [
         loadChildren: '../voting/voting.module#VotingPageModule'
       },
       {
+        path: 'sports',
+        loadChildren: '../sports/sports.module#SportsPageModule'
+      },
+      {
         path: 'links',
         loadChildren: '../resources/resources.module#ResourcesPageModule'
       }

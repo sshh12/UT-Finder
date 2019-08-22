@@ -20,6 +20,7 @@ import { WeatherAPI } from './backend/weather-api';
 import { TowerAPI } from './backend/tower-api';
 import { MapsAPI } from './backend/maps-api';
 import { BusAPI } from './backend/bus-api';
+import { UTSportsAPI } from './backend/utsports-api';
 
 @NgModule({
   declarations: [AppComponent],
@@ -45,6 +46,7 @@ import { BusAPI } from './backend/bus-api';
     TowerAPI,
     MapsAPI,
     BusAPI,
+    UTSportsAPI,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

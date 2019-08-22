@@ -1,0 +1,39 @@
+<ion-header>
+
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaulthref=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Sports: {{sport}}</ion-title>
+  </ion-toolbar>
+
+  <ion-toolbar color="secondary">
+    <ion-segment scrollable="true" [(ngModel)]="sport" (click)='updateSport()'>
+      <ion-segment-button *ngFor='let utsport of sports' value='{{utsport.name}}'>
+        <i class="fa fa-{{utsport.icon}}"></i>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+
+  <ion-toolbar *ngIf='sportObj.gendered' [(ngModel)]="sex">
+    <ion-segment>
+      <ion-segment-button value='male' checked>
+        <ion-icon name="man"></ion-icon>
+      </ion-segment-button>
+      <ion-segment-button value='female'>
+        <ion-icon name="woman"></ion-icon>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button size="small" color="secondary">
+      <ion-icon name="pricetags"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>
