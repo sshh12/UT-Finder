@@ -9,7 +9,15 @@ export class Sport {
 }
 
 export class SportEvent {
-
+  iconURL: string;
+  title: string;
+  home: boolean;
+  tv: string;
+  location: string;
+  date: string;
+  time: string;
+  result: string;
+  actions: {name: string, link: string}[];
 }
 
 export let SPORTS = [
@@ -82,18 +90,24 @@ export class UTSportsAPI {
   constructor(private http: HTTP) {
   }
 
-  async getSchedule(sport: Sport, sex?: 'male' | 'female'): Promise<string> {
+  async getSchedule(sport: Sport, sex: 'men' | 'women'): Promise<string> {
     let url = 'https://texassports.com/schedule.aspx?path=';
-    if(sport.gendered) {
+    if (sport.gendered) {
       url += sex.charAt(0);
     }
     url += sport.code;
+    console.log(url);
     return (await this.http.get(url, {}, {})).data
   }
 
-  async fetchStatSummary(sport: Sport, sex?: 'male' | 'female'): Promise<any[]> {
+  async fetchStatSummary(sport: Sport, sex?: 'men' | 'women'): Promise<any[]> {
     let html = await this.getSchedule(sport, sex);
-    let innerHTML = html.match(/Schedule Record([\s\S]+?)<\/section>/)[1];
+    let innerHTML
+    try {
+      innerHTML = html.match(/Schedule Record([\s\S]+?)<\/section>/)[1];
+    } catch (e) {
+      return [];
+    }
     let regex = /<span class="flex-item-1">([^<]+)<\/span>\s*<span class="flex-item-1">([^<]+)<\/span>/g;
     let matcher;
     let stats = [];
@@ -107,16 +121,99 @@ export class UTSportsAPI {
     return stats;
   }
 
-  async fetchEvents(sport: Sport, sex?: 'male' | 'female'): Promise<SportEvent[]> {
+  parseEvent(html: string): SportEvent {
+
+    let iconURL;
+    try {
+      iconURL = 'https://texassports.com' + html.match(/lazyload" data-src="([^"]+)"/)[1];
+    } catch (e) {
+      iconURL = null;
+    }
+    let title;
+    try {
+      title = html.match(/sidearm-schedule-game-opponent-name">[\S\s]+?_blank">([^<]+)</)[1];
+    } catch (e) {
+      title = html.match(/sidearm-schedule-game-opponent-name">\s*([\s\S]+?\S)\s*<\/span>/)[1];
+    }
+    let tv;
+    try {
+      tv = html.match(/tv-content">([^<]+)<\/span>/)[1];
+    } catch(e) {
+      tv = null;
+    }
+    let home = html.includes('home">vs');
+    let location = html.replace(/<div>\s*<a class="hide-on-large[\s\S]+?<\/div>/g, '')
+      .match(/sidearm-schedule-game-location">([\s\S]+?)<\/div/)[1]
+      .replace('n><a', 'n> / <a').replace(/<[^>]+>/g, '').replace(/\s{2,}/g, ' ').trim();
+    let dateMatch = html.match(/date flex-item-1">\s*<span>([\w ()]+)<\/span>\s*<span>([\w:\.\- ]+)</);
+
+    let result;
+    try {
+      result = html.match(/game-result text-italic">([\s\S]+?)<\/div/)[1];
+      result = result.replace(/<[^>]+>/g, '').replace(/\s{2,}/g, ' ').trim();
+    } catch(e) {
+      result = null;
+    }
+
+    // Actions
+    let actions = [];
+    try {
+      let matcher;
+      let regex = /li class="game_custom\d+"><a href="([^"]+)"[^>]+>([^<]+)</g;
+      while (matcher = regex.exec(html)) {
+        // hide duplicate actions
+        if(actions.find(action => action.name == matcher[2])) {
+          continue;
+        }
+        actions.push({
+          name: matcher[2],
+          link: matcher[1]
+        });
+      }
+      let boxMatch = html.match(/href="(\/boxscore[^"]+)"/);
+      if(boxMatch) {
+        actions.push({
+          name: 'Box Score',
+          link: 'https://texassports.com' + boxMatch[1]
+        });
+      }
+      let newsMatch = html.match(/href="(\/news[^"]+)"/);
+      if(newsMatch) {
+        actions.push({
+          name: 'News',
+          link: 'https://texassports.com' + newsMatch[1]
+        });
+      }
+    } catch(e) {}
+
+    return {
+      iconURL: iconURL,
+      title: title,
+      home: home,
+      tv: tv,
+      location: location,
+      date: dateMatch[1].trim(),
+      time: dateMatch[2].trim(),
+      result: result,
+      actions: actions
+    };
+  }
+
+  async fetchEvents(sport: Sport, sex?: 'men' | 'women'): Promise<SportEvent[]> {
     let html = await this.getSchedule(sport, sex);
     let regex = /<li class="sidearm-schedule-game ([\s\S]+?)<\/[^a]+>\s*<\/li/g;
     let matcher;
+    let events: SportEvent[] = [];
     while (matcher = regex.exec(html)) {
       let innerHTML = matcher[1];
-      let iconURL = 'https://texassports.com' + innerHTML.match(/lazyload" data-src="([^"]+)"/)[1];
-      console.log(iconURL)
+      try {
+        events.push(this.parseEvent(innerHTML));
+      } catch(e) {
+        console.log(e);
+      }
     }
-    return null;
+    console.log(events);
+    return events;
   }
 
 }

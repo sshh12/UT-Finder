@@ -15,12 +15,12 @@
     </ion-segment>
   </ion-toolbar>
 
-  <ion-toolbar *ngIf='sportObj.gendered' [(ngModel)]="sex">
-    <ion-segment>
-      <ion-segment-button value='male' checked>
+  <ion-toolbar *ngIf='sportObj.gendered'>
+    <ion-segment [(ngModel)]="sex" (click)='updateSport()'>
+      <ion-segment-button value='men' checked>
         <ion-icon name="man"></ion-icon>
       </ion-segment-button>
-      <ion-segment-button value='female'>
+      <ion-segment-button value='women'>
         <ion-icon name="woman"></ion-icon>
       </ion-segment-button>
     </ion-segment>
@@ -30,8 +30,55 @@
 
 <ion-content>
 
+  <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
+
+  <ion-list>
+
+    <ion-card *ngIf='stats.length > 0'>
+      <ion-card-header>
+        <ion-card-subtitle>Stats</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <table>
+          <tr>
+            <td *ngFor='let stat of stats'><b>{{stat.name}}</b></td>
+          </tr>
+          <tr>
+            <td *ngFor='let stat of stats'>{{stat.value}}</td>
+          </tr>
+        </table>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card *ngFor='let event of events'>
+      <ion-card-header>
+        <ion-avatar *ngIf='event.iconURL'>
+          <img src="{{event.iconURL}}">
+        </ion-avatar>
+        <ion-card-subtitle>{{event.location}}</ion-card-subtitle>
+        <ion-card-subtitle>{{event.date}} / {{event.time}}</ion-card-subtitle>
+        <ion-card-title>
+          <ion-badge color="{{event.home ? 'secondary' : 'warning'}}">{{event.home ? 'VS' : 'AT'}}</ion-badge>&nbsp;{{event.title}}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-chip *ngIf='event.result' color="{{colorResult(event)}}">
+          <ion-label>{{event.result}}</ion-label>
+        </ion-chip>
+        <ion-chip color="secondary" *ngIf='event.tv'>
+          <ion-label>TV: {{event.tv}}</ion-label>
+        </ion-chip>
+        <br />
+        <ion-button *ngFor='let action of event.actions'
+          (click)='openLink(action.link)'
+          size="small" fill="clear" color="tertiary">{{action.name}}</ion-button>
+      </ion-card-content>
+    </ion-card>
+
+  </ion-list>
+
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button size="small" color="secondary">
+    <ion-fab-button size="small" color="secondary" (click)='openLink("https://texassports.com/sports/2014/5/29/tickets_0529144327.aspx")'>
       <ion-icon name="pricetags"></ion-icon>
     </ion-fab-button>
   </ion-fab>
