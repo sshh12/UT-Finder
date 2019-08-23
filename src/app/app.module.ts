@@ -13,11 +13,15 @@ import { GoogleMaps } from '@ionic-native/google-maps';
 import { HTTP } from '@ionic-native/http/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { SecureStorage } from '@ionic-native/secure-storage/ngx';
+
 import { UTAPI } from './backend/ut-api';
 import { WeatherAPI } from './backend/weather-api';
 import { TowerAPI } from './backend/tower-api';
 import { MapsAPI } from './backend/maps-api';
 import { BusAPI } from './backend/bus-api';
+import { UTSportsAPI } from './backend/utsports-api';
+import { VotingAPI } from './backend/voting-api';
 
 @NgModule({
   declarations: [AppComponent],
@@ -29,6 +33,7 @@ import { BusAPI } from './backend/bus-api';
     AppRoutingModule
   ],
   providers: [
+    SecureStorage,
     StatusBar,
     SplashScreen,
     InAppBrowser,
@@ -42,6 +47,8 @@ import { BusAPI } from './backend/bus-api';
     TowerAPI,
     MapsAPI,
     BusAPI,
+    UTSportsAPI,
+    VotingAPI,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

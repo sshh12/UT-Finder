@@ -2,10 +2,14 @@
 
   <ion-toolbar color="primary">
 
+    <ion-buttons slot="start">
+      <ion-menu-button autoHide="false"></ion-menu-button>
+    </ion-buttons>
+
     <ion-title>Map</ion-title>
 
     <ion-buttons slot="end">
-      <ion-button fill="outline" icon-only  (click)="showSURE()" color="light">SURE Walk</ion-button>
+      <ion-button fill="outline" icon-only (click)="showSURE()" color="light">SURE Walk</ion-button>
     </ion-buttons>
 
   </ion-toolbar>
@@ -19,7 +23,10 @@
     <ion-buttons slot="end">
       <ion-icon *ngIf='!loading' (click)="closeBusView()" slot="icon-only" name="close"></ion-icon>
     </ion-buttons>
-    <ion-title><ion-badge class="bus-badge {{getRouteStyle(showBusRoute)}}">{{showBusRoute.num}}</ion-badge> {{showBusRoute.name}}</ion-title>
+    <ion-title>
+      <ion-badge class="bus-badge {{getRouteStyle(showBusRoute)}}">{{showBusRoute.num}}</ion-badge>
+      {{showBusRoute.name}}
+    </ion-title>
     <ion-progress-bar *ngIf='loading' type="indeterminate"></ion-progress-bar>
   </ion-toolbar>
 
@@ -27,15 +34,23 @@
 
 <ion-content>
 
-    <div id="map_canvas">
+  <div id="map_canvas">
 
     <ion-fab vertical="top" horizontal="end" slot="fixed" *ngIf='!showBusRoute'>
-        <ion-fab-button size="small" color="secondary"><ion-icon name="map"></ion-icon></ion-fab-button>
-        <ion-fab-list>
-          <ion-fab-button color="tertiary" (click)="showBuses()"><ion-icon name="bus"></ion-icon></ion-fab-button>
-          <ion-fab-button color="success" (click)="showFood()"><ion-icon name="pizza"></ion-icon></ion-fab-button>
-          <ion-fab-button color="light" (click)="showWeather()"><ion-icon name="rainy"></ion-icon></ion-fab-button>
-        </ion-fab-list>
+      <ion-fab-button size="small" color="secondary">
+        <ion-icon name="map"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-list>
+        <ion-fab-button color="tertiary" (click)="showBuses()">
+          <ion-icon name="bus"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-button color="success" (click)="showFood()">
+          <ion-icon name="pizza"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-button color="light" (click)="showWeather()">
+          <ion-icon name="rainy"></ion-icon>
+        </ion-fab-button>
+      </ion-fab-list>
     </ion-fab>
 
   </div>

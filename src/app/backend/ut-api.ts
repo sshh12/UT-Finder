@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { Storage } from '@ionic/storage';
+import { SecureStorage, SecureStorageObject } from '@ionic-native/secure-storage/ngx';
 import { HTTP } from '@ionic-native/http/ngx';
 import {
   AlertController,
@@ -18,30 +19,30 @@ import {
 declare var cookieEmperor;
 
 export class ClassTime {
-    num: number;
-    name: string;
-    title: string;
-    building: string;
-    room: string;
-    days: Array<string>;
-    timeslot: string;
+  num: number;
+  name: string;
+  title: string;
+  building: string;
+  room: string;
+  days: Array<string>;
+  timeslot: string;
 }
 
 export class FinalTime {
-    num: number;
-    name: string;
-    title: string;
-    startDate: Date;
-    endDate: Date;
-    location: string;
-    exists: boolean;
-    dayIndex?: number;
+  num: number;
+  name: string;
+  title: string;
+  startDate: Date;
+  endDate: Date;
+  location: string;
+  exists: boolean;
+  dayIndex?: number;
 }
 
 export class MoneyAccount {
-    name: string;
-    balance: number;
-    status: string;
+  name: string;
+  balance: number;
+  status: string;
 }
 
 export class Course {
@@ -61,6 +62,13 @@ export class Assignment {
   due: string;
 }
 
+export class AccountInfo {
+  eid: string;
+  name: string;
+  names: string[];
+  birthday: Date;
+}
+
 @Injectable()
 export class UTAPI {
 
@@ -73,19 +81,38 @@ export class UTAPI {
   canvasAccountID = 0;
   canvasUserID = 0;
   usingDemoAccount = false;
+  secStorage: SecureStorageObject = null;
+  account: AccountInfo = null;
 
   constructor(private iab: InAppBrowser,
-              private alertCtrl: AlertController,
-              private toastCtrl: ToastController,
-              private http: HTTP,
-              private storage: Storage) {
+    private alertCtrl: AlertController,
+    private toastCtrl: ToastController,
+    private http: HTTP,
+    private storage: Storage,
+    private secureStorage: SecureStorage) {
 
     this.http.disableRedirect(false);
+    this.initStorage();
+  }
 
+  async initStorage() {
+    this.secStorage = await this.secureStorage.create('ut_finder_secure');
+    // Migrate old storage
+    let password = await this.storage.get('password');
+    try {
+      await this.secStorage.get('password');
+    } catch (e) {
+      await this.secStorage.set('password', '');
+    }
+    if (password) {
+      await this.secStorage.set('password', password);
+    }
+    await this.storage.set('password', null);
+    this.account = await this.storage.get('account');
   }
 
   openNewTab(url: string) {
-    this.iab.create(url, '_blank', {location: 'no'});
+    this.iab.create(url, '_blank', { location: 'no' });
   }
 
   doLogin(username: string, password: string, save: boolean): Promise<void> {
@@ -94,10 +121,10 @@ export class UTAPI {
 
       if (save) {
         this.storage.set('eid', username);
-        this.storage.set('password', password);
+        this.secStorage.set('password', password);
       }
 
-      if(username == DEMO_EID) {
+      if (username == DEMO_EID) {
         this.lastLogged = new Date();
         this.utLoginCookie = DEMO_EID;
         this.utSCCookie = DEMO_EID;
@@ -106,7 +133,7 @@ export class UTAPI {
         return;
       }
 
-      const browser = this.iab.create('https://utdirect.utexas.edu/registration/classlist.WBX', '_blank', {location: 'no'});
+      const browser = this.iab.create('https://utdirect.utexas.edu/registration/classlist.WBX', '_blank', { location: 'no' });
 
       browser.on('loadstop').subscribe(() => {
 
@@ -122,12 +149,14 @@ export class UTAPI {
             this.lastLogged = new Date();
             this.utLoginCookie = await this.getCookie('https://utdirect.utexas.edu', 'utlogin-prod');
             this.utSCCookie = await this.getCookie('https://utexas.edu', 'SC');
+            this.account = await this.fetchAccountInfo();
+            this.storage.set('account', this.account);
             resolve();
 
           } else if (curUrl.startsWith('https://login.utexas.edu')) {
             // currently on the login page
             let error = await browser.executeScript(
-               { code: 'document.getElementById(\'error-message\') != null' }
+              { code: 'document.getElementById(\'error-message\') != null' }
             ) + '';
 
             if (error === 'true') {
@@ -145,19 +174,19 @@ export class UTAPI {
             } else {
 
               await browser.executeScript(
-                 { code: `document.getElementById('IDToken1').value = "${username}";` }
+                { code: `document.getElementById('IDToken1').value = "${username}";` }
               );
               await browser.executeScript(
-                 { code: `document.getElementById('IDToken2').value = "${password}"` }
+                { code: `document.getElementById('IDToken2').value = "${password}"` }
               );
               await browser.executeScript({ code: 'LoginSubmit(\'Log In\')' });
 
               // do it again cause ios broke
               await browser.executeScript(
-                 { code: `document.getElementById('IDToken1').value = "${username}";` }
+                { code: `document.getElementById('IDToken1').value = "${username}";` }
               );
               await browser.executeScript(
-                 { code: `document.getElementById('IDToken2').value = "${password}"` }
+                { code: `document.getElementById('IDToken2').value = "${password}"` }
               );
 
             }
@@ -174,146 +203,145 @@ export class UTAPI {
 
     });
 
-    }
+  }
 
-    ensureCanvasLogin(): Promise<boolean> {
+  ensureCanvasLogin(): Promise<boolean> {
 
-      return new Promise(async (resolve) => {
+    return new Promise(async (resolve) => {
 
-        await this.ensureUTLogin();
+      await this.ensureUTLogin();
 
-        if (this.canvasCookie !== '' || this.usingDemoAccount) {
-          resolve(true);
-          return;
-        }
+      if (this.canvasCookie !== '' || this.usingDemoAccount) {
+        resolve(true);
+        return;
+      }
 
-        const browser = this.iab.create('https://utexas.instructure.com/courses', '_blank', {location: 'no'});
+      const browser = this.iab.create('https://utexas.instructure.com/courses', '_blank', { location: 'no' });
 
-        browser.on('loadstop').subscribe(() => {
+      browser.on('loadstop').subscribe(() => {
 
-          this.checker = setInterval(async () => {
+        this.checker = setInterval(async () => {
 
-            const curUrl = await browser.executeScript({ code: 'window.location.href' }) + '';
+          const curUrl = await browser.executeScript({ code: 'window.location.href' }) + '';
 
-            // this means the user is prob already logged in
-            if (curUrl.includes('https://utexas.instructure.com/courses')) {
+          // this means the user is prob already logged in
+          if (curUrl.includes('https://utexas.instructure.com/courses')) {
 
-              clearInterval(this.checker);
-              browser.close();
-              this.canvasCookie = await this.getCookie('https://utexas.instructure.com', 'canvas_session');
-              resolve(true);
+            clearInterval(this.checker);
+            browser.close();
+            this.canvasCookie = await this.getCookie('https://utexas.instructure.com', 'canvas_session');
+            resolve(true);
 
-            }
+          }
 
-          }, 800);
-
-        });
-
-        browser.on('exit').subscribe(() => {
-          clearInterval(this.checker);
-        });
+        }, 800);
 
       });
 
-    }
+      browser.on('exit').subscribe(() => {
+        clearInterval(this.checker);
+      });
 
-    ensureUTLogin(): Promise<boolean> {
+    });
 
-      return new Promise(async (resolve) => {
+  }
 
-        const timeSinceLogged = new Date().getTime() - this.lastLogged.getTime();
+  ensureUTLogin(): Promise<boolean> {
 
-        if (timeSinceLogged > 20 * 60 * 1000) { // reset after 20 mins
+    return new Promise(async (resolve) => {
 
-          const username = await this.storage.get('eid');
-          const password = await this.storage.get('password');
+      const timeSinceLogged = new Date().getTime() - this.lastLogged.getTime();
 
-          if (!username || !password) { // need user/pass
+      if (timeSinceLogged > 20 * 60 * 1000) { // reset after 20 mins
 
-            let alert = await this.alertCtrl.create({
-              header: 'Login',
-              message: 'Your login will be stored solely on your device.',
-              inputs: [
-                {
-                  name: 'EID',
-                  placeholder: 'abc12345'
-                }, {
-                  name: 'password',
-                  placeholder: 'password',
-                  type: 'password'
-                }
-              ],
-              buttons: [
-                {
-                  text: 'Login',
-                  handler: async data => {
-                    await this.doLogin(data.EID.toLowerCase(), data.password, false);
-                    resolve(true);
-                  }
-                },
-                {
-                  text: 'Login & Save',
-                  handler: async data => {
-                    await this.doLogin(data.EID.toLowerCase(), data.password, true);
-                    resolve(true);
-                  }
-                }
-              ]
-            });
-            alert.onDidDismiss().then((event) => {
-              if (event.role === 'backdrop') {
-                resolve(false);
+        const username = await this.storage.get('eid');
+        const password = await this.secStorage.get('password');
+
+        if (!username || !password) { // need user/pass
+
+          let alert = await this.alertCtrl.create({
+            header: 'Login',
+            message: 'Your login will be stored solely on your device.',
+            inputs: [
+              {
+                name: 'EID',
+                placeholder: 'abc12345'
+              }, {
+                name: 'password',
+                placeholder: 'password',
+                type: 'password'
               }
-            });
-            await alert.present();
-
-          } else { // already have user/pass
-
-            let alert = await this.alertCtrl.create({
-              header: 'Login',
-              buttons: [
-                {
-                  text: 'New Login',
-                  handler: async () => {
-                      await this.storage.set('eid', '');
-                      await this.storage.set('password', '');
-                      resolve(await this.ensureUTLogin());
-                    }
-                  },
-                  {
-                    text: `As ${username}`,
-                    handler: async () => {
-                      await this.doLogin(username, password, false);
-                      resolve(true);
-                    }
-                  }
-                ]
-              });
-              alert.onDidDismiss().then((event) => {
-                if (event.role === 'backdrop') {
-                  resolve(false);
+            ],
+            buttons: [
+              {
+                text: 'Login',
+                handler: async data => {
+                  await this.doLogin(data.EID.toLowerCase(), data.password, false);
+                  resolve(true);
                 }
-              });
-              await alert.present();
-
+              },
+              {
+                text: 'Login & Save',
+                handler: async data => {
+                  await this.doLogin(data.EID.toLowerCase(), data.password, true);
+                  resolve(true);
+                }
+              }
+            ]
+          });
+          alert.onDidDismiss().then((event) => {
+            if (event.role === 'backdrop') {
+              resolve(false);
             }
+          });
+          await alert.present();
 
-        } else {
-          resolve(true);  // already logged in, nothing to do
+        } else { // already have user/pass
+
+          let alert = await this.alertCtrl.create({
+            header: 'Login',
+            buttons: [
+              {
+                text: 'New Login',
+                handler: async () => {
+                  await this.storage.set('eid', '');
+                  await this.secStorage.set('password', '');
+                  await this.storage.set('account', null);
+                  resolve(await this.ensureUTLogin());
+                }
+              },
+              {
+                text: `As ${username}`,
+                handler: async () => {
+                  await this.doLogin(username, password, false);
+                  resolve(true);
+                }
+              }
+            ]
+          });
+          alert.onDidDismiss().then((event) => {
+            if (event.role === 'backdrop') {
+              resolve(false);
+            }
+          });
+          await alert.present();
+
         }
+
+      } else {
+        resolve(true);  // already logged in, nothing to do
+      }
 
     });
 
   }
 
   getCookie(url: string, name: string): Promise<string> {
-
     return new Promise<string>(async (resolve) => {
       cookieEmperor.getCookie(url, name,
         (c) => resolve(c.cookieValue),
         () => resolve(''));
     });
-
   }
 
   async getCanvas(apiURL: string) {
@@ -342,6 +370,26 @@ export class UTAPI {
 
   }
 
+  async fetchAccountInfo(): Promise<AccountInfo> {
+
+    if (!await this.ensureUTLogin()) {
+      return null;
+    }
+
+    let html = await this.getPage('https://utdirect.utexas.edu/apps/utd/all_my_addresses/');
+    let name = html.match(/upd_name" value="([^"]+)"/)[1];
+    let bdayString = html.match(/Date of Birth:[<\/span> cl="fied_vu]+(\d\d\/\d\d\/\d\d)/)[1];
+    let names = name.split(/[, ]+/);
+    names.push(names.shift());
+    return {
+      name: name,
+      names: names,
+      birthday: new Date(bdayString),
+      eid: await this.storage.get('eid')
+    };
+
+  }
+
   async fetchSchedule(sem: string = null): Promise<ClassTime[]> {
 
     if (!await this.ensureUTLogin()) {
@@ -355,7 +403,7 @@ export class UTAPI {
       selector = '<th>Course</th>';
     }
 
-    if(this.usingDemoAccount) {
+    if (this.usingDemoAccount) {
       return sem ? SCHEDULE_DATA.OTHER : SCHEDULE_DATA.NOW;
     }
 
@@ -470,7 +518,7 @@ export class UTAPI {
       return [];
     }
 
-    if(this.usingDemoAccount) {
+    if (this.usingDemoAccount) {
       return MONEY_DATA;
     }
 

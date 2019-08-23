@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="io.sshh.utfinder" version="3.2.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="io.sshh.utfinder" version="4.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>UT Finder</name>
     <description>An simple app for UT.</description>
     <author email="shrivu.shankar@utexas.edu" href="https://sshh.io">Shrivu Shankar</author>
@@ -128,5 +128,6 @@
     <plugin name="cordova-plugin-statusbar" spec="^2.4.2" />
     <plugin name="cordova-plugin-splashscreen" spec="^5.0.2" />
     <plugin name="mx.ferreyra.callnumber" spec="~0.0.2" />
+    <plugin name="cordova-plugin-secure-storage" spec="3.0.2" />
     <engine name="android" spec="^8.0.0" />
 </widget>

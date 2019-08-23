@@ -101,7 +101,7 @@ export class ClassCalendar {
             {
               text: 'See on Map',
               handler: () => {
-                this.router.navigateByUrl('/tabs/map?search=' + classtime.building);
+                this.router.navigateByUrl('/menu/main/tabs/map?search=' + classtime.building);
               }
             }
           ]

@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaulthref=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Health and Safety</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list>
+
+    <ion-list-header>Emergency</ion-list-header>
+
+    <ion-item (click)="callNumber('5124714441')">
+      <ion-label>UTPD <b style="float: right">(512)-471-4441</b></ion-label>
+    </ion-item>
+    <ion-item (click)="callNumber('5122325050')">
+      <ion-label>Behavior Concerns <b style="float: right">(512)-232-5050</b></ion-label>
+    </ion-item>
+    <ion-item (click)="callNumber('5124712255')">
+      <ion-label>24/7 Crisis Line <b style="float: right">(512)-471-2255</b></ion-label>
+    </ion-item>
+
+    <ion-list-header>Health</ion-list-header>
+
+    <ion-item (click)="openLink('https://portal.uhs.utexas.edu/login_directory.aspx')">
+      <ion-label>UHS (Health Services)</ion-label>
+    </ion-item>
+    <ion-item (click)="openLink('https://cmhc.utexas.edu/')">
+      <ion-label>Mental Health Center</ion-label>
+    </ion-item>
+
+    <ion-list-header>Additional Services</ion-list-header>
+
+    <ion-item (click)="callNumber('5122329255')">
+      <ion-label>Sure Walk <b style="float: right">(512)-232-9255</b></ion-label>
+    </ion-item>
+    <ion-item (click)="openLink('https://parking.utexas.edu/sure')">
+      <ion-label>Sure Ride</ion-label>
+    </ion-item>
+
+  </ion-list>
+
+</ion-content>

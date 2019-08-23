@@ -1,0 +1,60 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaulthref=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Voting</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list>
+
+    <ion-card class="card-list">
+      <ion-card-header>
+        <ion-card-subtitle>Eligibility</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ul>
+          <li>You are a United States citizen</li>
+          <li>You are a resident of Travis County</li>
+          <li>You are at least 17 years and 10 months old</li>
+          <li>You are not a convicted felon</li>
+          <li>You have not been declared by a court to be either totally mentally incapacitated or partially mentally
+            incapacitated without the right to vote.</li>
+        </ul>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-subtitle>Registration</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item (click)='openLink("https://travis.go2gov.net/voterreg/vexpress/registration.do")'>
+          <ion-icon name="clipboard" slot="end"></ion-icon>
+          <ion-label>Register</ion-label>
+        </ion-item>
+        <ion-item (click)='checkRegistration()'>
+          <ion-icon name="search" slot="end"></ion-icon>
+          <ion-label>Check Registration</ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-subtitle>Polling</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-button expand="block" color="primary" 
+          (click)='openLink("https://ballotpedia.org/Sample_Ballot_Lookup#address=110+Inner+Campus+Drive+Austin%2C+Tx")'>See Ballot</ion-button>
+        <ion-button expand="block" color="secondary" 
+          (click)='openLink("https://traviscountyclerk.org/eclerk/Content.do?code=E.4")'>View Locations</ion-button>
+      </ion-card-content>
+    </ion-card>
+
+  </ion-list>
+
+</ion-content>

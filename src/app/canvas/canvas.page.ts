@@ -46,7 +46,7 @@ export class CanvasPage {
         await this.storage.set('canvas:courses', this.courses);
         this.loading = false;
       }
-      this.router.navigateByUrl('/tabs/canvas/assignments?course=' + course.canvasID);
+      this.router.navigateByUrl('/menu/main/tabs/canvas/assignments?course=' + course.canvasID);
     }
 
     getIcon(course: Course) {
