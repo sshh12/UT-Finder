@@ -96,7 +96,6 @@ export class UTSportsAPI {
       url += sex.charAt(0);
     }
     url += sport.code;
-    console.log(url);
     return (await this.http.get(url, {}, {})).data
   }
 
@@ -117,7 +116,6 @@ export class UTSportsAPI {
         value: matcher[2]
       });
     }
-    console.log(stats);
     return stats;
   }
 
@@ -212,7 +210,6 @@ export class UTSportsAPI {
         console.log(e);
       }
     }
-    console.log(events);
     return events;
   }
 

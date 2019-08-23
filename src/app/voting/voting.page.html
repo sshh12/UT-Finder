@@ -32,11 +32,11 @@
         <ion-card-subtitle>Registration</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
-        <ion-item href="#">
+        <ion-item (click)='openLink("https://travis.go2gov.net/voterreg/vexpress/registration.do")'>
           <ion-icon name="clipboard" slot="end"></ion-icon>
           <ion-label>Register</ion-label>
         </ion-item>
-        <ion-item href="#">
+        <ion-item (click)='checkRegistration()'>
           <ion-icon name="search" slot="end"></ion-icon>
           <ion-label>Check Registration</ion-label>
         </ion-item>
@@ -48,8 +48,10 @@
         <ion-card-subtitle>Polling</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
-        <ion-button expand="block" color="primary">See Ballot</ion-button>
-        <ion-button expand="block" color="secondary">View Locations</ion-button>
+        <ion-button expand="block" color="primary" 
+          (click)='openLink("https://ballotpedia.org/Sample_Ballot_Lookup#address=110+Inner+Campus+Drive+Austin%2C+Tx")'>See Ballot</ion-button>
+        <ion-button expand="block" color="secondary" 
+          (click)='openLink("https://traviscountyclerk.org/eclerk/Content.do?code=E.4")'>View Locations</ion-button>
       </ion-card-content>
     </ion-card>
 

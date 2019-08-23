@@ -13,7 +13,7 @@ export class SportsPage {
 
     sport = 'Baseball';
     sportObj = SPORTS[0];
-    sex: 'men' | 'women' = 'women';
+    sex: 'men' | 'women' = 'men';
 
     events: SportEvent[] = [];
     stats: any[] = [];
