@@ -11,7 +11,7 @@ export class MenuPage {
 
   selectedPath = '';
 
-  constructor(private router: Router, private utapi: UTAPI) {
+  constructor(private router: Router, public utapi: UTAPI) {
     this.router.events.subscribe((event: RouterEvent) => {
       if (event && event.url) {
         this.selectedPath = event.url;
