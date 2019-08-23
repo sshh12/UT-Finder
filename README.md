@@ -13,13 +13,15 @@ Features
 
 -> Class and Finals Schedules
 -> Map
--> Weather
+-> Sports
+-> Canvas Grades
+-> Voting Information
 -> Dine In/Bevo Bucks
 -> Live Bus Routes
--> Canvas Grades
 -> Campus Resources
 -> Call a SURE Walk
 -> Things from MyUT
+-> Weather
 -> Swag
 ```
 
