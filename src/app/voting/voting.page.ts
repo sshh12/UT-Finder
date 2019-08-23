@@ -31,25 +31,46 @@ export class VotingPage {
       header: 'Check Registration',
       buttons: [
         {
-          text: 'Use VUID',
+          text: 'Manually',
           handler: async () => {
-            this.votingapi.fetchVUIDRegistration();
+            this.openLink('https://teamrv-mvp.sos.texas.gov/MVP/back2HomePage.do');
           }
         },
         {
-          text: `Use UT EID`,
+          text: 'Using UT EID',
           handler: async () => {
             let account = await this.utapi.fetchAccountInfo();
-            this.votingapi.fetchNameRegistration(
+            let results = await this.votingapi.fetchNameRegistration(
               account.names[0],
               account.names[account.names.length - 1],
               getFormattedDate(account.birthday)
             );
+            this.showResults(results);
           }
         }
       ]
     });
     await alert.present();
+  }
+
+  async showResults(results) {
+    if (!results) {
+      let alert = await this.alertCtrl.create({
+        header: 'Not Found 😔',
+        subHeader: 'Unable to find your registration',
+        message: 'You may be registered in the wrong county (should be Travis) or your application is still processing.',
+        buttons: ['OK']
+      });
+      await alert.present();
+    } else {
+      let alert = await this.alertCtrl.create({
+        header: 'Found 🎉',
+        subHeader: `Registration found for ${results.Name}`,
+        message: `County: ${results.County}, VUID: ${results.VUID}, Status: ${results['Voter Status']}`,
+        buttons: ['OK']
+      });
+      await alert.present();
+    }
   }
 
   openLink(url) {
