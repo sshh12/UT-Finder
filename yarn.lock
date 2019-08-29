@@ -1722,7 +1722,7 @@ cache-base@^1.0.1:
     union-value "^1.0.0"
     unset-value "^1.0.0"
 
-call-number@1.0.1:
+call-number@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/call-number/-/call-number-1.0.1.tgz#bf9daae487fd6a5573f89aa3655fbe8af036afd2"
   integrity sha1-v52q5If9alVz+JqjZV++ivA2r9I=
@@ -2228,7 +2228,7 @@ cordova-android-play-services-gradle-release@^1.4.6:
     semver "5.1.0"
     xml2js "~0.4.19"
 
-cordova-android@^8.0.0:
+cordova-android@8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/cordova-android/-/cordova-android-8.0.0.tgz#1fbe05a914731df619522b9385d4d1b183c36bdb"
   integrity sha512-Ipv8HbVJpxEyYFSFLTEOaLRp0yxBtJVNbgSuDEB4naa34FzQaRWSNiiMcPJnO+x3hRXNt7pcwa46hARNzhn7+w==
@@ -2260,7 +2260,7 @@ cordova-common@^3.1.0:
     underscore "^1.8.3"
     which "^1.3.0"
 
-cordova-plugin-advanced-http@^2.0.1:
+cordova-plugin-advanced-http@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/cordova-plugin-advanced-http/-/cordova-plugin-advanced-http-2.1.1.tgz#2583d84bd5b068e1842ccd60dc4e490ead1a4eb3"
   integrity sha512-C8NQ5+PsUOqDCEzlhhTP9pIHizK/O9rVcdNU3+psfU/4mg5heiEVj/E3AS2TSjMo2wef1xw8yempSKETzuRGig==
@@ -2270,16 +2270,16 @@ cordova-plugin-calendar@^5.1.4:
   resolved "https://registry.yarnpkg.com/cordova-plugin-calendar/-/cordova-plugin-calendar-5.1.4.tgz#4cfea411f4177ba79ca5410d697adb0f4f5e5218"
   integrity sha512-4Cl7s/hwfrLsJr6ecK8yBNPDbQHe0YB3y+4T/PRxv86CWjJpx6eiEHRlldjizSvNWpKoMy2ZG7Y4Sr5fCPrwZA==
 
-"cordova-plugin-cookieemperor@git+https://github.com/rtk/cordova-cookie-emperor.git":
+"cordova-plugin-cookieemperor@git+https://github.com/sshh12/cordova-cookie-emperor.git":
   version "1.0.0"
-  resolved "git+https://github.com/rtk/cordova-cookie-emperor.git#3a73cfddce512e1a3ad8742163b92de72a0e338a"
+  resolved "git+https://github.com/sshh12/cordova-cookie-emperor.git#0c77d814fbac03bbb8e9f0f1cce0541f2c22361b"
 
-cordova-plugin-device@^2.0.2:
+cordova-plugin-device@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/cordova-plugin-device/-/cordova-plugin-device-2.0.3.tgz#c2b41b7efd0455dd097f89356d85bfdd5dadeb0f"
   integrity sha512-Jb3V72btxf3XHpkPQsGdyc8N6tVBYn1vsxSFj43fIz9vonJDUThYPCJJHqk6PX6N4dJw6I4FjxkpfCR4LDYMlw==
 
-cordova-plugin-file@^6.0.1:
+cordova-plugin-file@^6.0.2:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/cordova-plugin-file/-/cordova-plugin-file-6.0.2.tgz#f3911479f8357e9aacb5576674f8d95b31a1fb20"
   integrity sha512-m7cughw327CjONN/qjzsTpSesLaeybksQh420/gRuSXJX5Zt9NfgsSbqqKDon6jnQ9Mm7h7imgyO2uJ34XMBtA==
@@ -2290,7 +2290,7 @@ cordova-plugin-file@^6.0.1:
   dependencies:
     cordova-common "^3.1.0"
 
-cordova-plugin-inappbrowser@^3.0.0:
+cordova-plugin-inappbrowser@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/cordova-plugin-inappbrowser/-/cordova-plugin-inappbrowser-3.1.0.tgz#61520b8de3eb75b37842d2340f5d90a84a073747"
   integrity sha512-YqrZfYgbGTS20SFID0mrRxud312VH072QVlFonCAkPgtGg1Svy7lELOCNFd+KU7t4mVtZeTEjZPEeefvjaetwQ==
@@ -2300,27 +2300,26 @@ cordova-plugin-ionic-keyboard@^2.1.3:
   resolved "https://registry.yarnpkg.com/cordova-plugin-ionic-keyboard/-/cordova-plugin-ionic-keyboard-2.1.3.tgz#6b050d5b7cb4393d5758b55f45a46372f25178fe"
   integrity sha512-6ucQ6FdlLdBm8kJfFnzozmBTjru/0xekHP/dAhjoCZggkGRlgs8TsUJFkxa/bV+qi7Dlo50JjmpE4UMWAO+aOQ==
 
-cordova-plugin-ionic-webview@^2.4.1:
+cordova-plugin-ionic-webview@^2.5.1:
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/cordova-plugin-ionic-webview/-/cordova-plugin-ionic-webview-2.5.1.tgz#b21fba401bf1e67478c395ba530c85040cc663a2"
   integrity sha512-blDPUMxbASOaAU7GuLFetAeOq42VnbJWvFFtD5zm4pjGnlhZCd2ngOY4Fd6pioub8rPi9xxe4wzVcIvS14TBWA==
 
-cordova-plugin-secure-storage@3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/cordova-plugin-secure-storage/-/cordova-plugin-secure-storage-3.0.2.tgz#20e51072c2fc86bf3e6238896436080aba1b283c"
-  integrity sha512-ZwVSPuw+SRObjH51nV/8eNR6OujSfJGZEobpR4SyKyaUy+hTy5nyAJAHNf5CSm+a8Yp+hN9TW34ztpia9kT7Ig==
+"cordova-plugin-secure-storage@git://github.com/mibrito707/cordova-plugin-secure-storage.git#v4.0.0-beta":
+  version "4.0.0"
+  resolved "git://github.com/mibrito707/cordova-plugin-secure-storage.git#7f39069fbee4bc359f9865e6aee6b441651ca000"
 
-cordova-plugin-splashscreen@^5.0.2:
+cordova-plugin-splashscreen@^5.0.3:
   version "5.0.3"
   resolved "https://registry.yarnpkg.com/cordova-plugin-splashscreen/-/cordova-plugin-splashscreen-5.0.3.tgz#02820472771c3e10b43ceedd54b0a1e4674efa6d"
   integrity sha512-rnoDXMDfzoeHDBvsnu6JmzDE/pV5YJCAfc5hYX/Mb2BIXGgSjFJheByt0tU6kp3Wl40tSyFX4pYfBwFblBGyRg==
 
-cordova-plugin-statusbar@^2.4.2:
+cordova-plugin-statusbar@^2.4.3:
   version "2.4.3"
   resolved "https://registry.yarnpkg.com/cordova-plugin-statusbar/-/cordova-plugin-statusbar-2.4.3.tgz#cc557aef66c27484e0f7f045004040d03321f82d"
   integrity sha512-ThmXzl6QIKWFXf4wWw7Q/zpB+VKkz3VM958+5A0sXD4jmR++u7KnGttLksXshVwWr6lvGwUebLYtIyXwS4Ovcg==
 
-cordova-plugin-whitelist@^1.3.3:
+cordova-plugin-whitelist@^1.3.4:
   version "1.3.4"
   resolved "https://registry.yarnpkg.com/cordova-plugin-whitelist/-/cordova-plugin-whitelist-1.3.4.tgz#31938545c7c3e7de35c20ab08c2c3afa06e8a3f9"
   integrity sha512-EYC5eQFVkoYXq39l7tYKE6lEjHJ04mvTmKXxGL7quHLdFPfJMNzru/UYpn92AOfpl3PQaZmou78C7EgmFOwFQQ==
@@ -5616,6 +5615,11 @@ mute-stream@0.0.8:
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.8.tgz#1630c42b2251ff81e2a283de96a5497ea92e5e0d"
   integrity sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==
+
+mx.ferreyra.callnumber@~0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/mx.ferreyra.callnumber/-/mx.ferreyra.callnumber-0.0.2.tgz#dda64ced1d5a19e801d5c64f17f02bcd0599cb63"
+  integrity sha512-J9FJiMrfWG9Q8AQEz/cgYLcXTTD/Z5+vfq29hn8K7yVWjxkSzr7zFi7Dpn8wcv2iKHBHDJY+U0z8yoAzDugXMw==
 
 nan@^2.10.0, nan@^2.12.1, nan@^2.13.2:
   version "2.14.0"
