@@ -31,6 +31,21 @@
     <ion-item (click)="openLink('https://cmhc.utexas.edu/')">
       <ion-label>Mental Health Center</ion-label>
     </ion-item>
+    <ion-item (click)="callNumber('5124756877')">
+      <ion-label>24/7 Nurse Advice <b style="float: right">(512)-475-6877</b></ion-label>
+    </ion-item>
+
+    <ion-list-header>Report</ion-list-header>
+
+    <ion-item (click)="openLink('https://deanofstudents.utexas.edu/emergency/advocacysupport.php')">
+      <ion-label>Harassment/Assault/Misconduct</ion-label>
+    </ion-item>
+    <ion-item (click)="openLink('https://titleix.utexas.edu/file-a-report')">
+      <ion-label>Gender/Sex (Title IX) Concerns</ion-label>
+    </ion-item>
+    <ion-item (click)="openLink('https://diversity.utexas.edu/ccrt/')">
+      <ion-label>Bias/Hate Incidents</ion-label>
+    </ion-item>
 
     <ion-list-header>Additional Services</ion-list-header>
 
@@ -39,6 +54,9 @@
     </ion-item>
     <ion-item (click)="openLink('https://parking.utexas.edu/sure')">
       <ion-label>Sure Ride</ion-label>
+    </ion-item>
+    <ion-item (click)="openLink('https://deanofstudents.utexas.edu/emergency/utoutpost.php')">
+      <ion-label>UT Outpost (Food Pantry)</ion-label>
     </ion-item>
 
   </ion-list>
