@@ -20,3 +20,36 @@ ion-content.map {
 .route-rapid {
   background-color: rgb(125, 125, 125);
 }
+
+.lgbt-colors {
+  -webkit-animation: rainbow 20s ease infinite;
+  -moz-animation: rainbow 20s ease infinite;
+  animation: rainbow 20s ease infinite;
+}
+@-webkit-keyframes rainbow {
+  0% {--background: #ff0018; --background-activated: #ff0018; --background-hover: #ff0018;}
+  15% {--background: #ffa52c; --background-activated: #ffa52c; --background-hover: #ffa52c;}
+  30% {--background: #ffff41; --background-activated: #ffff41; --background-hover: #ffff41;}
+  45% {--background: #008018; --background-activated: #008018; --background-hover: #008018;}
+  60% {--background: #0000f9; --background-activated: #0000f9; --background-hover: #0000f9;}
+  75% {--background: #86007d; --background-activated: #86007d; --background-hover: #86007d;}
+  100% {--background: #ff0018; --background-activated: #ff0018; --background-hover: #ff0018;}
+}
+@-moz-keyframes rainbow {
+  0% {--background: #ff0018; --background-activated: #ff0018; --background-hover: #ff0018;}
+  15% {--background: #ffa52c; --background-activated: #ffa52c; --background-hover: #ffa52c;}
+  30% {--background: #ffff41; --background-activated: #ffff41; --background-hover: #ffff41;}
+  45% {--background: #008018; --background-activated: #008018; --background-hover: #008018;}
+  60% {--background: #0000f9; --background-activated: #0000f9; --background-hover: #0000f9;}
+  75% {--background: #86007d; --background-activated: #86007d; --background-hover: #86007d;}
+  100% {--background: #ff0018; --background-activated: #ff0018; --background-hover: #ff0018;}
+}
+@keyframes rainbow {
+  0% {--background: #ff0018; --background-activated: #ff0018; --background-hover: #ff0018;}
+  15% {--background: #ffa52c; --background-activated: #ffa52c; --background-hover: #ffa52c;}
+  30% {--background: #ffff41; --background-activated: #ffff41; --background-hover: #ffff41;}
+  45% {--background: #008018; --background-activated: #008018; --background-hover: #008018;}
+  60% {--background: #0000f9; --background-activated: #0000f9; --background-hover: #0000f9;}
+  75% {--background: #86007d; --background-activated: #86007d; --background-hover: #86007d;}
+  100% {--background: #ff0018; --background-activated: #ff0018; --background-hover: #ff0018;}
+}
