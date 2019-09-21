@@ -81,6 +81,10 @@ export class AssignmentsPage {
     this.showDecimalScores = !this.showDecimalScores;
   }
 
+  round(num) {
+    return Math.round(num * 100) / 100;
+  }
+
 }
 
 // Map class subjects to font-awesome icons

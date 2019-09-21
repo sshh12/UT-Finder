@@ -569,10 +569,14 @@ export class UTAPI {
         canvasID: course.id,
         name: course.name,
         code: course.course_code,
-        title: course.name.replace(/\w\w\d\d -/, '').replace(/\s+\(\d+\)\s*/, '').trim()
+        title: course.name.replace(/\w\w\d\d -/, '')
+          .replace(/\w\d\d \w{2,6}: /, '')
+          .replace(/\s+\(\d+\)\s*/, '').trim()
       });
 
     }
+
+    console.log(courses);
 
     // look up enrollments
     let canvasEnrollments = await this.getCanvas(`users/${this.canvasUserID}/enrollments`);
@@ -638,7 +642,9 @@ export class UTAPI {
           score = '?';
         }
 
-        title = title.replace(/Submission Only\s*-?\s*/, '').replace(/DS \d+\s+-?\s*/, '');
+        title = title.replace(/Submission Only\s*-?\s*/, '')
+          .replace(/DS \d+\s+-?\s*/, '')
+          .replace('&#39;', '\'').replace('&amp;', '&');
 
         assigns.push({
           title: title,

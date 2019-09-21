@@ -25,7 +25,7 @@
                  (click)="toggleScoreFormat()" 
                  color='{{ assign.score == "?" ? "light" : "success" }}' 
                  slot='end'>
-        {{ assign.score }}/{{ assign.maxscore }}
+        {{ assign.score == "?" ? "?" : round(assign.score) }}/{{ assign.maxscore }}
       </ion-badge>
       <ion-badge *ngIf="showDecimalScores" 
                  (click)="toggleScoreFormat()" 
