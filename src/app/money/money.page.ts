@@ -38,8 +38,8 @@ export class MoneyPage {
     }
 
     async viewHistory(acc: Account) {
-      if (acc.name.includes('Bevo Bucks')) {
-        this.utapi.openNewTab('https://utdirect.utexas.edu/bevobucks/accountHist.WBX');
+      if (acc.name.includes('Bevo Pay')) {
+        this.utapi.openNewTab('https://utdirect.utexas.edu/bevopay/accountHist.WBX');
       } else if (acc.name.includes('Dine In')) {
         this.utapi.openNewTab('https://utdirect.utexas.edu/hfis/transactions.WBX');
       } else if (acc.name.includes('Owe')) {
@@ -55,8 +55,8 @@ export class MoneyPage {
     }
 
     async addFunds(acc: Account) {
-      if (acc.name.includes('Bevo Bucks')) {
-        this.utapi.openNewTab('https://utdirect.utexas.edu/bevobucks/addBucks.WBX');
+      if (acc.name.includes('Bevo Pay')) {
+        this.utapi.openNewTab('https://utdirect.utexas.edu/bevopay/add.WBX');
       } else if (acc.name.includes('Dine In')) {
         this.utapi.openNewTab('https://utdirect.utexas.edu/hfis/addDollars.WBX');
       } else if (acc.name.includes('Owe')) {
