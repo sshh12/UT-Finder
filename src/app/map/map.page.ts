@@ -106,7 +106,12 @@ export class MapPage implements OnInit {
 
   addLocations(locations: MapLocation[]) {
     for (let loc of locations) {
-      loc.repr = (loc.name + loc.abbr + loc.type).toLowerCase();
+      if(loc.type == 'UT' || loc.type == 'FoodLocation') {
+        // Only create searchable string for places
+        loc.repr = (loc.name + loc.abbr + loc.type).toLowerCase();
+      } else {
+        loc.repr = loc.type.toLowerCase();
+      }
       let icon: MarkerIcon = {
         url: loc.iconURL,
         size: {
@@ -116,7 +121,7 @@ export class MapPage implements OnInit {
       };
       let options: MarkerOptions = {
         title: loc.name,
-        snippet: loc.abbr,
+        snippet: loc.desc || loc.abbr,
         position: loc.location,
         visible: false,
         animation: null,
@@ -139,6 +144,9 @@ export class MapPage implements OnInit {
       this.addLocations(locations);
     });
     this.mapAPI.fetchFoodPlaces().then((locations) => {
+      this.addLocations(locations);
+    });
+    this.mapAPI.fetchInclusiveRestrooms().then((locations) => {
       this.addLocations(locations);
     });
     this.TowerAPI.fetchTowerState().then((towerState) => {
@@ -208,6 +216,11 @@ export class MapPage implements OnInit {
   showFood() {
     this.closeKeyboard();
     this.search('FoodLocation');
+  }
+
+  async showInclusiveRestrooms() {
+    this.closeKeyboard();
+    this.search('InclusiveRestroom');
   }
 
   async showBuses() {
