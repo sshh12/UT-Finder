@@ -7,10 +7,13 @@ export class MapLocation {
     abbr: string;
     name: string;
     location: {lat: number, lng: number};
-    type: 'UT' | 'FoodLocation';
+    type: 'UT' | 'FoodLocation' | 'InclusiveRestroom';
     iconURL: string;
+    desc?: string;
     repr?: string;
 }
+
+const RESTROOM_XML_URL = 'https://www.google.com/maps/d/u/0/kml?forcekml=1&mid=1lA-3jWjNar_DWJsmYojIXn5-ZNw';
 
 @Injectable()
 export class MapsAPI {
@@ -73,6 +76,37 @@ export class MapsAPI {
 
     return places;
 
+  }
+
+  async fetchInclusiveRestrooms() {
+
+    let xmlData = (await this.http.get(RESTROOM_XML_URL, {}, {})).data;
+    let placeRegex = /<Placemark>([\s\S]+?)<\/Placemark>/g;
+    let match;
+
+    let places = [];
+
+    while (match = placeRegex.exec(xmlData)) {
+      let dataRegex = /<Data name="([^"]+)">\s*<value>([^<]+)<\/value>/g;
+      let dataMatch;
+      let data = {};
+      while (dataMatch = dataRegex.exec(match[1])) {
+        data[dataMatch[1]] = dataMatch[2];
+      }
+      places.push({
+        abbr: `Restroom @ ${data['Building Code']}`,
+        name: `Inclusive Restroom in ${data['Building Code']} ${data['Room Numbers']}`,
+        desc: data['notes'],
+        location: {
+          lat: parseFloat(data['Latitude']), 
+          lng: parseFloat(data['Longitude'])
+        },
+        type: 'InclusiveRestroom',
+        iconURL: 'assets/map-restroom.png'
+      });
+    }
+    
+    return places;
   }
 
 }

@@ -16,12 +16,14 @@ Features
 -> Sports
 -> Canvas Grades
 -> Voting Information
+-> Emergency Resources
 -> Dine In/Bevo Bucks
 -> Live Bus Routes
--> Campus Resources
+-> Inclusive Restroom Map
+-> Campus Links
 -> Call a SURE Walk
--> Things from MyUT
 -> Weather
+-> Things from MyUT
 -> Swag
 ```
 
