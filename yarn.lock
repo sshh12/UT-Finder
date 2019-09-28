@@ -2270,9 +2270,9 @@ cordova-plugin-calendar@^5.1.4:
   resolved "https://registry.yarnpkg.com/cordova-plugin-calendar/-/cordova-plugin-calendar-5.1.4.tgz#4cfea411f4177ba79ca5410d697adb0f4f5e5218"
   integrity sha512-4Cl7s/hwfrLsJr6ecK8yBNPDbQHe0YB3y+4T/PRxv86CWjJpx6eiEHRlldjizSvNWpKoMy2ZG7Y4Sr5fCPrwZA==
 
-"cordova-plugin-cookieemperor@git+https://github.com/sshh12/cordova-cookie-emperor.git":
+"cordova-plugin-cookieemperor@git+https://github.com/RTK/cordova-cookie-emperor.git":
   version "1.0.0"
-  resolved "git+https://github.com/sshh12/cordova-cookie-emperor.git#0c77d814fbac03bbb8e9f0f1cce0541f2c22361b"
+  resolved "git+https://github.com/RTK/cordova-cookie-emperor.git#33a68185636c7544c1007eed695b5b8c4eea8f0c"
 
 cordova-plugin-device@^2.0.3:
   version "2.0.3"
@@ -2284,9 +2284,9 @@ cordova-plugin-file@^6.0.2:
   resolved "https://registry.yarnpkg.com/cordova-plugin-file/-/cordova-plugin-file-6.0.2.tgz#f3911479f8357e9aacb5576674f8d95b31a1fb20"
   integrity sha512-m7cughw327CjONN/qjzsTpSesLaeybksQh420/gRuSXJX5Zt9NfgsSbqqKDon6jnQ9Mm7h7imgyO2uJ34XMBtA==
 
-"cordova-plugin-googlemaps@git+https://github.com/mapsplugin/cordova-plugin-googlemaps.git#multiple_maps":
+"cordova-plugin-googlemaps@git+https://github.com/mapsplugin/cordova-plugin-googlemaps.git#f1508e97ff6ce86ad4c75fc95fcc1b907290e378":
   version "2.6.3-20190614-1928"
-  resolved "git+https://github.com/mapsplugin/cordova-plugin-googlemaps.git#7104facd78a2865332bab3ba839458e9498340b4"
+  resolved "git+https://github.com/mapsplugin/cordova-plugin-googlemaps.git#f1508e97ff6ce86ad4c75fc95fcc1b907290e378"
   dependencies:
     cordova-common "^3.1.0"
 
