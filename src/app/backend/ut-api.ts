@@ -265,7 +265,6 @@ export class UTAPI {
 
       browser.on('exit').subscribe(() => {
         clearInterval(this.checker);
-        resolve(false);
       });
 
     });
