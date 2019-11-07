@@ -11,33 +11,40 @@
 
   <ion-list>
 
-    <ion-card class="card-list">
+    <ion-card *ngIf='registration' class="card-list">
       <ion-card-header>
-        <ion-card-subtitle>Registration <ion-chip color="success">
+        <ion-card-subtitle>Registration&nbsp;
+          <ion-chip *ngIf='!registration.bars' class="no-radius" color="success">
             <ion-label>No Bars</ion-label>
+          </ion-chip>
+          <ion-chip *ngIf='registration.bars' class="no-radius" color="danger">
+            <ion-label>Possible Bars</ion-label>
           </ion-chip>
         </ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
-        <ion-chip class="small-chip">
-          <ion-label><b>Nov 4, 10 AM - Midnight</b></ion-label>
+        <ion-chip class="small-chip" *ngFor='let regDate of registration.regDates; let i = index'>
+          <ion-label *ngIf='i == 0'><b>{{regDate}}</b></ion-label>
+          <ion-label *ngIf='i != 0'>{{regDate}}</ion-label>
         </ion-chip>
-        <ion-chip class="small-chip">
-          <ion-label>Nov 5 - 7, 7 PM - Midnight</ion-label>
-        </ion-chip>
-        <ion-chip class="small-chip">
-          <ion-label>Nov 8, 8 AM - Midnight</ion-label>
-        </ion-chip>
-        <ion-chip class="small-chip">
-          <ion-label>Nov 8, 8 AM - Midnight</ion-label>
-        </ion-chip>
-        <ion-chip class="small-chip">
-          <ion-label>Nov 8, 8 AM - Midnight</ion-label>
-        </ion-chip>
-        <ion-chip class="small-chip">
-          <ion-label>Nov 8, 8 AM - Midnight</ion-label>
-        </ion-chip>
-        <ion-button expand="block" color="primary">Register</ion-button>
+        <ion-button expand="block" color="primary"
+          (click)="openLink('https://utdirect.utexas.edu/registration/chooseSemester.WBX')">Register</ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card *ngIf='waitlist && waitlist.length > 0'>
+      <ion-card-header>
+        <ion-card-subtitle>Waitlists</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ul>
+          <li *ngFor='let course of waitlist'>
+            <b>{{course.name}}</b> {{course.title}} 
+            <ion-chip color="warning">
+              <ion-label>{{course.pos}}</ion-label>
+            </ion-chip>
+          </li>
+        </ul>
       </ion-card-content>
     </ion-card>
 
@@ -46,13 +53,14 @@
         <ion-card-subtitle>Courses</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
-        <ion-item>
+        <ion-item (click)="openCourseSearch()">
           <ion-icon name="search" slot="end"></ion-icon>
           <ion-label>Course Search</ion-label>
         </ion-item>
-        <ul>
-            <li>C S 331 Algorithms And Complexity <ion-chip color="warning"><ion-label>5 of 15</ion-label></ion-chip></li>
-          </ul>
+        <ion-item (click)="openLink('https://utdirect.utexas.edu/acct/fb/my_tuition/my_tuition_home.WBX')">
+          <ion-icon name="cash" slot="end"></ion-icon>
+          <ion-label>Tuition Bill</ion-label>
+        </ion-item>
       </ion-card-content>
     </ion-card>
 

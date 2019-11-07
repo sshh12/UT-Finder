@@ -73,6 +73,18 @@ export class SemesterInfo {
   code: string;
 }
 
+export class RISInfo {
+  bars: boolean;
+  regDates: string[];
+}
+
+export class WaitListInfo {
+  pos: string;
+  code: string;
+  name: string;
+  title: string;
+}
+
 @Injectable()
 export class UTAPI {
 
@@ -375,11 +387,15 @@ export class UTAPI {
     return JSON.parse(rawResp.replace('while(1);', ''));
   }
 
-  async getPage(url: string): Promise<string> {
+  async getPage(url: string, method: string = 'GET', data: any = {}): Promise<string> {
     this.http.setCookie('https://utdirect.utexas.edu', 'utlogin-prod=' + this.utLoginCookie);
     this.http.setCookie('https://utexas.edu', 'SC=' + this.utSCCookie);
     this.http.setCookie('https://utexas.instructure.com', 'canvas_session=' + this.canvasCookie);
-    return (await this.http.get(url, {}, {})).data;
+    if(method === 'GET') {
+      return (await this.http.get(url, data, {})).data;
+    } else if(method === 'POST') {
+      return (await this.http.post(url, data, {})).data;
+    }
   }
 
   async fetchHTMLFromTable(url: string, include: string): Promise<string> {
@@ -685,6 +701,45 @@ export class UTAPI {
 
     return assigns;
 
+  }
+
+  async fetchRIS(): Promise<RISInfo> {
+    let ris = {
+      bars: false,
+      regDates: []
+    };
+    if (!await this.ensureUTLogin()) {
+      return ris;
+    }
+    let sems = this.getSemesters();
+    let page = await this.getPage('https://utdirect.utexas.edu/registrar/ris.WBX', 
+      'POST', {ccyys: sems[1].code, seq_num: '0'});
+    ris.bars = !page.includes('You have no bars at this time');
+    for (let rowMatch of this.getRegexMatrix(/([A-Z]\w{2}\s{1,2}[\d\wMidnight, APM\-]+[tM])\|/g, page)) {
+      ris.regDates.push(rowMatch[1].trim());
+    }
+    return ris;
+  }
+
+  async fetchWaitLists(): Promise<WaitListInfo[]> {
+    let waitlist = []
+    if (!await this.ensureUTLogin()) {
+      return waitlist;
+    }
+    let page = await this.getPage('https://utdirect.utexas.edu/registrar/waitlist/wl_see_my_waitlists.WBX');
+    for (let rowMatch of this.getRegexMatrix(/<td\s+col[^>]+>\s*<[^>]+>\s*(\d+)\s*<\/span>\s*<[^>]+>\s*([A-Z][A-Z \d]+)\s*<[^>]+>\s*(\S[\s\S]+?)\s*</g, page)) {
+      waitlist.push({
+        pos: '',
+        code: rowMatch[1],
+        name: rowMatch[2],
+        title: rowMatch[3]
+      });
+    }
+    let i = 0;
+    for (let rowMatch of this.getRegexMatrix(/\s*(\d+ of \d+)\s*</g, page)) {
+      waitlist[i++].pos = rowMatch[1];
+    }
+    return waitlist;
   }
 
   getSemesters(): SemesterInfo[] {
