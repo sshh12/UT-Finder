@@ -119,7 +119,7 @@ export class SchedulePage {
           this.storage.set('schedule:classes', classes);
           noItemsFound = (classes.length == 0);
         } else {
-          let sems = this.utapi.getSemesterCodes();
+          let sems = this.utapi.getSemesters().map(sim => sim.code);
           let classes = await this.utapi.fetchSchedule(sems[1]);
           if (classes.length === 0) {
             classes = await this.utapi.fetchSchedule(sems[2]);

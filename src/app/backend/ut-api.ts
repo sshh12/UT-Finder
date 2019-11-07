@@ -69,6 +69,22 @@ export class AccountInfo {
   birthday: Date;
 }
 
+export class SemesterInfo {
+  code: string;
+}
+
+export class RISInfo {
+  bars: boolean;
+  regDates: string[];
+}
+
+export class WaitListInfo {
+  pos: string;
+  code: string;
+  name: string;
+  title: string;
+}
+
 @Injectable()
 export class UTAPI {
 
@@ -159,19 +175,7 @@ export class UTAPI {
               { code: 'document.getElementById(\'error-message\') != null' }
             ) + '';
 
-            if (error === 'true') {
-
-              const toast = await this.toastCtrl.create({
-                message: 'Unable to login 😢',
-                duration: 3000,
-                position: 'top'
-              });
-              await toast.present();
-              clearInterval(this.checker);
-              browser.close();
-              resolve();
-
-            } else {
+            if (error != 'true') {
 
               await browser.executeScript(
                 { code: `document.getElementById('IDToken1').value = "${username}";` }
@@ -209,12 +213,18 @@ export class UTAPI {
 
     return new Promise(async (resolve) => {
 
-      await this.ensureUTLogin();
+      if(!await this.ensureUTLogin()) {
+        resolve(false);
+        return;
+      }
 
       if (this.canvasCookie !== '' || this.usingDemoAccount) {
         resolve(true);
         return;
       }
+
+      const username = await this.storage.get('eid') || '';
+      const password = await this.secStorage.get('password') || '';
 
       const browser = this.iab.create('https://utexas.instructure.com/courses', '_blank', { location: 'no' });
 
@@ -231,6 +241,33 @@ export class UTAPI {
             browser.close();
             this.canvasCookie = await this.getCookie('https://utexas.instructure.com', 'canvas_session');
             resolve(true);
+
+          } else if (curUrl.includes('https://enterprise.login.utexas.edu')) {
+
+            let error = await browser.executeScript(
+              { code: 'document.getElementsByClassName(\'form-error\').length != 0' }
+            ) + '';
+
+            if (error != 'true') {
+
+              await browser.executeScript(
+                { code: `document.getElementById('username').value = "${username}";` }
+              );
+              await browser.executeScript(
+                { code: `document.getElementById('password').value = "${password}"` }
+              );
+              await browser.executeScript(
+                { code: 'document.getElementsByName(\'_eventId_proceed\')[0].click()' });
+
+              // do it again cause ios broke
+              await browser.executeScript(
+                { code: `document.getElementById('username').value = "${username}";` }
+              );
+              await browser.executeScript(
+                { code: `document.getElementById('password').value = "${password}"` }
+              );
+
+            }
 
           }
 
@@ -350,11 +387,15 @@ export class UTAPI {
     return JSON.parse(rawResp.replace('while(1);', ''));
   }
 
-  async getPage(url: string): Promise<string> {
+  async getPage(url: string, method: string = 'GET', data: any = {}): Promise<string> {
     this.http.setCookie('https://utdirect.utexas.edu', 'utlogin-prod=' + this.utLoginCookie);
     this.http.setCookie('https://utexas.edu', 'SC=' + this.utSCCookie);
     this.http.setCookie('https://utexas.instructure.com', 'canvas_session=' + this.canvasCookie);
-    return (await this.http.get(url, {}, {})).data;
+    if(method === 'GET') {
+      return (await this.http.get(url, data, {})).data;
+    } else if(method === 'POST') {
+      return (await this.http.post(url, data, {})).data;
+    }
   }
 
   async fetchHTMLFromTable(url: string, include: string): Promise<string> {
@@ -662,25 +703,64 @@ export class UTAPI {
 
   }
 
-  getSemesterCodes(): string[] {
+  async fetchRIS(): Promise<RISInfo> {
+    let ris = {
+      bars: false,
+      regDates: []
+    };
+    if (!await this.ensureUTLogin()) {
+      return ris;
+    }
+    let sems = this.getSemesters();
+    let page = await this.getPage('https://utdirect.utexas.edu/registrar/ris.WBX', 
+      'POST', {ccyys: sems[1].code, seq_num: '0'});
+    ris.bars = !page.includes('You have no bars at this time');
+    for (let rowMatch of this.getRegexMatrix(/([A-Z]\w{2}\s{1,2}[\d\wMidnight, APM\-]+[tM])\|/g, page)) {
+      ris.regDates.push(rowMatch[1].trim());
+    }
+    return ris;
+  }
+
+  async fetchWaitLists(): Promise<WaitListInfo[]> {
+    let waitlist = []
+    if (!await this.ensureUTLogin()) {
+      return waitlist;
+    }
+    let page = await this.getPage('https://utdirect.utexas.edu/registrar/waitlist/wl_see_my_waitlists.WBX');
+    for (let rowMatch of this.getRegexMatrix(/<td\s+col[^>]+>\s*<[^>]+>\s*(\d+)\s*<\/span>\s*<[^>]+>\s*([A-Z][A-Z \d]+)\s*<[^>]+>\s*(\S[\s\S]+?)\s*</g, page)) {
+      waitlist.push({
+        pos: '',
+        code: rowMatch[1],
+        name: rowMatch[2],
+        title: rowMatch[3]
+      });
+    }
+    let i = 0;
+    for (let rowMatch of this.getRegexMatrix(/\s*(\d+ of \d+)\s*</g, page)) {
+      waitlist[i++].pos = rowMatch[1];
+    }
+    return waitlist;
+  }
+
+  getSemesters(): SemesterInfo[] {
     let now = new Date();
     let curYear = now.getFullYear();
     let curMonth = now.getMonth();
-    let codes = [];
+    let sems = [];
     if (0 <= curMonth && curMonth <= 4) {
-      codes.push(`${curYear}2`);
-      codes.push(`${curYear}6`);
-      codes.push(`${curYear}9`);
+      sems.push({ code: `${curYear}2` });
+      sems.push({ code: `${curYear}6`});
+      sems.push({ code: `${curYear}9`});
     } else if (5 <= curMonth && curMonth <= 7) {
-      codes.push(`${curYear}6`);
-      codes.push(`${curYear}9`);
-      codes.push(`${curYear + 1}2`);
+      sems.push({ code: `${curYear}6` });
+      sems.push({ code: `${curYear}9` });
+      sems.push({ code: `${curYear + 1}2` });
     } else {
-      codes.push(`${curYear}9`);
-      codes.push(`${curYear + 1}2`);
-      codes.push(`${curYear + 1}6`);
+      sems.push({ code: `${curYear}9` });
+      sems.push({ code: `${curYear + 1}2` });
+      sems.push({ code: `${curYear + 1}6` });
     }
-    return codes;
+    return sems;
   }
 
   parseDateRange(month: string, day: string, times: string): Array<Date> {
