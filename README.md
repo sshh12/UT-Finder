@@ -3,7 +3,7 @@
 A simple app for finding your way around [UT Austin](https://www.utexas.edu/).
 
 ## Releases
-- [Apple](https://itunes.apple.com/us/app/ut-finder/id1436096236)
+- [IOS](https://itunes.apple.com/us/app/ut-finder/id1436096236)
 - [Android](https://play.google.com/store/apps/details?id=io.sshh.utfinder)
 
 ```
@@ -14,6 +14,7 @@ Features
 -> Class and Finals Schedules
 -> Map
 -> Sports
+-> RIS/Waitlists
 -> Canvas Grades
 -> Voting Information
 -> Emergency Resources
