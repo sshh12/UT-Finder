@@ -466,12 +466,16 @@ export class MapPage implements OnInit {
 
     showClasses.sort((a, b) => this.classToTime(a) - this.classToTime(b));
 
-    console.log(showClasses);
     let points = [];
     for(let section of showClasses) {
       let loc = this.findBuilding(section.building);
       if(!loc) {
-        // error
+        let toast = await this.toastCtrl.create({
+          message: `Couldn't find ${section.building}`,
+          duration: 2000,
+          position: 'top'
+        });
+        await toast.present();
       } else {
         let icon: MarkerIcon = {
           url: loc.iconURL,

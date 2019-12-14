@@ -20,7 +20,6 @@ export class CoursesPage {
     (async () => {
       this.registration = await this.utapi.fetchRIS();
       this.waitlist = await this.utapi.fetchWaitLists();
-      console.log(this.registration, this.waitlist);
     })();
   }
 

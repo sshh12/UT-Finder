@@ -133,6 +133,11 @@ export class UTSportsAPI {
     } catch (e) {
       title = html.match(/sidearm-schedule-game-opponent-name">\s*([\s\S]+?\S)\s*<\/span>/)[1];
     }
+    // regex patch
+    if(title.indexOf('</div>') >= 0) {
+      title = title.substring(0, title.indexOf('</div>')).trim();
+    }
+
     let tv;
     try {
       tv = html.match(/tv-content">([^<]+)<\/span>/)[1];
