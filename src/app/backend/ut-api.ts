@@ -113,17 +113,24 @@ export class UTAPI {
 
   async initStorage() {
     this.secStorage = await this.secureStorage.create('ut_finder_secure');
-    // Migrate old storage
-    let password = await this.storage.get('password');
-    try {
-      await this.secStorage.get('password');
-    } catch (e) {
-      await this.secStorage.set('password', '');
+    if(this.secStorage) {
+      // Migrate old storage
+      let password = await this.storage.get('password');
+      try {
+        await this.secStorage.get('password');
+      } catch (e) {
+        await this.secStorage.set('password', '');
+      }
+      if (password) {
+        await this.secStorage.set('password', password);
+      }
+      await this.storage.set('password', null);
+    } else {
+      // insecure fallback
+      console.log('Secure storage failed...falling back to normal storage.')
+      // @ts-ignore:131
+      this.secStorage = this.storage;
     }
-    if (password) {
-      await this.secStorage.set('password', password);
-    }
-    await this.storage.set('password', null);
     this.account = await this.storage.get('account');
   }
 
@@ -518,8 +525,10 @@ export class UTAPI {
 
       if (!title.includes('did not request')) {
 
+        console.log(clean(colsMatch[4][1]));
+
         let dateTime = this.getRegexMatrix(/\s*?\w+, (\w+) (\d+), (\d+-\d+ \w+)\s*?/g, clean(colsMatch[3][1]));
-        let location = this.getRegexMatrix(/\s*?(\w+ [\d.]+)\s*?/g, clean(colsMatch[4][1]));
+        let location = this.getRegexMatrix(/\s*?(\w+ [a-z]*[\d.]+[a-z]*)\s*?/g, clean(colsMatch[4][1]));
 
         let [startDate, endDate] = this.parseDateRange(dateTime[0][1], dateTime[0][2], dateTime[0][3]);
 
@@ -548,6 +557,8 @@ export class UTAPI {
       }
 
     }
+
+    console.log(finals);
 
     return finals;
 
