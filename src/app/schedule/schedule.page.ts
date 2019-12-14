@@ -236,4 +236,9 @@ export class SchedulePage {
 
     }
 
+    async showClassRoute() {
+      let classes = await this.utapi.fetchSchedule();
+      this.router.navigateByUrl('/menu/main/tabs/map?classes=' + JSON.stringify(classes));
+    }
+
 }

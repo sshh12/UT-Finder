@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HTTP } from '@ionic-native/http/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { CallNumber } from '@ionic-native/call-number/ngx';
-import { ActivatedRoute  } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import {
   NavController,
   AlertController,
@@ -44,34 +44,42 @@ export class MapPage implements OnInit {
   mapLoaded = false;
   tileOptions: TileOverlayOptions;
   loading = false;
+  view = 'places';
 
   places: MapLocation[] = [];
   placeMarkers: { [key: string]: Marker; } = {};
+
+  
+  classes: any;
+  classMarkers: { [key: string]: Marker; } = {};
 
   showBusRoute: BusRoute = null;
   liveBusInterval: any = 0;
   busMarkers: { [key: string]: Marker | Polyline; } = {};
 
   constructor(private platform: Platform,
-              private keyboard: Keyboard,
-              private caller: CallNumber,
-              private alertCtrl: AlertController,
-              private toastCtrl: ToastController,
-              private aroute: ActivatedRoute,
-              private weatherAPI: WeatherAPI,
-              private mapAPI: MapsAPI,
-              private busAPI: BusAPI,
-              private TowerAPI: TowerAPI) {
+    private keyboard: Keyboard,
+    private caller: CallNumber,
+    private alertCtrl: AlertController,
+    private toastCtrl: ToastController,
+    private aroute: ActivatedRoute,
+    private weatherAPI: WeatherAPI,
+    private mapAPI: MapsAPI,
+    private busAPI: BusAPI,
+    private TowerAPI: TowerAPI) {
 
     this.aroute.queryParams.subscribe((params) => {
-      if(params.search) {
-        let waitForLoad = setInterval(() => {
-          if(this.mapLoaded) {
+      let waitForLoad = setInterval(() => {
+        if (this.mapLoaded) {
+          if (params.search) {
             this.search(params.search);
-            clearInterval(waitForLoad);
+          } else if (params.classes) {
+            this.classes = JSON.parse(params.classes);
+            this.showClassView('M');
           }
-        }, 100);
-      }
+          clearInterval(waitForLoad);
+        }
+      }, 100);
     });
 
   }
@@ -92,6 +100,16 @@ export class MapPage implements OnInit {
     } catch {
       query = event;
     }
+
+    let testLoc = this.findBuilding(query);
+    if(testLoc) {
+      for (let place of this.places) {
+        this.placeMarkers[place.name].setVisible(false);
+      }
+      this.placeMarkers[testLoc.name].setVisible(true);
+      return;
+    }
+
     query = query.toLowerCase().trim();
 
     for (let place of this.places) {
@@ -104,9 +122,18 @@ export class MapPage implements OnInit {
 
   }
 
+  findBuilding(abbr: string) {
+    abbr = abbr.trim().toUpperCase();
+    for(let place of this.places) {
+      if(place.type != 'UT') continue;
+      else if(place.abbr == abbr) return place;
+    }
+    return null;
+  }
+
   addLocations(locations: MapLocation[]) {
     for (let loc of locations) {
-      if(loc.type == 'UT' || loc.type == 'FoodLocation') {
+      if (loc.type == 'UT' || loc.type == 'FoodLocation') {
         // Only create searchable string for places
         loc.repr = (loc.name + loc.abbr + loc.type).toLowerCase();
       } else {
@@ -173,19 +200,19 @@ export class MapPage implements OnInit {
     let mapOptions: GoogleMapOptions = {
       mapType: GoogleMapsMapTypeId.HYBRID,
       camera: {
-         target: this.mapCenter,
-         zoom: 15
-       },
-       styles: [
-         {
-            featureType: 'all',
-            elementType: 'labels',
-            stylers: [
-              { visibility: 'off' }
-            ]
-          }
-       ],
-       mapToolbar: false
+        target: this.mapCenter,
+        zoom: 15
+      },
+      styles: [
+        {
+          featureType: 'all',
+          elementType: 'labels',
+          stylers: [
+            { visibility: 'off' }
+          ]
+        }
+      ],
+      mapToolbar: false
     };
 
     this.map = GoogleMaps.create('map_canvas', mapOptions);
@@ -235,13 +262,13 @@ export class MapPage implements OnInit {
       header: 'Metro Routes',
       inputs: [],
       buttons: [{
-          text: 'cancel'
-        }, {
-          text: 'Show',
-          handler: (data: any) => {
-            this.showRoute(JSON.parse(data));
-          }
-        }]
+        text: 'cancel'
+      }, {
+        text: 'Show',
+        handler: (data: any) => {
+          this.showRoute(JSON.parse(data));
+        }
+      }]
     };
 
     let checked = true;
@@ -264,9 +291,10 @@ export class MapPage implements OnInit {
   async showRoute(route: BusRoute) {
 
     this.showBusRoute = route;
+    this.view = 'bus';
     this.loading = true;
 
-    Object.values(this.placeMarkers).map(marker => marker.setVisible(false));
+    this.cleanMap();
 
     let routeData = await this.busAPI.fetchRouteData(route);
 
@@ -330,11 +358,11 @@ export class MapPage implements OnInit {
 
     let buses = (await this.busAPI.fetchBusLocations()).filter(busLocation => {
       return busLocation.routeId == String(this.showBusRoute.num);
-    });  
+    });
 
     for (let busLocation of buses) {
 
-      if(busLocation.id in this.busMarkers) {
+      if (busLocation.id in this.busMarkers) {
 
         (this.busMarkers[busLocation.id] as Marker).setPosition(busLocation.position);
 
@@ -367,9 +395,9 @@ export class MapPage implements OnInit {
   }
 
   getRouteStyle(route: BusRoute): String {
-    if(route.num < 800) {
+    if (route.num < 800) {
       return 'route-normal';
-    } else if(route.num < 900) {
+    } else if (route.num < 900) {
       return 'route-rapid';
     }
     return '';
@@ -378,7 +406,8 @@ export class MapPage implements OnInit {
   async closeBusView() {
     clearInterval(this.liveBusInterval);
     this.showBusRoute = null;
-    for(let key in this.busMarkers) {
+    this.view = 'places';
+    for (let key in this.busMarkers) {
       this.busMarkers[key].remove();
     }
     this.busMarkers = {};
@@ -399,7 +428,6 @@ export class MapPage implements OnInit {
   }
 
   async showSURE() {
-
     let alert = await this.alertCtrl.create({
       header: 'SURE Walk',
       message: 'Would you like to order a SURE Walk?',
@@ -414,7 +442,100 @@ export class MapPage implements OnInit {
       ]
     });
     await alert.present();
+  }
 
+  async showClassView(day: string) {
+
+    this.view = 'classes';
+    this.cleanMap();
+    for (let key in this.classMarkers) {
+      this.classMarkers[key].remove();
+    }
+    this.classMarkers = {};
+
+    let showClasses = this.classes.filter(c => c.days.includes(day));
+    if(showClasses.length == 0) {
+      let toast = await this.toastCtrl.create({
+        message: 'No classes that day! 🌴',
+        duration: 2000,
+        position: 'top'
+      });
+      await toast.present();
+      return;
+    }
+
+    showClasses.sort((a, b) => this.classToTime(a) - this.classToTime(b));
+
+    let points = [];
+    for(let section of showClasses) {
+      let loc = this.findBuilding(section.building);
+      if(!loc) {
+        let toast = await this.toastCtrl.create({
+          message: `Couldn't find ${section.building}`,
+          duration: 2000,
+          position: 'top'
+        });
+        await toast.present();
+      } else {
+        let icon: MarkerIcon = {
+          url: loc.iconURL,
+          size: {
+            width: 32,
+            height: 32
+          }
+        };
+        let options: MarkerOptions = {
+          title: `${loc.name} (${loc.abbr} ${section.room})`,
+          snippet: section.timeslot,
+          position: loc.location,
+          visible: true,
+          animation: null,
+          flat: false,
+          icon: icon,
+          zIndex: 9999
+        };
+        this.map.addMarker(options).then(marker => {
+          this.classMarkers[loc.name] = marker;
+        });
+        points.push(loc.location);
+      }
+    }
+
+    let polyOptions: PolylineOptions = {
+      points: points,
+      color: '#c77716',
+      strokeWidth: 10,
+      zIndex: 99,
+      strokeOpacity: 1.0,
+      clickable: false
+    };
+    this.map.addPolyline(polyOptions).then(line => {
+      this.classMarkers['line'] = line;
+    });
+
+  }
+
+  classToTime(section: any) {
+    let time = section.timeslot.split('-')[0].match( /(\d+):(\d+)(\wm)/ );
+    let hour = parseInt(time[1], 10) + (time[3] === 'pm' ? 12 : 0);
+    if (time[1] === '12') {
+      hour = 12;
+    }
+    return 1 + (hour - 5) * 2 + (time[2] === '30' ? 1 : 0);
+  }
+
+  async closeClassView() {
+    this.view = 'places';
+    for (let key in this.classMarkers) {
+      this.classMarkers[key].remove();
+    }
+    this.classMarkers = {};
+  }
+
+  cleanMap() {
+    Object.values(this.placeMarkers).map(marker => marker.setVisible(false));
+    Object.values(this.busMarkers).map(marker => marker.setVisible(false));
+    Object.values(this.classMarkers).map(marker => marker.setVisible(false));
   }
 
 }
