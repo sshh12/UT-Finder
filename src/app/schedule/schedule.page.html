@@ -5,6 +5,9 @@
       <ion-menu-button autoHide="false"></ion-menu-button>
     </ion-buttons>
     <ion-title>Classes</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="outline" icon-only (click)="showClassRoute()" color="light">My Class Route</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 
   <ion-toolbar>
@@ -28,7 +31,7 @@
   <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed" #fab>
-      <ion-fab-button size="small" color="secondary" (click)="updateSchedule()"><ion-icon name="add"></ion-icon></ion-fab-button>
+      <ion-fab-button size="small" color="secondary" (click)="updateSchedule()"><ion-icon name="refresh"></ion-icon></ion-fab-button>
   </ion-fab>
 
   <ion-fab vertical="top" horizontal="end" slot="fixed" *ngIf="currentCalendar.classes.length > 0 && scheduleView=='current'">
