@@ -71,6 +71,7 @@ export class AccountInfo {
 
 export class SemesterInfo {
   code: string;
+  lsCode: string;
 }
 
 export class RISInfo {
@@ -756,20 +757,21 @@ export class UTAPI {
   getSemesters(): SemesterInfo[] {
     let now = new Date();
     let curYear = now.getFullYear();
+    let curYearAbbr = curYear - 2000;
     let curMonth = now.getMonth();
     let sems = [];
     if (0 <= curMonth && curMonth <= 4) {
-      sems.push({ code: `${curYear}2` });
-      sems.push({ code: `${curYear}6`});
-      sems.push({ code: `${curYear}9`});
+      sems.push({ code: `${curYear}2`, lsCode: `${curYearAbbr - 1}-${curYearAbbr}` });
+      sems.push({ code: `${curYear}6`, lsCode: `${curYearAbbr - 1}-${curYearAbbr}`});
+      sems.push({ code: `${curYear}9`, lsCode: `${curYearAbbr - 1}-${curYearAbbr}`});
     } else if (5 <= curMonth && curMonth <= 7) {
-      sems.push({ code: `${curYear}6` });
-      sems.push({ code: `${curYear}9` });
-      sems.push({ code: `${curYear + 1}2` });
+      sems.push({ code: `${curYear}6`, lsCode: `${curYearAbbr}-${curYearAbbr + 1}` });
+      sems.push({ code: `${curYear}9`, lsCode: `${curYearAbbr}-${curYearAbbr + 1}` });
+      sems.push({ code: `${curYear + 1}2`, lsCode: `${curYearAbbr - 1}-${curYearAbbr}` });
     } else {
-      sems.push({ code: `${curYear}9` });
-      sems.push({ code: `${curYear + 1}2` });
-      sems.push({ code: `${curYear + 1}6` });
+      sems.push({ code: `${curYear}9`, lsCode: `${curYearAbbr}-${curYearAbbr + 1}` });
+      sems.push({ code: `${curYear + 1}2`, lsCode: `${curYearAbbr - 1}-${curYearAbbr}` });
+      sems.push({ code: `${curYear + 1}6`, lsCode: `${curYearAbbr - 1}-${curYearAbbr}` });
     }
     return sems;
   }
