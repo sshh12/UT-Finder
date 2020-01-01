@@ -9,11 +9,13 @@
     "url": "https://github.com/sshh12/UT-Finder"
   },
   "scripts": {
-    "android-dev": "ionic cordova run android",
-    "android-deploy": "ionic cordova build android --release --rollup --prod && jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore publish/utfinder-release-key.jks platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk utfinderkey && zipalign -v 4 platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk UTFinder.apk",
-    "ios-deploy": "ionic cordova build ios --rollup --prod",
-    "clean": "shx rm -rf plugins && shx rm -rf platforms/*",
-    "lab": "ionic serve --lab"
+    "dev:lab": "ionic serve --lab",
+    "dev:android": "ionic cordova run android",
+    "deploy:android:1": "ionic cordova build android --release --rollup --prod",
+    "deploy:android:2": "jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore publish/utfinder-release-key.jks platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk utfinderkey",
+    "deploy:android:3": "zipalign -v 4 platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk UTFinder.apk",
+    "deploy:ios": "ionic cordova build ios --rollup --prod",
+    "clean": "shx rm -rf plugins && shx rm -rf platforms/*"
   },
   "dependencies": {
     "@angular/common": "~7.0.0",

@@ -5,7 +5,7 @@
       <ion-menu-button autoHide="false"></ion-menu-button>
     </ion-buttons>
     <ion-title>Classes</ion-title>
-    <ion-buttons slot="end">
+    <ion-buttons slot="end" *ngIf="currentCalendar.classes.length != 0">
       <ion-button fill="outline" icon-only (click)="showClassRoute()" color="light">My Class Route</ion-button>
     </ion-buttons>
   </ion-toolbar>
