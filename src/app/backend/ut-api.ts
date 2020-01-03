@@ -71,6 +71,7 @@ export class AccountInfo {
 
 export class SemesterInfo {
   code: string;
+  lsCode: string;
 }
 
 export class RISInfo {
@@ -84,6 +85,13 @@ export class WaitListInfo {
   name: string;
   title: string;
 }
+
+export class AuditInfo {
+  created: Date;
+  type: string;
+  degree: string;
+  progress: number;
+};
 
 @Injectable()
 export class UTAPI {
@@ -753,23 +761,48 @@ export class UTAPI {
     return waitlist;
   }
 
+  async fetchIDAs(): Promise<AuditInfo[]> {
+    let audits = [];
+    if (!await this.ensureUTLogin()) {
+      return audits;
+    }
+    let page = await this.getPage('https://utdirect.utexas.edu/apps/degree/audits/requests/history/');
+    for(let rowMatch of this.getRegexMatrix(/<tr>([\s\S]+?)<\/tr>/g, page)) {
+      let rowText = rowMatch[1];
+      if(rowText.includes('Degree Audits Requested') || rowText.includes('Request Created')) {
+        continue;
+      }
+      let cols = this.getRegexMatrix(/<td[ style="x\-align:rh]*>([\s\S]+?)<\/td>/g, rowText).map(c => c[1].trim());
+      let audit = {
+        created: new Date(cols[1]),
+        type: cols[2],
+        degree: cols[3].replace(/\s{2,}/g, ' '),
+        progress: parseFloat(cols[7].replace('%', ''))
+      };
+      audits.push(audit);
+    }
+    audits.sort((a, b) => b.created.getTime() - a.created.getTime());
+    return audits;
+  }
+
   getSemesters(): SemesterInfo[] {
     let now = new Date();
     let curYear = now.getFullYear();
+    let curYearAbbr = curYear - 2000;
     let curMonth = now.getMonth();
     let sems = [];
     if (0 <= curMonth && curMonth <= 4) {
-      sems.push({ code: `${curYear}2` });
-      sems.push({ code: `${curYear}6`});
-      sems.push({ code: `${curYear}9`});
+      sems.push({ code: `${curYear}2`, lsCode: `${curYearAbbr - 1}-${curYearAbbr}` });
+      sems.push({ code: `${curYear}6`, lsCode: `${curYearAbbr - 1}-${curYearAbbr}`});
+      sems.push({ code: `${curYear}9`, lsCode: `${curYearAbbr - 1}-${curYearAbbr}`});
     } else if (5 <= curMonth && curMonth <= 7) {
-      sems.push({ code: `${curYear}6` });
-      sems.push({ code: `${curYear}9` });
-      sems.push({ code: `${curYear + 1}2` });
+      sems.push({ code: `${curYear}6`, lsCode: `${curYearAbbr}-${curYearAbbr + 1}` });
+      sems.push({ code: `${curYear}9`, lsCode: `${curYearAbbr}-${curYearAbbr + 1}` });
+      sems.push({ code: `${curYear + 1}2`, lsCode: `${curYearAbbr - 1}-${curYearAbbr}` });
     } else {
-      sems.push({ code: `${curYear}9` });
-      sems.push({ code: `${curYear + 1}2` });
-      sems.push({ code: `${curYear + 1}6` });
+      sems.push({ code: `${curYear}9`, lsCode: `${curYearAbbr}-${curYearAbbr + 1}` });
+      sems.push({ code: `${curYear + 1}2`, lsCode: `${curYearAbbr - 1}-${curYearAbbr}` });
+      sems.push({ code: `${curYear + 1}6`, lsCode: `${curYearAbbr - 1}-${curYearAbbr}` });
     }
     return sems;
   }

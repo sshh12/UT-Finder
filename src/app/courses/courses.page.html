@@ -48,6 +48,23 @@
       </ion-card-content>
     </ion-card>
 
+    <ion-card *ngIf='audits && audits.length > 0'>
+      <ion-card-header>
+        <ion-card-subtitle>IDA</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content class="no-pad">
+        <ul>
+          <li *ngFor='let audit of audits'>
+            <b>{{audit.created.toLocaleDateString()}}</b>&nbsp;{{audit.degree.split(", ")[0]}}
+            <ion-chip color="primary">
+              <ion-label>{{audit.progress}}%</ion-label>
+            </ion-chip>
+          </li>
+        </ul>
+        <ion-progress-bar color="primary" value="{{auditProgress / 100}}"></ion-progress-bar>
+      </ion-card-content>
+    </ion-card>
+
     <ion-card>
       <ion-card-header>
         <ion-card-subtitle>Courses</ion-card-subtitle>

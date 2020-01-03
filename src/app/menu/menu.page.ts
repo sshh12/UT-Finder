@@ -19,4 +19,9 @@ export class MenuPage {
     });
   }
 
+  openCalendar() {
+    let sem = this.utapi.getSemesters()[0];
+    this.utapi.openNewTab('https://registrar.utexas.edu/calendars/' + sem.lsCode);
+  }
+
 }
