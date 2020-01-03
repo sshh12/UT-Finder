@@ -86,6 +86,13 @@ export class WaitListInfo {
   title: string;
 }
 
+export class AuditInfo {
+  created: Date;
+  type: string;
+  degree: string;
+  progress: number;
+};
+
 @Injectable()
 export class UTAPI {
 
@@ -752,6 +759,30 @@ export class UTAPI {
       waitlist[i++].pos = rowMatch[1];
     }
     return waitlist;
+  }
+
+  async fetchIDAs(): Promise<AuditInfo[]> {
+    let audits = [];
+    if (!await this.ensureUTLogin()) {
+      return audits;
+    }
+    let page = await this.getPage('https://utdirect.utexas.edu/apps/degree/audits/requests/history/');
+    for(let rowMatch of this.getRegexMatrix(/<tr>([\s\S]+?)<\/tr>/g, page)) {
+      let rowText = rowMatch[1];
+      if(rowText.includes('Degree Audits Requested') || rowText.includes('Request Created')) {
+        continue;
+      }
+      let cols = this.getRegexMatrix(/<td[ style="x\-align:rh]*>([\s\S]+?)<\/td>/g, rowText).map(c => c[1].trim());
+      let audit = {
+        created: new Date(cols[1]),
+        type: cols[2],
+        degree: cols[3].replace(/\s{2,}/g, ' '),
+        progress: parseFloat(cols[7].replace('%', ''))
+      };
+      audits.push(audit);
+    }
+    audits.sort((a, b) => b.created.getTime() - a.created.getTime());
+    return audits;
   }
 
   getSemesters(): SemesterInfo[] {

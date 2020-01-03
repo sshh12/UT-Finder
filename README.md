@@ -15,6 +15,7 @@ Features
 -> Map
 -> Sports
 -> RIS/Waitlists
+-> IDAs
 -> Canvas Grades
 -> Voting Information
 -> Emergency Resources

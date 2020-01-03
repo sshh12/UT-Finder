@@ -13,6 +13,8 @@ export class CoursesPage {
 
   registration = null;
   waitlist = [];
+  audits = [];
+  auditProgress = 0;
 
   constructor(private iab: InAppBrowser,
       private utapi: UTAPI,
@@ -20,6 +22,10 @@ export class CoursesPage {
     (async () => {
       this.registration = await this.utapi.fetchRIS();
       this.waitlist = await this.utapi.fetchWaitLists();
+      this.audits = await this.utapi.fetchIDAs();
+      if(this.audits.length > 0) {
+        this.auditProgress = this.audits[0].progress;
+      }
     })();
   }
 
