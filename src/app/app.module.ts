@@ -8,7 +8,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { IonicStorageModule } from '@ionic/storage';
-import { Calendar } from '@ionic-native/calendar/ngx';
 import { GoogleMaps } from '@ionic-native/google-maps';
 import { HTTP } from '@ionic-native/http/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
@@ -40,7 +39,6 @@ import { VotingAPI } from './backend/voting-api';
     SplashScreen,
     InAppBrowser,
     GoogleMaps,
-    Calendar,
     Keyboard,
     HTTP,
     CallNumber,

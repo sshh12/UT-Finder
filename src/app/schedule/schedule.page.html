@@ -34,9 +34,9 @@
       <ion-fab-button size="small" color="secondary" (click)="updateSchedule()"><ion-icon name="refresh"></ion-icon></ion-fab-button>
   </ion-fab>
 
-  <ion-fab vertical="top" horizontal="end" slot="fixed" *ngIf="currentCalendar.classes.length > 0 && scheduleView=='current'">
+  <!-- TODO <ion-fab vertical="top" horizontal="end" slot="fixed" *ngIf="currentCalendar.classes.length > 0 && scheduleView=='current'">
    <ion-fab-button size="small" color="tertiary" (click)="saveToCalendar()"><ion-icon name="download"></ion-icon></ion-fab-button>
-  </ion-fab>
+  </ion-fab> -->
 
   <!-- Current Time as line _____ -->
   <hr class="timenow-bar" [style.top.px]="timeNowBarOffset">

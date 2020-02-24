@@ -268,13 +268,6 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@ionic-native/calendar@^5.5.1":
-  version "5.12.0"
-  resolved "https://registry.yarnpkg.com/@ionic-native/calendar/-/calendar-5.12.0.tgz#d6301592570d76a5cb35229d3359b60bd00ef9c0"
-  integrity sha512-8aAdhlfcEdy/AQ4o5pKCozkDe4b90107SM1yrjpvG8LP22W+ipYBSTalue9j3M57x2LatB9NooK4DkvA1puR7A==
-  dependencies:
-    "@types/cordova" latest
-
 "@ionic-native/call-number@^5.5.1":
   version "5.12.0"
   resolved "https://registry.yarnpkg.com/@ionic-native/call-number/-/call-number-5.12.0.tgz#0aa26b7540528386aecee623849e5889625f007e"
@@ -2281,11 +2274,6 @@ cordova-plugin-badge@^0.8.8:
   version "0.8.8"
   resolved "https://registry.yarnpkg.com/cordova-plugin-badge/-/cordova-plugin-badge-0.8.8.tgz#0924018699b48f92dd3b33615452737582144c96"
   integrity sha512-RhIBtd5xhD/iLnxjt35jvOae28oNW/wtMZBOmQR3Rf0y4wirvA1bpAZEhBoFqL+rZGhsd6ddOdQXdex1T0DRyQ==
-
-cordova-plugin-calendar@^5.1.4:
-  version "5.1.4"
-  resolved "https://registry.yarnpkg.com/cordova-plugin-calendar/-/cordova-plugin-calendar-5.1.4.tgz#4cfea411f4177ba79ca5410d697adb0f4f5e5218"
-  integrity sha512-4Cl7s/hwfrLsJr6ecK8yBNPDbQHe0YB3y+4T/PRxv86CWjJpx6eiEHRlldjizSvNWpKoMy2ZG7Y4Sr5fCPrwZA==
 
 "cordova-plugin-cookieemperor@git+https://github.com/RTK/cordova-cookie-emperor.git":
   version "1.0.0"
