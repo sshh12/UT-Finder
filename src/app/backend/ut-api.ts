@@ -533,8 +533,6 @@ export class UTAPI {
 
       if (!title.includes('did not request')) {
 
-        console.log(clean(colsMatch[4][1]));
-
         let dateTime = this.getRegexMatrix(/\s*?\w+, (\w+) (\d+), (\d+-\d+ \w+)\s*?/g, clean(colsMatch[3][1]));
         let location = this.getRegexMatrix(/\s*?(\w+ [a-z]*[\d.]+[a-z]*)\s*?/g, clean(colsMatch[4][1]));
 
@@ -565,8 +563,6 @@ export class UTAPI {
       }
 
     }
-
-    console.log(finals);
 
     return finals;
 
@@ -604,7 +600,7 @@ export class UTAPI {
       return CANVAS_DATA;
     }
 
-    let canvasCourses = await this.getCanvas('courses');
+    let canvasCourses = await this.getCanvas('courses?enrollment_state=active');
     let courses: Course[] = [];
 
     for (let course of canvasCourses) {
@@ -635,8 +631,6 @@ export class UTAPI {
       });
 
     }
-
-    console.log(courses);
 
     // look up enrollments
     let canvasEnrollments = await this.getCanvas(`users/${this.canvasUserID}/enrollments`);
