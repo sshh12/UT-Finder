@@ -315,6 +315,13 @@
   dependencies:
     "@types/cordova" latest
 
+"@ionic-native/local-notifications@^5.21.6":
+  version "5.21.6"
+  resolved "https://registry.yarnpkg.com/@ionic-native/local-notifications/-/local-notifications-5.21.6.tgz#426c7917ccca45bd6dc1798c7e21ae4b2bf47d9c"
+  integrity sha512-ZjL2b6fVF8IRxvaF/CVxUxZOcGiaBZ6P4GhvRiDr0HEVGEnCqIIw+MJr6gU/UPyACpYm5oStMN+2NiAovD1ydw==
+  dependencies:
+    "@types/cordova" latest
+
 "@ionic-native/secure-storage@^5.12.0":
   version "5.12.0"
   resolved "https://registry.yarnpkg.com/@ionic-native/secure-storage/-/secure-storage-5.12.0.tgz#d74f9b27baec26f3a29033f259eb64d9f8ecc18d"
@@ -2270,6 +2277,11 @@ cordova-plugin-advanced-http@^2.1.1:
   resolved "https://registry.yarnpkg.com/cordova-plugin-advanced-http/-/cordova-plugin-advanced-http-2.1.1.tgz#2583d84bd5b068e1842ccd60dc4e490ead1a4eb3"
   integrity sha512-C8NQ5+PsUOqDCEzlhhTP9pIHizK/O9rVcdNU3+psfU/4mg5heiEVj/E3AS2TSjMo2wef1xw8yempSKETzuRGig==
 
+cordova-plugin-badge@^0.8.8:
+  version "0.8.8"
+  resolved "https://registry.yarnpkg.com/cordova-plugin-badge/-/cordova-plugin-badge-0.8.8.tgz#0924018699b48f92dd3b33615452737582144c96"
+  integrity sha512-RhIBtd5xhD/iLnxjt35jvOae28oNW/wtMZBOmQR3Rf0y4wirvA1bpAZEhBoFqL+rZGhsd6ddOdQXdex1T0DRyQ==
+
 cordova-plugin-calendar@^5.1.4:
   version "5.1.4"
   resolved "https://registry.yarnpkg.com/cordova-plugin-calendar/-/cordova-plugin-calendar-5.1.4.tgz#4cfea411f4177ba79ca5410d697adb0f4f5e5218"
@@ -2309,6 +2321,11 @@ cordova-plugin-ionic-webview@^2.5.1:
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/cordova-plugin-ionic-webview/-/cordova-plugin-ionic-webview-2.5.1.tgz#b21fba401bf1e67478c395ba530c85040cc663a2"
   integrity sha512-blDPUMxbASOaAU7GuLFetAeOq42VnbJWvFFtD5zm4pjGnlhZCd2ngOY4Fd6pioub8rPi9xxe4wzVcIvS14TBWA==
+
+cordova-plugin-local-notification@0.9.0-beta.2:
+  version "0.9.0-beta.2"
+  resolved "https://registry.yarnpkg.com/cordova-plugin-local-notification/-/cordova-plugin-local-notification-0.9.0-beta.2.tgz#e3a0b4a35d11f95bb4f1e367d9baee9909cca695"
+  integrity sha512-63n77K1pt8dnbWnNR8QWETi9Glezi1bvNHvHWmGNIOv0xCb0phZnm+Ku49BQ+omwe8Z5voMvrA4I03SYPpv38w==
 
 "cordova-plugin-secure-storage@git://github.com/mibrito707/cordova-plugin-secure-storage.git#v4.0.0-beta":
   version "4.0.0"
@@ -5621,7 +5638,7 @@ mute-stream@0.0.8:
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.8.tgz#1630c42b2251ff81e2a283de96a5497ea92e5e0d"
   integrity sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==
 
-mx.ferreyra.callnumber@~0.0.2:
+mx.ferreyra.callnumber@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/mx.ferreyra.callnumber/-/mx.ferreyra.callnumber-0.0.2.tgz#dda64ced1d5a19e801d5c64f17f02bcd0599cb63"
   integrity sha512-J9FJiMrfWG9Q8AQEz/cgYLcXTTD/Z5+vfq29hn8K7yVWjxkSzr7zFi7Dpn8wcv2iKHBHDJY+U0z8yoAzDugXMw==
@@ -7190,10 +7207,10 @@ rxjs@^6.1.0, rxjs@^6.4.0:
   dependencies:
     tslib "^1.9.0"
 
-rxjs@^6.5.3:
-  version "6.5.3"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.5.3.tgz#510e26317f4db91a7eb1de77d9dd9ba0a4899a3a"
-  integrity sha512-wuYsAYYFdWTAnAaPoKGNhfpWwKZbJW+HgAJ+mImp+Epl7BG8oNWBCTyRM8gba9k4lk8BgWdoYm21Mo/RYhhbgA==
+rxjs@^6.5.4:
+  version "6.5.4"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.5.4.tgz#e0777fe0d184cec7872df147f303572d414e211c"
+  integrity sha512-naMQXcgEo3csAEGvw/NydRA0fuS2nDZJiw1YUWFKU7aPPAPGZEsD4Iimit96qwCieH6y614MCLYwdkrWx7z/7Q==
   dependencies:
     tslib "^1.9.0"
 
