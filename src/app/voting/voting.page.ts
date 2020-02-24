@@ -58,7 +58,7 @@ export class VotingPage {
       let alert = await this.alertCtrl.create({
         header: 'Not Found 😔',
         subHeader: 'Unable to find your registration',
-        message: 'You may be registered in the wrong county (should be Travis) or your application is still processing.',
+        message: 'You may be registered in a different county (Travis) or your application is still processing.',
         buttons: ['OK']
       });
       await alert.present();

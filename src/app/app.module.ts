@@ -8,12 +8,12 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { IonicStorageModule } from '@ionic/storage';
-import { Calendar } from '@ionic-native/calendar/ngx';
 import { GoogleMaps } from '@ionic-native/google-maps';
 import { HTTP } from '@ionic-native/http/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { CallNumber } from '@ionic-native/call-number/ngx';
 import { SecureStorage } from '@ionic-native/secure-storage/ngx';
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 
 import { UTAPI } from './backend/ut-api';
 import { WeatherAPI } from './backend/weather-api';
@@ -34,11 +34,11 @@ import { VotingAPI } from './backend/voting-api';
   ],
   providers: [
     SecureStorage,
+    LocalNotifications,
     StatusBar,
     SplashScreen,
     InAppBrowser,
     GoogleMaps,
-    Calendar,
     Keyboard,
     HTTP,
     CallNumber,

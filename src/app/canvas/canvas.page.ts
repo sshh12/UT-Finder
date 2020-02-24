@@ -117,7 +117,8 @@ let ICONS = {
   'rhe': 'edit',
   'sds': 'chart-bar',
   'ugs': 'school',
-  'wgs': 'female'
+  'wgs': 'female',
+  'lin': 'file-alt'
 };
 
 function getCourseIcon(course: Course): String {
