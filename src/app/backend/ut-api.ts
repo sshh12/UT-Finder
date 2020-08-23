@@ -10,6 +10,7 @@ import {
 } from "@ionic-native/secure-storage/ngx";
 import { HTTP } from "@ionic-native/http/ngx";
 import { AlertController, ToastController } from "@ionic/angular";
+import { Circle } from "@ionic-native/google-maps";
 
 declare var cookieEmperor;
 
@@ -106,6 +107,20 @@ let asyncSleep = (ms: number) => {
   });
 };
 
+let getCookie = (url: string, name: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    cookieEmperor.getCookie(
+      url,
+      name,
+      (c) => resolve({ domain: url, name: name, value: c.cookieValue }),
+      () => reject()
+    );
+  });
+};
+
+const WEIRD_COOKIE =
+  "_shibsession_64656661756c7468747470733a2f2f75746469726563742e7574657861732e6564752f73686962626f6c657468";
+
 @Injectable()
 export class UTAPI {
   checker: any;
@@ -114,6 +129,7 @@ export class UTAPI {
   utLoginCookie = "";
   utSCCookie = "";
   canvasCookie = "";
+  cookies: any = {};
   canvasAccountID = 0;
   canvasUserID = 0;
   secStorage: SecureStorageObject = null;
@@ -122,7 +138,6 @@ export class UTAPI {
   constructor(
     private iab: InAppBrowser,
     private alertCtrl: AlertController,
-    private toastCtrl: ToastController,
     private http: HTTP,
     private storage: Storage,
     private secureStorage: SecureStorage
@@ -158,7 +173,7 @@ export class UTAPI {
     this.iab.create(url, "_blank", { location: "no" });
   }
 
-  async doLogin(username: string, password: string): Promise<void> {
+  async doUTLogin(username: string, password: string): Promise<void> {
     let browser = await createBrowser(
       this.iab,
       "https://utdirect.utexas.edu/registration/classlist.WBX"
@@ -191,12 +206,18 @@ export class UTAPI {
             clearInterval(loginCheckInterval);
             browser.close();
             this.lastLogged = new Date();
-            this.utLoginCookie = await this.getCookie(
+            this.cookies["ut_persist"] = {
+              domain: "https://utdirect.utexas.edu",
+              value: await getCookie(
+                "https://utdirect.utexas.edu",
+                "ut_persist"
+              ),
+            };
+            this.cookies["SC"] = await getCookie("https://utexas.edu", "SC");
+            this.cookies[WEIRD_COOKIE] = await getCookie(
               "https://utdirect.utexas.edu",
-              "utlogin-prod"
+              WEIRD_COOKIE
             );
-            this.utSCCookie = await this.getCookie("https://utexas.edu", "SC");
-            console.log(this.utLoginCookie, this.utSCCookie);
             this.account = await this.fetchAccountInfo();
             this.storage.set("account", this.account);
             resolve();
@@ -207,83 +228,63 @@ export class UTAPI {
     await waitForSuccess();
   }
 
-  ensureCanvasLogin(): Promise<boolean> {
-    return new Promise(async (resolve) => {
-      if (!(await this.ensureUTLogin())) {
-        resolve(false);
-        return;
-      }
-
-      if (this.canvasCookie !== "") {
-        resolve(true);
-        return;
-      }
-
-      const username = (await this.storage.get("eid")) || "";
-      const password = (await this.secStorage.get("password")) || "";
-
-      const browser = this.iab.create(
-        "https://utexas.instructure.com/courses",
-        "_blank",
-        { location: "no" }
-      );
-
-      browser.on("loadstop").subscribe(() => {
-        this.checker = setInterval(async () => {
-          const curUrl =
+  async doCanvasLogin(username: string, password: string): Promise<void> {
+    let browser = await createBrowser(
+      this.iab,
+      "https://utexas.instructure.com/courses"
+    );
+    let location =
+      (await browser.executeScript({ code: "window.location.href" })) + "";
+    if (location.startsWith("https://enterprise.login.utexas.edu/")) {
+      await browser.executeScript({
+        code: `document.getElementById('username').value = decodeURIComponent("${encodeURIComponent(
+          username
+        )}");`,
+      });
+      await browser.executeScript({
+        code: `document.getElementById('password').value = decodeURIComponent("${encodeURIComponent(
+          password
+        )}")`,
+      });
+      await asyncSleep(500);
+      await browser.executeScript({
+        code: 'document.getElementsByName("_eventId_proceed")[0].click()',
+      });
+    }
+    let waitForSuccess = () => {
+      return new Promise((resolve, reject) => {
+        let loginCheckInterval = setInterval(async () => {
+          let location =
             (await browser.executeScript({ code: "window.location.href" })) +
             "";
-
-          console.log(curUrl);
-
-          // this means the user is prob already logged in
-          if (curUrl.includes("https://utexas.instructure.com/courses")) {
-            clearInterval(this.checker);
+          if (location.startsWith("https://utexas.instructure.com/courses")) {
+            clearInterval(loginCheckInterval);
             browser.close();
-            this.canvasCookie = await this.getCookie(
-              "https://utexas.instructure.com",
+            this.lastLogged = new Date();
+            this.cookies["canvas_session"] = await getCookie(
+              "https://utexas.instructure.com/courses",
               "canvas_session"
             );
-            resolve(true);
-          } else if (curUrl.includes("https://enterprise.login.utexas.edu")) {
-            let error =
-              (await browser.executeScript({
-                code:
-                  "document.getElementsByClassName('form-error').length != 0",
-              })) + "";
-
-            console.log(error);
-
-            if (error != "true") {
-              console.log("a");
-              await browser.executeScript({
-                code: `document.getElementById('username').value = "${username}";`,
-              });
-              await browser.executeScript({
-                code: `document.getElementById('password').value = "${password}"`,
-              });
-              await browser.executeScript({
-                code:
-                  "document.getElementsByName('_eventId_proceed')[0].click()",
-              });
-
-              // do it again cause ios broke
-              await browser.executeScript({
-                code: `document.getElementById('username').value = "${username}";`,
-              });
-              await browser.executeScript({
-                code: `document.getElementById('password').value = "${password}"`,
-              });
-              console.log("b");
-            }
+            console.log(this.cookies);
+            resolve();
           }
-        }, 800);
+        }, 500);
       });
+    };
+    await waitForSuccess();
+  }
 
-      browser.on("exit").subscribe(() => {
-        clearInterval(this.checker);
-      });
-    });
+  async ensureCanvasLogin(): Promise<boolean> {
+    if (!(await this.ensureUTLogin())) {
+      return false;
+    }
+    if (this.cookies["canvas_session"]) {
+      return true;
+    }
+    const username = (await this.storage.get("eid")) || "";
+    const password = (await this.secStorage.get("password")) || "";
+    await this.doCanvasLogin(username, password);
+    return true;
   }
 
   ensureUTLogin(): Promise<boolean> {
@@ -317,7 +318,7 @@ export class UTAPI {
               {
                 text: "Login",
                 handler: async (data) => {
-                  await this.doLogin(data.EID.toLowerCase(), data.password);
+                  await this.doUTLogin(data.EID.toLowerCase(), data.password);
                   resolve(true);
                 },
               },
@@ -328,7 +329,7 @@ export class UTAPI {
                   let password = data.password;
                   this.storage.set("eid", eid);
                   this.secStorage.set("password", password);
-                  await this.doLogin(eid, password);
+                  await this.doUTLogin(eid, password);
                   resolve(true);
                 },
               },
@@ -358,7 +359,7 @@ export class UTAPI {
               {
                 text: `As ${username}`,
                 handler: async () => {
-                  await this.doLogin(username, password);
+                  await this.doUTLogin(username, password);
                   resolve(true);
                 },
               },
@@ -377,17 +378,6 @@ export class UTAPI {
     });
   }
 
-  getCookie(url: string, name: string): Promise<string> {
-    return new Promise<string>(async (resolve) => {
-      cookieEmperor.getCookie(
-        url,
-        name,
-        (c) => resolve(c.cookieValue),
-        () => resolve("")
-      );
-    });
-  }
-
   async getCanvas(apiURL: string) {
     await this.ensureCanvasLogin();
     const rawResp = await this.getPage(
@@ -401,15 +391,10 @@ export class UTAPI {
     method: string = "GET",
     data: any = {}
   ): Promise<string> {
-    this.http.setCookie(
-      "https://utdirect.utexas.edu",
-      "utlogin-prod=" + this.utLoginCookie
-    );
-    this.http.setCookie("https://utexas.edu", "SC=" + this.utSCCookie);
-    this.http.setCookie(
-      "https://utexas.instructure.com",
-      "canvas_session=" + this.canvasCookie
-    );
+    for (let cookieName in this.cookies) {
+      let cookie = this.cookies[cookieName];
+      this.http.setCookie(cookie.domain, cookie.name + "=" + cookie.value);
+    }
     if (method === "GET") {
       return (await this.http.get(url, data, {})).data;
     } else if (method === "POST") {
@@ -436,7 +421,6 @@ export class UTAPI {
     let html = await this.getPage(
       "https://utdirect.utexas.edu/apps/utd/all_my_addresses/"
     );
-    console.log(html);
     let name = html.match(/upd_name" value="([^"]+)"/)[1];
     let bdayString = html.match(
       /Date of Birth:[<\/span> cl="fied_vu]+(\d\d\/\d\d\/\d\d)/
