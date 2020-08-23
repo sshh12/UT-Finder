@@ -327,7 +327,9 @@ export class MapPage implements OnInit {
         points.push(loc.location);
       }
     }
-
+    if (points.length == 0) {
+      return;
+    }
     let polyOptions: PolylineOptions = {
       points: points,
       color: "#c77716",

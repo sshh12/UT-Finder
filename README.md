@@ -3,6 +3,7 @@
 A simple app for finding your way around [UT Austin](https://www.utexas.edu/).
 
 ## Releases
+
 - [IOS](https://itunes.apple.com/us/app/ut-finder/id1436096236)
 - [Android](https://play.google.com/store/apps/details?id=io.sshh.utfinder)
 
@@ -13,20 +14,19 @@ Features
 
 -> Class and Finals Schedules
 -> Map
--> Sports
--> RIS/Waitlists
 -> IDAs
+-> Sports
 -> Canvas Grades
+-> COVID Resources
 -> Voting Information
 -> Emergency Resources
--> Dine In/Bevo Bucks
--> Live Bus Routes
 -> Inclusive Restroom Map
--> Campus Links
+-> Dine In/Bevo Bucks
 -> Call a SURE Walk
--> Weather
 -> Things from MyUT
--> Swag
+-> RIS/Waitlists
+-> Campus Links
+-> Weather
 ```
 
 ## Screenshots
