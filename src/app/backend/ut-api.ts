@@ -605,7 +605,6 @@ export class UTAPI {
     let courses: Course[] = [];
 
     for (let course of canvasCourses) {
-      // ensure active course
       if (
         !course.enrollments ||
         course.enrollments[0].enrollment_state !== "active"
@@ -636,20 +635,17 @@ export class UTAPI {
       });
     }
 
-    // look up enrollments
     let canvasEnrollments = await this.getCanvas(
       `users/${this.canvasUserID}/enrollments`
     );
 
     for (let enroll of canvasEnrollments) {
-      // find course attached to enrollment
       let course: Course = courses.find((course) => {
         return course.canvasID === enroll.course_id;
       });
       if (!course) {
         continue;
       }
-
       if (enroll.grades.current_score) {
         course.grade = enroll.grades.current_score;
       } else {

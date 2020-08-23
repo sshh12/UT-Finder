@@ -1,27 +1,25 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { RouteReuseStrategy } from '@angular/router';
-import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
-import { IonicStorageModule } from '@ionic/storage';
-import { GoogleMaps } from '@ionic-native/google-maps';
-import { HTTP } from '@ionic-native/http/ngx';
-import { Keyboard } from '@ionic-native/keyboard/ngx';
-import { CallNumber } from '@ionic-native/call-number/ngx';
-import { SecureStorage } from '@ionic-native/secure-storage/ngx';
-import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
+import { NgModule } from "@angular/core";
+import { BrowserModule } from "@angular/platform-browser";
+import { RouteReuseStrategy } from "@angular/router";
+import { IonicModule, IonicRouteStrategy } from "@ionic/angular";
+import { SplashScreen } from "@ionic-native/splash-screen/ngx";
+import { StatusBar } from "@ionic-native/status-bar/ngx";
+import { AppRoutingModule } from "./app-routing.module";
+import { AppComponent } from "./app.component";
+import { InAppBrowser } from "@ionic-native/in-app-browser/ngx";
+import { IonicStorageModule } from "@ionic/storage";
+import { GoogleMaps } from "@ionic-native/google-maps";
+import { HTTP } from "@ionic-native/http/ngx";
+import { Keyboard } from "@ionic-native/keyboard/ngx";
+import { CallNumber } from "@ionic-native/call-number/ngx";
+import { SecureStorage } from "@ionic-native/secure-storage/ngx";
+import { LocalNotifications } from "@ionic-native/local-notifications/ngx";
 
-import { UTAPI } from './backend/ut-api';
-import { WeatherAPI } from './backend/weather-api';
-import { TowerAPI } from './backend/tower-api';
-import { MapsAPI } from './backend/maps-api';
-import { BusAPI } from './backend/bus-api';
-import { UTSportsAPI } from './backend/utsports-api';
-import { VotingAPI } from './backend/voting-api';
+import { UTAPI } from "./backend/ut-api";
+import { WeatherAPI } from "./backend/weather-api";
+import { TowerAPI } from "./backend/tower-api";
+import { MapsAPI } from "./backend/maps-api";
+import { UTSportsAPI } from "./backend/utsports-api";
 
 @NgModule({
   declarations: [AppComponent],
@@ -30,7 +28,7 @@ import { VotingAPI } from './backend/voting-api';
     BrowserModule,
     IonicModule.forRoot(),
     IonicStorageModule.forRoot(),
-    AppRoutingModule
+    AppRoutingModule,
   ],
   providers: [
     SecureStorage,
@@ -46,11 +44,9 @@ import { VotingAPI } from './backend/voting-api';
     WeatherAPI,
     TowerAPI,
     MapsAPI,
-    BusAPI,
     UTSportsAPI,
-    VotingAPI,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}
