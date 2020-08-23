@@ -1,11 +1,10 @@
 <ion-split-pane>
   <ion-menu contentId="content">
-
     <ion-header>
       <ion-toolbar color="primary">
         <ion-item *ngIf="utapi.account" color="primary">
           <ion-avatar slot="start">
-            <img src="assets/avatar.png">
+            <img src="assets/avatar.png" />
           </ion-avatar>
           <ion-label>{{ utapi.account.eid }}</ion-label>
         </ion-item>
@@ -21,22 +20,47 @@
           <ion-item-divider>
             <ion-label>Utilities</ion-label>
           </ion-item-divider>
-          <ion-item routerDirection="root" [routerLink]="'/menu/safety'" routerDirection="forward">
+          <ion-item
+            routerDirection="root"
+            [routerLink]="'/menu/safety'"
+            routerDirection="forward"
+          >
             <ion-label>
               Health/Safety
             </ion-label>
           </ion-item>
-          <ion-item routerDirection="root" [routerLink]="'/menu/courses'" routerDirection="forward">
+          <ion-item
+            routerDirection="root"
+            [routerLink]="'/menu/covid'"
+            routerDirection="forward"
+          >
+            <ion-label>
+              COVID-19
+            </ion-label>
+          </ion-item>
+          <ion-item
+            routerDirection="root"
+            [routerLink]="'/menu/courses'"
+            routerDirection="forward"
+          >
             <ion-label>
               Courses
             </ion-label>
           </ion-item>
-          <ion-item routerDirection="root" [routerLink]="'/menu/voting'" routerDirection="forward">
+          <ion-item
+            routerDirection="root"
+            [routerLink]="'/menu/voting'"
+            routerDirection="forward"
+          >
             <ion-label>
               Voting
             </ion-label>
           </ion-item>
-          <ion-item routerDirection="root" [routerLink]="'/menu/sports'" routerDirection="forward">
+          <ion-item
+            routerDirection="root"
+            [routerLink]="'/menu/sports'"
+            routerDirection="forward"
+          >
             <ion-label>
               Sports
             </ion-label>
@@ -51,12 +75,15 @@
               Helpful Links
             </ion-label>
           </ion-item>
+          <ion-item (click)="openGithub()">
+            <ion-label>
+              App Source Code
+            </ion-label>
+          </ion-item>
         </ion-menu-toggle>
       </ion-list>
     </ion-content>
-
   </ion-menu>
 
   <ion-router-outlet id="content" main></ion-router-outlet>
-
 </ion-split-pane>

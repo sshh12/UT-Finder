@@ -1,7 +1,5 @@
 <ion-header>
-
   <ion-toolbar color="primary">
-
     <ion-buttons slot="start">
       <ion-menu-button autoHide="false"></ion-menu-button>
     </ion-buttons>
@@ -9,47 +7,57 @@
     <ion-title>Map</ion-title>
 
     <ion-buttons slot="end">
-      <ion-button fill="outline" icon-only (click)="showSURE()" color="light">SURE Walk</ion-button>
+      <ion-button fill="outline" icon-only (click)="showSURE()" color="light"
+        >SURE Walk</ion-button
+      >
     </ion-buttons>
-
   </ion-toolbar>
 
   <ion-toolbar *ngIf='view == "places"' no-border-top>
-    <ion-searchbar placeholder="Where..." (ionInput)="search($event)" (keyup.enter)="closeKeyboard()"></ion-searchbar>
-    <ion-progress-bar *ngIf='loading' type="indeterminate"></ion-progress-bar>
-  </ion-toolbar>
-
-  <ion-toolbar *ngIf='view == "bus"' no-border-top>
-    <ion-buttons slot="end">
-      <ion-icon *ngIf='!loading' (click)="closeBusView()" slot="icon-only" name="close"></ion-icon>
-    </ion-buttons>
-    <ion-title>
-      <ion-badge class="bus-badge {{getRouteStyle(showBusRoute)}}">{{showBusRoute.num}}</ion-badge>
-      {{showBusRoute.name}}
-    </ion-title>
-    <ion-progress-bar *ngIf='loading' type="indeterminate"></ion-progress-bar>
+    <ion-searchbar
+      placeholder="Where..."
+      (ionInput)="search($event)"
+      (keyup.enter)="closeKeyboard()"
+    ></ion-searchbar>
+    <ion-progress-bar *ngIf="loading" type="indeterminate"></ion-progress-bar>
   </ion-toolbar>
 
   <ion-toolbar *ngIf='view == "classes"' no-border-top>
     <ion-segment scrollable="true">
-      <ion-segment-button (click)="showClassView('M')" value="M">Mon</ion-segment-button>
-      <ion-segment-button (click)="showClassView('T')" value="T">Tue</ion-segment-button>
-      <ion-segment-button (click)="showClassView('W')" value="W">Wed</ion-segment-button>
-      <ion-segment-button (click)="showClassView('H')" value="H">Thu</ion-segment-button>
-      <ion-segment-button (click)="showClassView('F')" value="F">Fri</ion-segment-button>
-      <ion-segment-button *ngIf='!loading' (click)="closeClassView()" value="exit">
+      <ion-segment-button (click)="showClassView('M')" value="M"
+        >Mon</ion-segment-button
+      >
+      <ion-segment-button (click)="showClassView('T')" value="T"
+        >Tue</ion-segment-button
+      >
+      <ion-segment-button (click)="showClassView('W')" value="W"
+        >Wed</ion-segment-button
+      >
+      <ion-segment-button (click)="showClassView('H')" value="H"
+        >Thu</ion-segment-button
+      >
+      <ion-segment-button (click)="showClassView('F')" value="F"
+        >Fri</ion-segment-button
+      >
+      <ion-segment-button
+        *ngIf="!loading"
+        (click)="closeClassView()"
+        value="exit"
+      >
         <i class="fa fa-times"></i>
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
-
 </ion-header>
 
 <ion-content>
-
   <div id="map_canvas">
-
-    <ion-fab vertical="top" horizontal="end" slot="fixed" *ngIf='view == "places"'>
+    <ion-fab
+      vertical="top"
+      horizontal="end"
+      slot="fixed"
+      *ngIf='view == "places"'
+    >
       <ion-fab-button size="small" color="secondary">
         <ion-icon name="map"></ion-icon>
       </ion-fab-button>
@@ -68,7 +76,5 @@
         </ion-fab-button>
       </ion-fab-list>
     </ion-fab>
-
   </div>
-
 </ion-content>

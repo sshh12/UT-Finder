@@ -40,7 +40,6 @@ UserInterfaceState.xcuserstate
 *.cer
 
 # Dev
-.vs/*
-.vs-code/*
 *.code-workspace
 *.apk
+!.vscode/

@@ -8,42 +8,58 @@
 </ion-header>
 
 <ion-content padding>
-
   <ion-spinner *ngIf="loading" name="dots"></ion-spinner>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button size="small" color="secondary" (click)="updateAccounts()">
-      <ion-icon name="{{ accounts.length == 0 ? 'add' : 'refresh' }}"></ion-icon>
+      <ion-icon
+        name="{{ accounts.length == 0 ? 'add' : 'refresh' }}"
+      ></ion-icon>
     </ion-fab-button>
   </ion-fab>
 
   <div *ngIf="!loading">
     <ion-grid>
       <ion-row>
-
-        <ion-col *ngFor='let acc of accounts' size="6">
+        <ion-col *ngFor="let acc of accounts" size="12">
           <ion-card>
             <ion-card-header>
               {{ acc.name }}
             </ion-card-header>
             <ion-card-content>
-              <p><b>${{ acc.balance.toFixed(2) }}</b>
-                <p>
-                  <br>
-                  <div>
-                    <ion-badge color="{{ getStatusColor(acc.status) }}" class="status">{{ acc.status }}</ion-badge>
-                  </div>
+              <p><b>${{ acc.balance.toFixed(2) }}</b></p>
+              <p>
+                <br />
+              </p>
+
+              <div>
+                <ion-badge
+                  color="{{ getStatusColor(acc.status) }}"
+                  class="status"
+                  >{{ acc.status }}</ion-badge
+                >
+              </div>
             </ion-card-content>
-            <hr>
+            <hr />
             <ion-row>
               <ion-col>
-                <ion-button class="full-btn" size="small" fill="outline" (click)="viewHistory(acc)">
+                <ion-button
+                  class="full-btn"
+                  size="small"
+                  fill="outline"
+                  (click)="viewHistory(acc)"
+                >
                   <ion-icon name="list"></ion-icon>
                   <ion-label>History</ion-label>
                 </ion-button>
               </ion-col>
               <ion-col>
-                <ion-button class="full-btn" size="small" fill="outline" (click)="addFunds(acc)">
+                <ion-button
+                  class="full-btn"
+                  size="small"
+                  fill="outline"
+                  (click)="addFunds(acc)"
+                >
                   <ion-icon name="cash"></ion-icon>
                   <ion-label>Add Funds</ion-label>
                 </ion-button>
@@ -51,12 +67,14 @@
             </ion-row>
           </ion-card>
         </ion-col>
-
       </ion-row>
     </ion-grid>
   </div>
 
-  <div style="text-align: center;" *ngIf="outdated && accounts.length != 0 && !loading">
+  <div
+    style="text-align: center;"
+    *ngIf="outdated && accounts.length != 0 && !loading"
+  >
     <ion-chip (click)="updateAccounts()">
       <ion-icon name="refresh" color="secondary"></ion-icon>
       <ion-label>Load Latest Balance</ion-label>
@@ -70,5 +88,4 @@
       <ion-label>Add your accounts</ion-label>
     </ion-chip>
   </div>
-
 </ion-content>
