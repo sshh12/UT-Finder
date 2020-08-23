@@ -1,0 +1,19 @@
+.card-list {
+  ion-card-content {
+    padding-top: 0px;
+    margin-top: -12px;
+    ul {
+      padding: 0px 0px 0px 12px;
+    }
+  }
+}
+iframe {
+  // TODO compute these
+  height: 780px;
+  width: 1080px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  transform: scale(0.35);
+  transform-origin: 0 0;
+}

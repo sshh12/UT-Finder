@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaulthref=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>COVID-19</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-card class="card-list">
+      <ion-card-content style="padding: 0; height: 300px;">
+        <iframe
+          src="https://iq-analytics.austin.utexas.edu/views/UTCOVID-19TestResultsDashboard7-15-20/UTCOVIDDashboardwithAPHData?:embed=y&:showVizHome=no&:host_url=https%3A%2F%2Fiq-analytics.austin.utexas.edu%2F&:embed_code_version=3&:tabs=no&:toolbar=no&:showAppBanner=false&:display_spinner=no&:loadOrderID=2"
+        ></iframe>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-subtitle>Resources</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-button
+          expand="block"
+          color="primary"
+          (click)="showProtectTexasApp()"
+          >Protect Texas Together App</ion-button
+        >
+        <ion-button
+          expand="block"
+          color="secondary"
+          (click)='openLink("https://protect.utexas.edu/")'
+          >protect.utexas.edu</ion-button
+        >
+        <ion-button
+          expand="block"
+          color="secondary"
+          (click)='openLink("https://coronavirus.utexas.edu/")'
+          >coronavirus.utexas.edu</ion-button
+        >
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+</ion-content>
